@@ -1,0 +1,539 @@
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   HTML + BODY
+========================================= */
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #effbee;
+
+    color: #222;
+}
+
+
+/* =========================================
+   MAIN SCREEN
+========================================= */
+
+.password-screen {
+    position: relative;
+
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    display: flex;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background: #effbee;
+}
+
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+
+.back-button {
+    position: absolute;
+
+    top: clamp(15px, 3vh, 30px);
+    left: clamp(15px, 4vw, 45px);
+
+    width: clamp(32px, 4vw, 40px);
+    height: clamp(32px, 4vw, 40px);
+
+    border: none;
+
+    background: transparent;
+
+    color: #333;
+
+    font-size: clamp(21px, 2.5vw, 27px);
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.password-content {
+    width: min(88%, 400px);
+
+    padding-top: clamp(60px, 10vh, 110px);
+
+    padding-bottom: 40px;
+}
+
+
+/* =========================================
+   TITLE
+========================================= */
+
+h1 {
+    text-align: center;
+
+    color: #086b36;
+
+    font-size: clamp(22px, 3vw, 30px);
+
+    line-height: 1.25;
+
+    font-weight: 700;
+
+    margin-bottom: clamp(8px, 1.5vh, 12px);
+}
+
+
+/* =========================================
+   SUBTITLE
+========================================= */
+
+.subtitle {
+    text-align: center;
+
+    color: #555;
+
+    font-size: clamp(12px, 1.5vw, 15px);
+
+    line-height: 1.5;
+
+    margin-bottom: clamp(25px, 4vh, 38px);
+}
+
+
+/* =========================================
+   INPUT GROUP
+========================================= */
+
+.input-group {
+    width: 100%;
+
+    margin-bottom: clamp(16px, 2.5vh, 22px);
+}
+
+
+/* =========================================
+   LABEL
+========================================= */
+
+.input-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #333;
+
+    font-size: clamp(11px, 1.4vw, 13px);
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   PASSWORD BOX
+========================================= */
+
+.password-box {
+    position: relative;
+
+    width: 100%;
+}
+
+
+/* =========================================
+   INPUT
+========================================= */
+
+.password-box input {
+    width: 100%;
+
+    height: clamp(42px, 6vh, 50px);
+
+    padding-left: clamp(11px, 2vw, 15px);
+    padding-right: 45px;
+
+    border: 1px solid #d8ddd8;
+
+    border-radius: 6px;
+
+    outline: none;
+
+    background: rgba(255, 255, 255, 0.9);
+
+    color: #222;
+
+    font-size: clamp(11px, 1.4vw, 13px);
+
+    transition: 0.2s;
+}
+
+
+.password-box input::placeholder {
+    color: #999;
+}
+
+
+.password-box input:focus {
+    border-color: #159447;
+
+    box-shadow: 0 0 0 2px rgba(21, 148, 71, 0.08);
+}
+
+
+/* =========================================
+   EYE BUTTON
+========================================= */
+
+.eye-button {
+    position: absolute;
+
+    top: 50%;
+    right: 12px;
+
+    transform: translateY(-50%);
+
+    border: none;
+
+    background: transparent;
+
+    color: #777;
+
+    font-size: clamp(13px, 1.8vw, 16px);
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   PASSWORD REQUIREMENTS
+========================================= */
+
+.requirements {
+    width: 100%;
+
+    margin-top: 4px;
+    margin-bottom: clamp(22px, 4vh, 30px);
+
+    padding: clamp(11px, 2vw, 15px);
+
+    border: 1px solid #e0e6e0;
+
+    border-radius: 7px;
+
+    background: rgba(255, 255, 255, 0.55);
+}
+
+
+.requirements p {
+    margin-bottom: 8px;
+
+    color: #333;
+
+    font-size: clamp(11px, 1.3vw, 13px);
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   REQUIREMENT
+========================================= */
+.requirements-toggle {
+    display: block;
+
+    margin: 5px 0 18px auto;
+
+    border: none;
+
+    background: transparent;
+
+    color: #087b3f;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.requirements-toggle:hover {
+    text-decoration: underline;
+}
+
+
+/* Hidden by default */
+.requirements {
+    display: none;
+
+    width: 100%;
+
+    margin-bottom: 22px;
+
+    padding: 12px;
+
+    border: 1px solid #dfe6df;
+
+    border-radius: 7px;
+
+    background: rgba(255, 255, 255, 0.6);
+}
+
+
+/* Show when clicked */
+.requirements.show {
+    display: block;
+}
+
+
+.requirements p {
+    margin-bottom: 8px;
+
+    color: #333;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+.requirement {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 6px;
+
+    color: #777;
+
+    font-size: 11px;
+}
+
+
+.requirement span {
+    color: #aaa;
+}
+
+
+.requirement.valid {
+    color: #159447;
+}
+
+
+.requirement.valid span {
+    color: #159447;
+}
+
+.requirement span {
+    color: #aaa;
+
+    font-size: 14px;
+
+    min-width: 14px;
+}
+
+
+.requirement.valid {
+    color: #159447;
+}
+
+
+.requirement.valid span {
+    color: #159447;
+}
+
+
+/* =========================================
+   RESET BUTTON
+========================================= */
+
+.reset-button {
+    width: 100%;
+
+    height: clamp(42px, 6vh, 50px);
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #087b3f;
+
+    color: #ffffff;
+
+    font-size: clamp(12px, 1.5vw, 14px);
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background 0.2s, transform 0.1s;
+}
+
+
+.reset-button:hover {
+    background: #066b36;
+}
+
+
+.reset-button:active {
+    transform: scale(0.98);
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+    .password-content {
+        width: 88%;
+
+        padding-top: 58px;
+    }
+
+    .subtitle {
+        margin-bottom: 25px;
+    }
+
+    .requirements {
+        padding: 11px;
+    }
+
+}
+
+
+/* =========================================
+   NORMAL PHONES
+========================================= */
+
+@media (min-width: 381px) and (max-width: 600px) {
+
+    .password-content {
+        width: 86%;
+
+        padding-top: 70px;
+    }
+
+}
+
+
+/* =========================================
+   TABLETS
+========================================= */
+
+@media (min-width: 601px) and (max-width: 1024px) {
+
+    .password-content {
+        width: min(65%, 410px);
+
+        padding-top: 90px;
+    }
+
+}
+
+
+/* =========================================
+   LAPTOPS
+========================================= */
+
+@media (min-width: 1025px) and (max-width: 1440px) {
+
+    .password-content {
+        width: 390px;
+
+        padding-top: 90px;
+    }
+
+}
+
+
+/* =========================================
+   LARGE DESKTOP / COMPUTER
+========================================= */
+
+@media (min-width: 1441px) {
+
+    .password-content {
+        width: 410px;
+
+        padding-top: 105px;
+    }
+
+}
+
+
+/* =========================================
+   SHORT SCREENS
+========================================= */
+
+@media (max-height: 600px) {
+
+    .password-content {
+        padding-top: 45px;
+
+        padding-bottom: 25px;
+    }
+
+    .subtitle {
+        margin-bottom: 20px;
+    }
+
+    .input-group {
+        margin-bottom: 13px;
+    }
+
+    .requirements {
+        margin-bottom: 18px;
+    }
+
+}
+
+
+/* =========================================
+   LANDSCAPE PHONE
+========================================= */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    .password-content {
+        width: min(75%, 500px);
+
+        padding-top: 25px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .subtitle {
+        margin-bottom: 18px;
+    }
+
+}

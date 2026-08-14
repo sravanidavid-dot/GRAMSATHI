@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create New Password - GramConnect</title>
+
+    <link rel="stylesheet" href="9.css">
+</head>
+
+<body>
+
+    <div class="password-screen">
+
+        <!-- Back Button -->
+        <button class="back-button" onclick="goBack()">←</button>
+
+        <!-- Content -->
+        <div class="password-content">
+
+            <h1>Create New Password</h1>
+
+            <p class="subtitle">
+                Create a new password for your account
+            </p>
+
+            <!-- New Password -->
+            <div class="input-group">
+
+                <label for="newPassword">New Password</label>
+
+                <div class="password-box">
+
+                    <input
+                        type="password"
+                        id="newPassword"
+                        placeholder="New Password"
+                    >
+
+                    <button
+                        type="button"
+                        class="eye-button"
+                        onclick="togglePassword('newPassword', this)"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Confirm Password -->
+            <div class="input-group">
+
+                <label for="confirmPassword">Confirm Password</label>
+
+                <div class="password-box">
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Confirm Password"
+                    >
+
+                    <button
+                        type="button"
+                        class="eye-button"
+                        onclick="togglePassword('confirmPassword', this)"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Password Requirements -->
+            <button
+    type="button"
+    class="requirements-toggle"
+    onclick="toggleRequirements()">
+    Password requirements
+</button>
+
+<div class="requirements" id="requirements">
+
+    <p>Password must contain:</p>
+
+    <div id="length" class="requirement">
+        <span>○</span>
+        At least 8 characters
+    </div>
+
+    <div id="uppercase" class="requirement">
+        <span>○</span>
+        One uppercase letter
+    </div>
+
+    <div id="number" class="requirement">
+        <span>○</span>
+        One number
+    </div>
+
+    <div id="special" class="requirement">
+        <span>○</span>
+        One special character
+    </div>
+
+</div>
+
+                
+            <!-- Reset Button -->
+            <button class="reset-button" onclick="resetPassword()">
+                Reset Password
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script src="9.js"></script>
+
+</body>
+</html>

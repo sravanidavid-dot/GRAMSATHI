@@ -1,0 +1,531 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #effbee;
+}
+
+
+/* =========================================
+   MAIN SPLASH SCREEN
+========================================= */
+
+.splash-screen {
+    position: relative;
+
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    overflow: hidden;
+
+    background: #effbee;
+
+    text-align: center;
+}
+
+
+/* =========================================
+   LOGO
+========================================= */
+
+.logo {
+    width: 100%;
+
+    padding-top: clamp(50px, 12vh, 115px);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo img {
+    width: clamp(65px, 8vw, 100px);
+    height: auto;
+
+    display: block;
+    object-fit: contain;
+
+    /* Logo image rectangle background blend */
+    mix-blend-mode: multiply;
+}
+/* =========================================
+   APP NAME
+========================================= */
+
+h1 {
+    margin-top: clamp(10px, 2vh, 18px);
+
+    color: #086b36;
+
+    font-size: clamp(24px, 3vw, 34px);
+
+    line-height: 1.2;
+
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
+}
+
+
+/* =========================================
+   TAGLINE
+========================================= */
+
+.tagline {
+    margin-top: clamp(10px, 2vh, 18px);
+
+    color: #444;
+
+    font-size: clamp(12px, 1.5vw, 16px);
+
+    line-height: 1.7;
+
+    font-weight: 500;
+}
+
+
+/* =========================================
+   LOADING SECTION
+========================================= */
+
+.loading-section {
+    position: absolute;
+
+    left: 50%;
+    bottom: clamp(105px, 17vh, 150px);
+
+    transform: translateX(-50%);
+
+    width: 150px;
+
+    z-index: 20;
+}
+
+
+/* =========================================
+   LOADER
+========================================= */
+
+.loader {
+    width: clamp(38px, 4vw, 48px);
+    height: clamp(38px, 4vw, 48px);
+
+    margin: auto;
+
+    border-style: solid;
+    border-width: 4px;
+
+    border-color: #d5e8d7;
+    border-top-color: #08783c;
+
+    border-radius: 50%;
+
+    animation: spin 0.9s linear infinite;
+}
+
+
+/* Loading text */
+
+.loading-section p {
+    margin-top: 12px;
+
+    color: #222;
+
+    font-size: clamp(12px, 1.4vw, 15px);
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   LOADER ANIMATION
+========================================= */
+
+@keyframes spin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================
+   VILLAGE
+========================================= */
+.village {
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    height: clamp(110px, 20vh, 180px);
+
+    background: #b8dfa9;
+
+    overflow: hidden;
+
+    z-index: 5;
+}
+
+/* =========================================
+   HILLS
+========================================= */
+
+.hill {
+    position: absolute;
+
+    bottom: 55%;
+
+    width: clamp(130px, 18vw, 230px);
+    height: clamp(70px, 12vh, 120px);
+
+    background: #91c58b;
+
+    border-radius: 100% 100% 0 0;
+}
+
+.hill-left {
+    left: -5%;
+}
+
+.hill-right {
+    right: -5%;
+
+    height: clamp(60px, 10vh, 100px);
+}
+
+
+/* =========================================
+   HOUSES
+========================================= */
+
+.house {
+    position: absolute;
+
+    bottom: 30%;
+
+    width: clamp(42px, 5vw, 65px);
+    height: clamp(30px, 4.5vw, 48px);
+
+    background: #f6f4dd;
+
+    border: 2px solid #6d9e69;
+
+    z-index: 8;
+}
+
+
+/* =========================================
+   HOUSE ROOF
+========================================= */
+
+.roof {
+    position: absolute;
+
+    top: clamp(-16px, -1.8vw, -10px);
+    left: -7%;
+
+    width: 114%;
+    height: clamp(18px, 2.2vw, 26px);
+
+    background: #6d9e69;
+
+    clip-path: polygon(
+        50% 0,
+        100% 100%,
+        0 100%
+    );
+}
+
+
+/* =========================================
+   HOUSE DOOR
+========================================= */
+
+.door {
+    position: absolute;
+
+    bottom: 0;
+    left: 36%;
+
+    width: 25%;
+    height: 55%;
+
+    min-width: 9px;
+
+    background: #8c7354;
+}
+
+
+/* =========================================
+   HOUSE WINDOW
+========================================= */
+
+.window {
+    position: absolute;
+
+    top: 18%;
+    right: 12%;
+
+    width: 22%;
+    aspect-ratio: 1;
+
+    background: #b9dcae;
+
+    border: 1px solid #6d9e69;
+}
+
+
+/* =========================================
+   HOUSE POSITIONS
+========================================= */
+
+.house1 {
+    left: clamp(35px, 8vw, 130px);
+}
+
+.house2 {
+    right: clamp(35px, 8vw, 130px);
+}
+
+
+/* =========================================
+   TREES
+========================================= */
+
+.tree {
+    position: absolute;
+
+    bottom: 28%;
+
+    width: clamp(28px, 4vw, 48px);
+    height: clamp(55px, 7vw, 85px);
+
+    z-index: 7;
+}
+
+
+/* =========================================
+   TREE TRUNK
+========================================= */
+
+.trunk {
+    position: absolute;
+
+    bottom: 0;
+    left: 40%;
+
+    width: 20%;
+    height: 45%;
+
+    min-width: 5px;
+
+    background: #8b7652;
+
+    border-radius: 5px;
+}
+
+
+/* =========================================
+   TREE LEAVES
+========================================= */
+
+.leaf {
+    position: absolute;
+
+    width: 75%;
+    aspect-ratio: 1;
+
+    background: #5d9d58;
+
+    border-radius: 50%;
+}
+
+.leaf1 {
+    top: 5%;
+    left: 13%;
+}
+
+.leaf2 {
+    top: 25%;
+    left: -5%;
+}
+
+.leaf3 {
+    top: 25%;
+    right: -5%;
+}
+
+
+/* =========================================
+   TREE POSITIONS
+========================================= */
+
+.tree1 {
+    left: clamp(15px, 4vw, 70px);
+}
+
+.tree2 {
+    left: clamp(90px, 14vw, 220px);
+}
+
+.tree3 {
+    right: clamp(15px, 4vw, 70px);
+}
+.tree4 {
+    right: clamp(90px, 14vw, 220px);
+}
+
+
+/* =========================================
+   GRASS
+========================================= */
+
+.grass {
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    height: 32%;
+
+    background: #acd79d;
+
+    z-index: 6;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (min-width: 601px) and (max-width: 1024px) {
+
+    .logo {
+        padding-top: 90px;
+    }
+
+    .village {
+        height: 155px;
+    }
+
+    .loading-section {
+        bottom: 135px;
+    }
+
+}
+
+
+/* =========================================
+   LAPTOP / DESKTOP
+========================================= */
+
+@media (min-width: 1025px) {
+
+    .logo {
+        padding-top: 105px;
+    }
+
+    .loading-section {
+        bottom: 145px;
+    }
+
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+    .logo {
+        padding-top: 55px;
+    }
+
+    .tagline {
+        font-size: 12px;
+    }
+
+    .loading-section {
+        bottom: 100px;
+    }
+
+    .village {
+        height: 115px;
+    }
+
+}
+
+
+/* =========================================
+   LANDSCAPE PHONES
+========================================= */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    .logo {
+        padding-top: 20px;
+    }
+
+    .logo img {
+        width: 55px;
+    }
+
+    h1 {
+        margin-top: 5px;
+        font-size: 22px;
+    }
+
+    .tagline {
+        margin-top: 5px;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .loading-section {
+        bottom: 75px;
+    }
+
+    .village {
+        height: 90px;
+    }
+
+}
+
+
+/* =========================================
+   LARGE SCREENS
+========================================= */
+
+@media (min-width: 1600px) {
+
+    .logo {
+        padding-top: 120px;
+    }
+
+    .village {
+        height: 190px;
+    }
+
+}
