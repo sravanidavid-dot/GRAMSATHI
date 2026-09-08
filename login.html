@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Login - GramConnect</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        /* Light Green Background */
+
+        body {
+            min-height: 100vh;
+
+            background: #e8f7e8;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        /* Login Container */
+
+        .login-container {
+            width: 360px;
+            padding: 35px;
+        }
+
+
+        /* Heading */
+
+        h2 {
+            text-align: center;
+
+            font-size: 24px;
+            font-weight: 700;
+
+            color: #222222;
+
+            margin-bottom: 40px;
+        }
+
+
+        /* Input Container */
+
+        .input-box {
+            position: relative;
+
+            width: 100%;
+
+            margin-bottom: 18px;
+        }
+
+
+        /* Input */
+
+        .input-box input {
+            width: 100%;
+            height: 52px;
+
+            background: #ffffff;
+
+            border: 1px solid #dddddd;
+            border-radius: 7px;
+
+            padding: 0 15px;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+
+        .input-box input:focus {
+            border-color: #079447;
+        }
+
+
+        .input-box input::placeholder {
+            color: #777777;
+        }
+
+
+        /* Password */
+
+        .password-input {
+            padding-right: 45px !important;
+        }
+
+
+        /* Eye */
+
+        .eye {
+            position: absolute;
+
+            right: 14px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            cursor: pointer;
+
+            font-size: 17px;
+        }
+
+
+        .eye-slash {
+            position: absolute;
+            width: 2px;
+            height: 25px;
+            background: #222222;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            left: 50%;
+            top: 50%;
+            pointer-events: none;
+        }
+
+
+        /* Forgot Password */
+
+        .forgot {
+            display: block;
+
+            text-align: right;
+
+            margin-top: 3px;
+
+            margin-bottom: 38px;
+
+            color: #555555;
+
+            font-size: 13px;
+
+            text-decoration: none;
+        }
+
+
+        .forgot:hover {
+            color: #079447;
+        }
+
+
+        /* Login Button */
+
+        .login-btn {
+            width: 100%;
+            height: 52px;
+
+            border: none;
+            border-radius: 7px;
+
+            background: #079447;
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .login-btn:hover {
+            background: #067b3b;
+        }
+
+
+        /* Sign Up */
+
+        .signup {
+            text-align: center;
+
+            margin-top: 27px;
+
+            font-size: 13px;
+
+            color: #555555;
+        }
+
+
+        .signup a {
+            color: #079447;
+
+            font-weight: bold;
+
+            text-decoration: none;
+
+            cursor: pointer;
+        }
+
+
+        .signup a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* Message */
+
+        #message {
+            text-align: center;
+
+            font-size: 13px;
+
+            margin-top: 15px;
+        }
+
+
+        /* Mobile */
+
+        @media (max-width: 450px) {
+
+            .login-container {
+                width: 100%;
+                max-width: 360px;
+
+                padding: 25px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- LOGIN -->
+
+    <div class="login-container">
+
+
+        <!-- Heading -->
+
+        <h2>
+            Login to GramConnect
+        </h2>
+
+
+        <!-- Mobile Number / Email -->
+
+        <div class="input-box">
+
+            <input
+                type="text"
+                id="loginId"
+                placeholder="Mobile Number / Email"
+            >
+
+        </div>
+
+
+        <!-- Password -->
+
+        <div class="input-box">
+
+            <input
+                type="password"
+                id="password"
+                class="password-input"
+                placeholder="Password"
+            >
+
+            <span
+                class="eye"
+                onclick="togglePassword()"
+            >
+                👁️
+            </span>
+
+        </div>
+
+
+        <!-- Forgot Password -->
+
+        <a
+            href="module8.html"
+            class="forgot"
+        >
+            Forgot Password?
+        </a>
+
+
+        <!-- Login -->
+
+        <button
+            class="login-btn"
+            onclick="login()"
+        >
+            Login
+        </button>
+
+
+        <!-- Sign Up -->
+
+        <p class="signup">
+
+            Don't have an account?
+
+            <a href="module6.html">
+                Sign Up
+            </a>
+
+        </p>
+
+
+        <!-- Message -->
+
+        <p id="message"></p>
+
+
+    </div>
+
+
+    <script>
+
+
+        /* Show / Hide Password */
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const eye =
+                document.querySelector(".eye");
+
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                eye.innerHTML = "👁️<span class=\"eye-slash\"></span>";
+
+                eye.setAttribute("aria-label", "Hide password");
+
+            }
+
+            else {
+
+                password.type = "password";
+
+                eye.innerHTML = "👁️";
+
+                eye.setAttribute("aria-label", "Show password");
+
+            }
+
+        }
+
+
+        /* Login Validation */
+
+        function login() {
+
+            const loginId =
+                document.getElementById("loginId").value.trim();
+
+            const password =
+                document.getElementById("password").value.trim();
+
+            const message =
+                document.getElementById("message");
+
+
+            if (loginId === "") {
+
+                message.textContent =
+                    "Please enter your mobile number or email.";
+
+                message.style.color = "red";
+
+                return;
+            }
+
+
+            if (password === "") {
+
+                message.textContent =
+                    "Please enter your password.";
+
+                message.style.color = "red";
+
+                return;
+            }
+
+
+            message.textContent =
+                "Login successful!";
+
+            message.style.color =
+                "#079447";
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
