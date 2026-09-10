@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>GramConnect - Welcome</title>
+
+
+    <style>
+
+        /*RESET*/
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+
+        body {
+
+            width: 100vw;
+            height: 100vh;
+
+            overflow: hidden;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            background: #ffffff;
+        }
+
+
+        /* COMPLETE WELCOME PAGE*/
+
+        .welcome-screen {
+
+            position: relative;
+
+            width: 100vw;
+            height: 100vh;
+
+            overflow: hidden;
+
+            /*
+             * YOUR VILLAGE BACKGROUND
+             */
+
+            background-image: url("IMAGE/su.png");
+
+            background-repeat: no-repeat;
+
+            background-position: center center;
+
+            /*
+             * Complete image fills the screen
+             */
+
+            background-size: 100% 100%;
+        }
+
+
+        /*LIGHT WHITE AREA FOR TEXT */
+
+        .top-overlay {
+
+            position: absolute;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+
+            height: 58%;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(255,255,255,0.94),
+                    rgba(255,255,255,0.80),
+                    rgba(255,255,255,0.10)
+                );
+
+            z-index: 1;
+
+            pointer-events: none;
+        }
+
+
+        /* MAIN CONTENT */
+
+        .content {
+
+            position: absolute;
+
+            top: 5%;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            width: 90%;
+
+            text-align: center;
+
+            z-index: 2;
+        }
+
+
+        /* LOGO */
+
+        .logo {
+
+            width: 105px;
+            height: 105px;
+
+            margin: 0 auto 18px;
+
+            border-radius: 50%;
+
+            background: #eaf7e6;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            box-shadow:
+                0 3px 12px rgba(0,0,0,0.08);
+        }
+
+
+        .logo-icon {
+
+            font-size: 55px;
+
+            line-height: 1;
+        }
+
+
+        /*WELCOME TO*/
+
+        .welcome-text {
+
+            font-size: clamp(28px, 3.5vw, 48px);
+
+            font-weight: 700;
+
+            color: #222222;
+
+            margin-bottom: 5px;
+        }
+
+
+        /*GRAMCONNECT*/
+        .brand-name {
+
+            font-size: clamp(40px, 5vw, 70px);
+
+            font-weight: 700;
+
+            color: #07883f;
+
+            line-height: 1.1;
+
+            margin-bottom: 22px;
+        }
+
+
+        /*DESCRIPTION*/
+
+        .description {
+
+            font-size: clamp(17px, 1.8vw, 25px);
+
+            line-height: 1.6;
+
+            color: #303030;
+
+            max-width: 650px;
+
+            margin: 0 auto;
+
+        }
+
+
+        /*GET STARTED BUTTON AREA*/
+
+        .button-area {
+
+            position: absolute;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            bottom: 7%;
+
+            width: 100%;
+
+            display: flex;
+
+            justify-content: center;
+
+            z-index: 5;
+
+            padding: 0 25px;
+        }
+
+
+        /*GET STARTED BUTTON */
+
+        .get-started {
+
+            width: min(650px, 70%);
+
+            height: 75px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #07883f;
+
+            color: white;
+
+            font-size: clamp(20px, 2vw, 30px);
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 5px 15px rgba(0,0,0,0.20);
+
+            transition: all 0.25s ease;
+        }
+
+
+        .get-started:hover {
+
+            background: #056b31;
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 8px 20px rgba(0,0,0,0.25);
+        }
+
+
+        .get-started:active {
+
+            transform: translateY(0);
+        }
+
+
+        /*DESKTOP */
+
+        @media (min-width: 1200px) {
+
+            .content {
+
+                top: 5%;
+            }
+
+
+            .logo {
+
+                width: 110px;
+                height: 110px;
+            }
+
+
+            .logo-icon {
+
+                font-size: 58px;
+            }
+
+
+            .button-area {
+
+                bottom: 6.5%;
+            }
+
+
+            .get-started {
+
+                width: 42%;
+
+                height: 80px;
+            }
+        }
+
+
+        /*LAPTOP */
+
+        @media (min-width: 769px)
+        and (max-width: 1199px) {
+
+            .logo {
+
+                width: 90px;
+                height: 90px;
+            }
+
+
+            .logo-icon {
+
+                font-size: 48px;
+            }
+
+
+            .get-started {
+
+                width: 50%;
+
+                height: 65px;
+            }
+        }
+
+
+        /* 
+           TABLET
+        */
+        @media (max-width: 768px) {
+
+            .content {
+
+                top: 5%;
+            }
+
+
+            .logo {
+
+                width: 75px;
+                height: 75px;
+            }
+
+
+            .logo-icon {
+
+                font-size: 40px;
+            }
+
+
+            .brand-name {
+
+                margin-bottom: 12px;
+            }
+
+
+            .description {
+
+                font-size: 15px;
+            }
+
+
+            .get-started {
+
+                width: 60%;
+
+                height: 55px;
+            }
+        }
+
+
+        /* 
+           MOBILE
+         */
+
+        @media (max-width: 500px) {
+
+            .welcome-screen {
+
+                background-size: 100% 100%;
+            }
+
+
+            .content {
+
+                top: 4%;
+            }
+
+
+            .logo {
+
+                width: 65px;
+                height: 65px;
+
+                margin-bottom: 10px;
+            }
+
+
+            .logo-icon {
+
+                font-size: 34px;
+            }
+
+
+            .welcome-text {
+
+                font-size: 22px;
+            }
+
+
+            .brand-name {
+
+                font-size: 31px;
+
+                margin-bottom: 10px;
+            }
+
+
+            .description {
+
+                font-size: 13px;
+
+                line-height: 1.45;
+            }
+
+
+            .button-area {
+
+                bottom: 5%;
+
+                padding: 0 20px;
+            }
+
+
+            .get-started {
+
+                width: 75%;
+
+                height: 50px;
+
+                font-size: 17px;
+
+                border-radius: 8px;
+            }
+        }
+
+
+        /* 
+           VERY SMALL SCREEN
+*/
+
+        @media (max-height: 650px) {
+
+            .content {
+
+                top: 2%;
+            }
+
+
+            .logo {
+
+                width: 55px;
+                height: 55px;
+
+                margin-bottom: 6px;
+            }
+
+
+            .logo-icon {
+
+                font-size: 28px;
+            }
+
+
+            .welcome-text {
+
+                font-size: 20px;
+            }
+
+
+            .brand-name {
+
+                font-size: 28px;
+
+                margin-bottom: 6px;
+            }
+
+
+            .description {
+
+                font-size: 11px;
+            }
+
+
+            .button-area {
+
+                bottom: 4%;
+            }
+
+
+            .get-started {
+
+                height: 45px;
+
+                font-size: 15px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- 
+         COMPLETE GRAMCONNECT WELCOME PAGE
+-->
+    <div class="welcome-screen">
+
+
+        <!-- WHITE FADE AT TOP -->
+
+        <div class="top-overlay"></div>
+
+
+        <!-- 
+             LOGO + TEXT
+        -->
+
+        <div class="content">
+
+
+            <!-- LOGO -->
+
+            <div class="logo">
+
+                <span class="logo-icon">🏡</span>
+
+            </div>
+
+
+            <!-- WELCOME TEXT -->
+
+            <h1 class="welcome-text">
+
+                Welcome to
+
+            </h1>
+
+
+            <!-- BRAND -->
+
+            <h2 class="brand-name">
+
+                GramConnect
+
+            </h2>
+
+
+            <!-- DESCRIPTION -->
+
+            <p class="description">
+
+                Your one-stop solution for
+                <br>
+
+                village services, schemes,
+                <br>
+
+                announcements and more.
+
+            </p>
+
+
+        </div>
+
+
+        <!-- 
+             GET STARTED BUTTON
+         -->
+
+        <div class="button-area">
+
+            <button
+                class="get-started"
+                onclick="getStarted()">
+
+                Get Started
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- 
+         JAVASCRIPT
+     -->
+
+    <script>
+
+        function getStarted() {
+
+            window.location.href = "login.html";
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
+
