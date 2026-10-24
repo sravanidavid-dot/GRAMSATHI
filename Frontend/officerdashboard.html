@@ -1,0 +1,3291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GramaSathi - Officer Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        :root {
+            --green: #087f3e;
+            --dark-green: #05652f;
+            --light-green: #eaf8ef;
+            --bg: #f4f7f5;
+            --white: #fff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --blue: #2563eb;
+            --red: #dc2626;
+            --purple: #7c3aed;
+            --shadow: 0 5px 20px rgba(0, 0, 0, .08);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .15);
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .menu-btn {
+            position: absolute;
+            left: 18px;
+            width: 46px;
+            height: 46px;
+            border: 0;
+            background: transparent;
+            color: white;
+            font-size: 29px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, .15);
+        }
+
+        /* ================= HEADER ACTIONS ================= */
+
+        .header-actions {
+            position: absolute;
+            right: 20px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-action {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: transparent;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .2s;
+        }
+
+        .header-action:hover {
+            background: rgba(255, 255, 255, .15);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 1px;
+            right: 0;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            background: var(--red);
+            color: white;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--green);
+        }
+
+        .profile-header {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: white;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .profile-arrow {
+            color: white;
+            font-size: 10px;
+            margin-left: -7px;
+            pointer-events: none;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -290px;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            z-index: 1200;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, .18);
+            transition: .3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            height: 70px;
+            background: var(--green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: 0;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            padding: 16px 12px;
+        }
+
+        .sidebar-menu button {
+            width: 100%;
+            border: 0;
+            background: white;
+            color: #333;
+            text-align: left;
+            padding: 14px 15px;
+            margin-bottom: 6px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .sidebar-menu button:hover,
+        .sidebar-menu button.active {
+            background: var(--light-green);
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        .sidebar-menu .logout {
+            color: var(--red);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 1100;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            max-width: 1500px;
+            margin: auto;
+            padding: 95px 25px 30px;
+        }
+
+        .page {
+            display: none;
+            position: relative;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* CROSS FOR EVERY OPENED PAGE */
+
+        .page-close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: #eef2f0;
+            color: #333;
+            font-size: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            transition: .2s;
+        }
+
+        .page-close:hover {
+            background: #dc2626;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .page-title {
+            margin-bottom: 22px;
+            padding-right: 55px;
+        }
+
+        .page-title h2 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            color: var(--muted);
+        }
+
+        /* ================= WELCOME ================= */
+
+        .welcome {
+            background: linear-gradient(110deg, #e9f9ef, #f8fffb);
+            border-radius: 17px;
+            min-height: 180px;
+            padding: 30px;
+            margin-bottom: 23px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #d8f0df;
+        }
+
+        .welcome h2 {
+            color: var(--green);
+            font-size: 28px;
+            margin-bottom: 9px;
+        }
+
+        .welcome p {
+            color: #557063;
+            font-size: 15px;
+        }
+
+        .welcome-badge {
+            display: inline-block;
+            margin-top: 16px;
+            background: white;
+            color: var(--green);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .06);
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 23px;
+        }
+
+        .stat {
+            background: white;
+            border-radius: 14px;
+            padding: 21px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--green);
+        }
+
+        .stat h3 {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .stat .number {
+            font-size: 31px;
+            font-weight: bold;
+        }
+
+        .stat small {
+            color: var(--muted);
+            display: block;
+            margin-top: 7px;
+        }
+
+        /* ================= CARDS ================= */
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .card-header h3 {
+            font-size: 19px;
+        }
+
+        /* ================= QUICK ACTIONS ================= */
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .quick-btn {
+            border: 0;
+            background: var(--light-green);
+            color: var(--green);
+            padding: 18px 12px;
+            border-radius: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* ================= FILTER ================= */
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .search,
+        select,
+        .form-group input,
+        .form-group textarea {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 11px 13px;
+            outline: none;
+            background: white;
+        }
+
+        .search {
+            min-width: 240px;
+        }
+
+        select {
+            min-width: 150px;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px 11px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8faf9;
+            color: #374151;
+        }
+
+        tr:hover td {
+            background: #fafdfb;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #946200;
+        }
+
+        .progress {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .resolved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .high {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .medium {
+            background: #fff3cd;
+            color: #946200;
+        }
+
+        .low {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .btn {
+            border: 0;
+            border-radius: 7px;
+            padding: 9px 13px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-blue {
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-red {
+            background: var(--red);
+            color: white;
+        }
+
+        .btn-gray {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-purple {
+            background: var(--purple);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: .9;
+        }
+
+        /* ================= TWO COLUMN ================= */
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 22px;
+        }
+
+        /* ================= SCHEDULE ================= */
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .schedule-time {
+            width: 80px;
+            font-weight: bold;
+            color: var(--green);
+        }
+
+        .schedule-item h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .schedule-item p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* ================= PROGRESS ================= */
+
+        .progress-box {
+            margin-top: 10px;
+        }
+
+        .progress-track {
+            height: 9px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--green);
+            border-radius: 20px;
+        }
+
+        /* ================= ACTIVITY ================= */
+
+        .activity {
+            display: flex;
+            gap: 13px;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--light-green);
+            color: var(--green);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .activity p {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .activity small {
+            color: var(--muted);
+        }
+
+        /* ================= NOTIFICATIONS ================= */
+
+        .notification {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .notification.unread {
+            border-left: 5px solid var(--green);
+            background: #f4fcf7;
+        }
+
+        .notification h4 {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .notification p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* ================= PROFILE ================= */
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 30px;
+        }
+
+        .profile-photo {
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            background: var(--light-green);
+            border: 4px solid #d7f0df;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 60px;
+            overflow: hidden;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1/-1;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            width: 650px;
+            max-width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 17px;
+            top: 12px;
+            border: 0;
+            background: none;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ================= TOAST ================= */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #1f2937;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 9px;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: .3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================= DARK MODE ================= */
+
+        body.dark {
+            --bg: #111827;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --border: #374151;
+        }
+
+        body.dark .card,
+        body.dark .sidebar,
+        body.dark .modal-box,
+        body.dark .stat {
+            background: #1f2937;
+            color: #f3f4f6;
+        }
+
+        body.dark .sidebar-menu button,
+        body.dark .search,
+        body.dark select,
+        body.dark .form-group input,
+        body.dark .form-group textarea {
+            background: #1f2937;
+            color: white;
+            border-color: #374151;
+        }
+
+        body.dark th {
+            background: #111827;
+        }
+
+        body.dark .welcome {
+            background: #173523;
+        }
+
+        body.dark .page-close {
+            background: #374151;
+            color: white;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media(max-width:1100px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width:700px) {
+
+            .main {
+                padding: 90px 14px 25px;
+            }
+
+            .header h1 {
+                font-size: 19px;
+            }
+
+            .header-actions {
+                right: 8px;
+                gap: 1px;
+            }
+
+            .header-action {
+                width: 38px;
+                height: 38px;
+                font-size: 19px;
+            }
+
+            .profile-header {
+                width: 30px;
+                height: 30px;
+                font-size: 16px;
+            }
+
+            .profile-arrow {
+                display: none;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .search,
+            select {
+                width: 100%;
+            }
+
+            .page-close {
+                width: 36px;
+                height: 36px;
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="header">
+
+        <button class="menu-btn" onclick="openSidebar()" title="Open Menu">
+            ☰
+        </button>
+
+        <h1>Officer Dashboard</h1>
+
+        <!-- Header actions -->
+        <div class="header-actions">
+
+            <button class="header-action" onclick="openHeaderPage('notifications')" title="Notifications"
+                aria-label="Notifications">
+                🔔
+                <span class="notification-badge" id="headerNotificationBadge">0</span>
+            </button>
+
+            <button class="header-action" onclick="openHeaderPage('profile')" title="My Profile"
+                aria-label="My Profile">
+                <span class="profile-header">👤</span>
+            </button>
+
+            <span class="profile-arrow">▼</span>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-header">
+
+            <h2>GramaSathi</h2>
+
+            <button class="close-btn" onclick="closeSidebar()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="sidebar-menu">
+
+            <button class="active" onclick="showPage('dashboard',this)">
+                📊 Dashboard
+            </button>
+
+            <button onclick="showPage('assigned',this)">
+                📋 Assigned Complaints
+            </button>
+
+            <button onclick="showPage('resolved',this)">
+                ✅ Resolved Complaints
+            </button>
+
+            <button onclick="showPage('schedule',this)">
+                📅 My Schedule
+            </button>
+
+            <button onclick="showPage('notifications',this)">
+                🔔 Notifications
+            </button>
+
+            <button onclick="showPage('activity',this)">
+                🕒 Activity Log
+            </button>
+
+            <button onclick="showPage('profile',this)">
+                👤 My Profile
+            </button>
+
+            <button onclick="toggleDarkMode()">
+                🌙 Dark Mode
+            </button>
+
+            <button class="logout" onclick="logout()">
+                🚪 Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+     DASHBOARD
+================================================= -->
+
+        <section class="page active" id="dashboard">
+
+            <!-- DASHBOARD CROSS -->
+            <button class="page-close" onclick="closeOpenedPage()" title="Close">
+                ×
+            </button>
+
+            <div class="welcome">
+
+                <h2>Hello, Officer 👋</h2>
+
+                <p>
+                    Manage assigned complaints and help resolve
+                    village issues efficiently.
+                </p>
+
+                <span class="welcome-badge">
+                    🟢 Officer Account • Active
+                </span>
+
+            </div>
+
+
+            <div class="stats">
+
+                <div class="stat">
+                    <h3>Assigned Complaints</h3>
+                    <div class="number" id="assignedCount">0</div>
+                    <small>Complaints assigned to you</small>
+                </div>
+
+                <div class="stat">
+                    <h3>Pending</h3>
+                    <div class="number" id="pendingCount">3</div>
+                    <small>Need your attention</small>
+                </div>
+
+                <div class="stat">
+                    <h3>In Progress</h3>
+                    <div class="number" id="progressCount">2</div>
+                    <small>Currently working</small>
+                </div>
+
+                <div class="stat">
+                    <h3>Resolved</h3>
+                    <div class="number" id="resolvedCount">1</div>
+                    <small>Successfully completed</small>
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-header">
+                    <h3>Quick Actions</h3>
+                </div>
+
+                <div class="quick-actions">
+
+                    <button class="quick-btn" onclick="showPage('assigned')">
+                        📋 View Complaints
+                    </button>
+
+                    <button class="quick-btn" onclick="showPage('schedule')">
+                        📅 My Schedule
+                    </button>
+
+                    <button class="quick-btn" onclick="showPage('notifications')">
+                        🔔 Notifications
+                    </button>
+
+                    <button class="quick-btn" onclick="showPage('profile')">
+                        👤 My Profile
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="two-column">
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h3>Today's Work</h3>
+
+                        <button class="btn btn-green" onclick="showPage('schedule')">
+                            View All
+                        </button>
+                    </div>
+                    <div id="todaysWorkList">
+                             <p>Loading today's work...</p>
+                        </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-header">
+    <h3>My Performance</h3>
+</div>
+
+<p>
+    Resolution Rate
+    <strong id="resolutionRate" style="float:right;">0%</strong>
+</p>
+
+<div class="progress-box">
+    <div class="progress-track">
+        <div id="resolutionProgress" class="progress-fill" style="width:0%;"></div>
+    </div>
+</div>
+
+<br>
+
+<p>
+    Monthly Target
+    <strong id="monthlyTarget">0 / 25</strong>
+</p>
+
+<div class="progress-box">
+    <div class="progress-track">
+        <div id="targetProgress" class="progress-fill" style="width:0%;"></div>
+    </div>
+</div>
+
+<br>
+
+<p id="targetMessage" style="color:var(--muted);font-size:13px;">
+    Loading performance...
+</p>
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>Recently Assigned</h3>
+
+                    <button class="btn btn-green" onclick="showPage('assigned')">
+                        View All
+                    </button>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Citizen</th>
+                                <th>Complaint</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="recentlyAssignedTable">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     ASSIGNED COMPLAINTS
+================================================= -->
+
+        <section class="page" id="assigned">
+
+            <button class="page-close" onclick="closeOpenedPage()" title="Close">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>Assigned Complaints</h2>
+
+                <p>
+                    Complaints assigned to you for verification and resolution.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="filters">
+
+                    <input class="search" id="complaintSearch" placeholder="🔍 Search complaint..."
+                        oninput="filterComplaints()">
+
+                    <select id="statusFilter" onchange="filterComplaints()">
+
+                        <option value="all">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+
+                    </select>
+
+                    <select id="priorityFilter" onchange="filterComplaints()">
+
+                        <option value="all">All Priority</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Citizen</th>
+                                <th>Category</th>
+                                <th>Complaint</th>
+                                <th>Date</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="complaintTable">
+
+                            <tr data-status="Pending" data-priority="High">
+
+                                <td>#GC101</td>
+                                <td>Ravi Kumar</td>
+                                <td>Electricity</td>
+                                <td>Street light not working</td>
+                                <td>09 Oct 2026</td>
+
+                                <td>
+                                    <span class="status high">
+                                        High
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="viewComplaint(
+                                    'GC101',
+                                    'Ravi Kumar',
+                                    'Electricity',
+                                    'Street light not working',
+                                    'High',
+                                    'Pending')">
+                                        View
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr data-status="In Progress" data-priority="Medium">
+
+                                <td>#GC102</td>
+                                <td>Priya</td>
+                                <td>Water</td>
+                                <td>Water supply issue</td>
+                                <td>09 Oct 2026</td>
+
+                                <td>
+                                    <span class="status medium">
+                                        Medium
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="status progress">
+                                        In Progress
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="viewComplaint(
+                                    'GC102',
+                                    'Priya',
+                                    'Water',
+                                    'Water supply issue',
+                                    'Medium',
+                                    'In Progress')">
+                                        View
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr data-status="Pending" data-priority="Medium">
+
+                                <td>#GC107</td>
+                                <td>Arjun</td>
+                                <td>Road</td>
+                                <td>Road damaged near village entrance</td>
+                                <td>08 Oct 2026</td>
+
+                                <td>
+                                    <span class="status medium">
+                                        Medium
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="viewComplaint(
+                                    'GC107',
+                                    'Arjun',
+                                    'Road',
+                                    'Road damaged near village entrance',
+                                    'Medium',
+                                    'Pending')">
+                                        View
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr data-status="In Progress" data-priority="Low">
+
+                                <td>#GC109</td>
+                                <td>Sita</td>
+                                <td>Sanitation</td>
+                                <td>Garbage collection issue</td>
+                                <td>08 Oct 2026</td>
+
+                                <td>
+                                    <span class="status low">
+                                        Low
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="status progress">
+                                        In Progress
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="viewComplaint(
+                                    'GC109',
+                                    'Sita',
+                                    'Sanitation',
+                                    'Garbage collection issue',
+                                    'Low',
+                                    'In Progress')">
+                                        View
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr data-status="Resolved" data-priority="High">
+
+                                <td>#GC110</td>
+                                <td>Ramesh</td>
+                                <td>Water</td>
+                                <td>Pipeline leakage</td>
+                                <td>07 Oct 2026</td>
+
+                                <td>
+                                    <span class="status high">
+                                        High
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="status resolved">
+                                        Resolved
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="viewComplaint(
+                                    'GC110',
+                                    'Ramesh',
+                                    'Water',
+                                    'Pipeline leakage',
+                                    'High',
+                                    'Resolved')">
+                                        View
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     RESOLVED COMPLAINTS
+================================================= -->
+
+        <section class="page" id="resolved">
+
+            <button class="page-close" onclick="closeOpenedPage()" title="Close">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>Resolved Complaints</h2>
+
+                <p>
+                    Complaints successfully resolved by you.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Citizen</th>
+                                <th>Category</th>
+                                <th>Resolved On</th>
+                                <th>Resolution</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>#GC110</td>
+                                <td>Ramesh</td>
+                                <td>Water</td>
+                                <td>09 Oct 2026</td>
+                                <td>Pipeline repaired</td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="showToast('Resolution details opened')">
+                                        View
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>#GC105</td>
+                                <td>Kavya</td>
+                                <td>Electricity</td>
+                                <td>07 Oct 2026</td>
+                                <td>Street light replaced</td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="showToast('Resolution details opened')">
+                                        View
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     SCHEDULE
+================================================= -->
+
+        <section class="page" id="schedule">
+
+            <button class="page-close" onclick="closeOpenedPage()" title="Close">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>My Schedule</h2>
+
+                <p>
+                    Your inspections and field activities.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>Today's Schedule</h3>
+
+                    <button class="btn btn-green" onclick="addSchedule()">
+                        + Add Task
+                    </button>
+
+                </div>
+
+
+                <div id="scheduleList">
+
+                    <div class="schedule-item">
+
+                        <div class="schedule-time">
+                            10:00 AM
+                        </div>
+
+                        <div style="flex:1">
+
+                            <h4>Street Light Inspection</h4>
+
+                            <p>
+                                Village A • Complaint #GC101
+                            </p>
+
+                        </div>
+
+                        <button class="btn btn-gray" onclick="completeTask(this)">
+                            Mark Done
+                        </button>
+
+                    </div>
+
+
+                    <div class="schedule-item">
+
+                        <div class="schedule-time">
+                            12:30 PM
+                        </div>
+
+                        <div style="flex:1">
+
+                            <h4>Water Supply Inspection</h4>
+
+                            <p>
+                                Village B • Complaint #GC102
+                            </p>
+
+                        </div>
+
+                        <button class="btn btn-gray" onclick="completeTask(this)">
+                            Mark Done
+                        </button>
+
+                    </div>
+
+
+                    <div class="schedule-item">
+
+                        <div class="schedule-time">
+                            03:00 PM
+                        </div>
+
+                        <div style="flex:1">
+
+                            <h4>Road Damage Verification</h4>
+
+                            <p>
+                                Village C • Complaint #GC107
+                            </p>
+
+                        </div>
+
+                        <button class="btn btn-gray" onclick="completeTask(this)">
+                            Mark Done
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     NOTIFICATIONS
+================================================= -->
+
+        <section class="page" id="notifications">
+
+            <button class="page-close" onclick="closeOpenedPage()" title="Close">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>Notifications</h2>
+
+                <p>
+                    Important updates related to your complaints.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>Recent Notifications</h3>
+
+                    <button class="btn btn-green" onclick="markAllRead()">
+                        Mark All Read
+                    </button>
+
+                </div>
+
+
+                <div id="notificationList">
+
+                    <div class="notification unread">
+
+                        <div>
+
+                            <h4>New Complaint Assigned</h4>
+
+                            <p>
+                                Complaint #GC107 has been assigned to you.
+                            </p>
+
+                        </div>
+
+                        <button class="btn btn-gray" onclick="markRead(this)">
+                            Mark Read
+                        </button>
+
+                    </div>
+
+
+                    <div class="notification unread">
+
+                        <div>
+
+                            <h4>Complaint Priority Updated</h4>
+
+                            <p>
+                                #GC101 has been marked as High Priority.
+                            </p>
+
+                        </div>
+
+                        <button class="btn btn-gray" onclick="markRead(this)">
+                            Mark Read
+                        </button>
+
+                    </div>
+
+
+                    <div class="notification">
+
+                        <div>
+
+                            <h4>Citizen Response</h4>
+
+                            <p>
+                                Ravi Kumar responded to complaint #GC101.
+                            </p>
+
+                        </div>
+
+                        <button class="btn btn-gray" onclick="deleteNotification(this)">
+                            Delete
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     ACTIVITY LOG
+================================================= -->
+
+        <section class="page" id="activity">
+
+            <button class="page-close" onclick="closeOpenedPage()" title="Close">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>Activity Log</h2>
+
+                <p>
+                    Track your recent activities.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <p>
+                            Complaint <strong>#GC110</strong>
+                            was marked as resolved.
+                        </p>
+
+                        <small>
+                            Today, 10:30 AM
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        📋
+                    </div>
+
+                    <div>
+
+                        <p>
+                            Complaint <strong>#GC107</strong>
+                            was opened for inspection.
+                        </p>
+
+                        <small>
+                            Today, 09:40 AM
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        🔔
+                    </div>
+
+                    <div>
+
+                        <p>
+                            You received a new complaint assignment.
+                        </p>
+
+                        <small>
+                            Yesterday, 05:20 PM
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     PROFILE
+================================================= -->
+
+        <section class="page" id="profile">
+
+            <button class="page-close" onclick="closeOpenedPage()" title="Close">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>My Profile</h2>
+
+                <p>
+                    Manage your officer information.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="profile-grid">
+
+                    <div>
+
+                        <div class="profile-photo" id="profilePhoto">
+                            👮
+                        </div>
+
+                        <br>
+
+                        <input type="file" id="profileImage" accept="image/*" onchange="changeProfileImage(this)">
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="profile-form">
+
+                            <div class="form-group">
+
+                                <label>Full Name</label>
+
+                                <input id="officerName" value="Officer Suresh">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Employee ID</label>
+
+                                <input id="employeeId" value="OFF-1001">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Department</label>
+
+                                <input id="department" value="Village Administration">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Mobile Number</label>
+
+                                <input id="officerMobile" value="9876543210">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Email</label>
+
+                                <input id="officerEmail" value="officer@gramasathi.com">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Assigned Village</label>
+
+                                <input id="assignedVillage" value="Village A">
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <label>Address</label>
+
+                                <textarea id="officerAddress">GramaSathi Village Administration Office</textarea>
+
+                            </div>
+
+                        </div>
+
+
+                        <br>
+
+                        <button class="btn btn-green" onclick="saveProfile()">
+                            💾 Save Profile
+                        </button>
+
+                        <button class="btn btn-purple" onclick="changePassword()">
+                            🔐 Change Password
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= MODAL ================= -->
+
+    <div class="modal" id="modal">
+
+        <div class="modal-box">
+
+            <button class="modal-close" onclick="closeModal()">
+                ×
+            </button>
+
+            <div id="modalContent"></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="toast" id="toast"></div>
+
+
+    <script>
+
+        /* =================================================
+           SIDEBAR
+        ================================================= */
+
+        function openSidebar() {
+
+            document
+                .getElementById("sidebar")
+                .classList.add("active");
+
+            document
+                .getElementById("overlay")
+                .classList.add("active");
+        }
+
+
+        function closeSidebar() {
+
+            document
+                .getElementById("sidebar")
+                .classList.remove("active");
+
+            document
+                .getElementById("overlay")
+                .classList.remove("active");
+        }
+
+
+        /* =================================================
+           PAGE NAVIGATION
+        ================================================= */
+
+        function showPage(pageId, button) {
+
+            document
+                .querySelectorAll(".page")
+                .forEach(page => {
+                    page.classList.remove("active");
+                });
+
+
+            const page =
+                document.getElementById(pageId);
+
+
+            if (page) {
+                page.classList.add("active");
+            }
+
+
+            document
+                .querySelectorAll(".sidebar-menu button")
+                .forEach(btn => {
+                    btn.classList.remove("active");
+                });
+
+
+            if (button) {
+                button.classList.add("active");
+            }
+
+
+            closeSidebar();
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+
+
+        /* =================================================
+           UNIVERSAL PAGE CLOSE
+           EVERY MENU PAGE USES THIS
+        ================================================= */
+
+        /* =================================================
+           HEADER NOTIFICATION / PROFILE NAVIGATION
+        ================================================= */
+
+        function openHeaderPage(pageId) {
+            showPage(pageId);
+            closeSidebar();
+        }
+
+        /* =================================================
+           HEADER NOTIFICATION BADGE
+        ================================================= */
+
+        function updateHeaderNotificationBadge() {
+            const badge = document.getElementById("headerNotificationBadge");
+            if (!badge) return;
+
+            const unreadCount = document.querySelectorAll(
+                "#notificationList .notification.unread"
+            ).length;
+
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.style.display = "flex";
+            } else {
+                badge.style.display = "none";
+            }
+        }
+
+        function closeOpenedPage() {
+
+            document
+                .querySelectorAll(".page")
+                .forEach(page => {
+                    page.classList.remove("active");
+                });
+
+
+            const dashboard =
+                document.getElementById("dashboard");
+
+
+            dashboard.classList.add("active");
+
+
+            document
+                .querySelectorAll(".sidebar-menu button")
+                .forEach(btn => {
+                    btn.classList.remove("active");
+                });
+
+
+            const dashboardButton =
+                document.querySelector(
+                    '.sidebar-menu button[onclick*="dashboard"]'
+                );
+
+
+            if (dashboardButton) {
+                dashboardButton.classList.add("active");
+            }
+
+
+            closeSidebar();
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+
+
+        /* =================================================
+           COMPLAINT FILTER
+        ================================================= */
+
+        function filterComplaints() {
+
+            const search =
+                document
+                    .getElementById("complaintSearch")
+                    .value
+                    .toLowerCase();
+
+
+            const status =
+                document
+                    .getElementById("statusFilter")
+                    .value;
+
+
+            const priority =
+                document
+                    .getElementById("priorityFilter")
+                    .value;
+
+
+            document
+                .querySelectorAll("#complaintTable tr")
+                .forEach(row => {
+
+                    const text =
+                        row.innerText.toLowerCase();
+
+                    const rowStatus =
+                        row.dataset.status;
+
+                    const rowPriority =
+                        row.dataset.priority;
+
+
+                    const searchMatch =
+                        text.includes(search);
+
+                    const statusMatch =
+                        status === "all" ||
+                        rowStatus === status;
+
+                    const priorityMatch =
+                        priority === "all" ||
+                        rowPriority === priority;
+
+
+                    row.style.display =
+                        searchMatch &&
+                            statusMatch &&
+                            priorityMatch
+                            ? ""
+                            : "none";
+
+                });
+        }
+
+
+        /* =================================================
+           VIEW COMPLAINT
+        ================================================= */
+
+        function viewComplaint(
+            id,
+            citizen,
+            category,
+            complaint,
+            priority,
+            status
+        ) {
+
+            openModal(`
+
+        <h2>Complaint Details</h2>
+
+        <div class="detail-row">
+            <strong>Complaint ID</strong>
+            <span>#${id}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Citizen</strong>
+            <span>${citizen}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Category</strong>
+            <span>${category}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Complaint</strong>
+            <span>${complaint}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Priority</strong>
+            <span>${priority}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Current Status</strong>
+            <span>${status}</span>
+        </div>
+
+        <br>
+
+        <h3 style="margin-bottom:10px;">
+            Update Complaint
+        </h3>
+
+        <div class="form-group">
+
+            <label>Status</label>
+
+            <select id="newStatus"
+                    style="width:100%;">
+
+                <option ${status === "Pending" ? "selected" : ""}>
+                    Pending
+                </option>
+
+                <option ${status === "In Progress" ? "selected" : ""}>
+                    In Progress
+                </option>
+
+                <option ${status === "Resolved" ? "selected" : ""}>
+                    Resolved
+                </option>
+
+            </select>
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Officer Remarks</label>
+
+            <textarea id="remarks"
+                      placeholder="Enter your remarks..."></textarea>
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Upload Evidence</label>
+
+            <input type="file"
+                   id="evidence"
+                   accept="image/*,.pdf">
+
+        </div>
+
+        <br>
+
+        <button class="btn btn-green"
+                onclick="updateComplaint('${id}')">
+            Update Complaint
+        </button>
+
+    `);
+        }
+
+
+        /* =================================================
+           UPDATE COMPLAINT
+        ================================================= */
+    async function loadComplaints() {
+    try {
+        const response = await fetch(
+            "http://127.0.0.1:5000/api/complaints"
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to load complaints");
+        }
+
+        const complaints = await response.json();
+        const table = document.getElementById("complaintTable");
+
+        table.innerHTML = "";
+
+        complaints.forEach(c => {
+            const row = document.createElement("tr");
+            row.dataset.status = c.status;
+            row.dataset.priority = "Medium";
+
+            const values = [
+                "#" + c.complaint_id,
+                c.citizen_name || "N/A",
+                c.category || "N/A",
+                c.title || c.description || "N/A",
+                c.created_at ? c.created_at.substring(0, 10) : "N/A",
+                "Medium",
+                c.status
+            ];
+
+            values.forEach((value, index) => {
+                const cell = document.createElement("td");
+
+                if (index === 5) {
+                    cell.innerHTML = '<span class="status medium">Medium</span>';
+                } else if (index === 6) {
+                    const badge = document.createElement("span");
+                    badge.className = "status " + getStatusClass(c.status);
+                    badge.textContent = c.status;
+                    cell.appendChild(badge);
+                } else {
+                    cell.textContent = value;
+                }
+
+                row.appendChild(cell);
+            });
+
+            const actionCell = document.createElement("td");
+            const button = document.createElement("button");
+
+            button.className = "btn btn-blue";
+            button.textContent = "View";
+            button.addEventListener("click", () => {
+                viewComplaint(
+                    String(c.complaint_id),
+                    c.citizen_name || "N/A",
+                    c.category || "N/A",
+                    c.title || c.description || "N/A",
+                    "Medium",
+                    c.status
+                );
+            });
+
+            actionCell.appendChild(button);
+            row.appendChild(actionCell);
+            table.appendChild(row);
+        });
+
+        updateDashboardCounts();
+
+    } catch (error) {
+        console.error("Failed to load complaints:", error);
+        showToast("Could not load complaints from backend");
+    }
+}
+/* TODAY'S WORK */
+
+async function loadTodaysWork() {
+    const container = document.getElementById("todaysWorkList");
+    if (!container) return;
+
+    try {
+        const response = await fetch(
+            "http://127.0.0.1:5000/api/complaints"
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to load complaints");
+        }
+
+        const complaints = await response.json();
+
+        if (complaints.length === 0) {
+            container.innerHTML = "<p>No complaints available.</p>";
+            return;
+        }
+
+        container.innerHTML = complaints.slice(0, 3).map(c => `
+            <div class="schedule-item">
+                <div>
+                    <h4>Complaint #${c.complaint_id}: ${
+                        c.title || c.category || "Complaint"
+                    }</h4>
+                    <p>${c.location || "Location unavailable"}</p>
+                    <p>Status: ${c.status || "Pending"}</p>
+                </div>
+            </div>
+        `).join("");
+
+    } catch (error) {
+        console.error("Today's Work error:", error);
+        container.innerHTML = "<p>Unable to load today's work.</p>";
+    }
+}
+async function loadRecentlyAssigned() {
+    const table = document.getElementById("recentlyAssignedTable");
+    if (!table) return;
+
+    try {
+        const response = await fetch("http://127.0.0.1:5000/api/complaints");
+
+        if (!response.ok) {
+            throw new Error("Failed to load complaints");
+        }
+
+        const complaints = await response.json();
+
+        if (complaints.length === 0) {
+            table.innerHTML = '<tr><td colspan="6">No complaints found.</td></tr>';
+            return;
+        }
+        table.innerHTML = complaints.slice(0, 5).map(c => {
+    const status = c.status || "Pending";
+    const statusClass = getStatusClass(status);
+    const date = c.created_at
+        ? c.created_at.substring(0, 10)
+        : "N/A";
+
+    return `
+        <tr>
+            <td>#${c.complaint_id}</td>
+            <td>${c.citizen_name || "N/A"}</td>
+            <td>${c.title || c.category || "N/A"}</td>
+            <td>${date}</td>
+            <td><span class="status medium">Medium</span></td>
+            <td><span class="status ${statusClass}">${status}</span></td>
+            <td>
+                <button class="btn btn-blue" onclick="viewComplaint(
+                    '${c.complaint_id}',
+                    '${(c.citizen_name || "N/A").replace(/'/g, "\\'")}',
+                    '${(c.category || "N/A").replace(/'/g, "\\'")}',
+                    '${(c.title || c.description || "N/A").replace(/'/g, "\\'")}',
+                    'Medium',
+                    '${status}'
+                )">View</button>
+            </td>
+        </tr>
+    `;
+}).join("");
+    } catch (error) {
+        console.error("Recently Assigned error:", error);
+        table.innerHTML = '<tr><td colspan="6">Unable to load complaints.</td></tr>';
+    }
+}
+async function loadMyPerformance() {
+    try {
+        const response = await fetch(
+            "http://127.0.0.1:5000/api/complaints"
+        );
+
+        if (!response.ok) {
+            throw new Error("Could not load complaints");
+        }
+
+        const complaints = await response.json();
+
+        const total = complaints.length;
+        const resolved = complaints.filter(
+            c => c.status === "Resolved"
+        ).length;
+
+        const rate = total > 0
+            ? Math.round((resolved / total) * 100)
+            : 0;
+
+        const target = 25;
+        const targetCount = resolved;
+        const targetPercent = Math.min(
+            Math.round((targetCount / target) * 100), 100
+        );
+        const remaining = Math.max(target - targetCount, 0);
+
+        document.getElementById("resolutionRate").textContent =
+            rate + "%";
+
+        document.getElementById("resolutionProgress").style.width =
+            rate + "%";
+
+        document.getElementById("monthlyTarget").textContent =
+            targetCount + " / " + target;
+
+        document.getElementById("targetProgress").style.width =
+            targetPercent + "%";
+
+        document.getElementById("targetMessage").textContent =
+            remaining > 0
+                ? `Resolve ${remaining} more complaints to reach the target.`
+                : "Monthly target reached!";
+
+    } catch (error) {
+        console.error("Performance error:", error);
+        document.getElementById("targetMessage").textContent =
+            "Unable to load performance data.";
+    }
+}
+async function updateComplaint(id) {
+    const status = document.getElementById("newStatus").value;
+
+    try {
+        const response = await fetch(
+            `http://127.0.0.1:5000/api/complaints/${encodeURIComponent(id)}/status`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ status })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Status update failed");
+        }
+        closeModal();
+showToast("Complaint #" + id + " updated successfully");
+
+await Promise.all([
+    loadComplaints(),
+    loadTodaysWork(),
+    loadRecentlyAssigned(),
+    loadMyPerformance()
+]);
+    } catch (error) {
+        console.error("Update complaint error:", error);
+        showToast("Failed to update complaint. Check backend.");
+    }
+}
+
+        function getStatusClass(status) {
+
+            if (status === "Pending") {
+                return "pending";
+            }
+
+            if (status === "In Progress") {
+                return "progress";
+            }
+
+            if (status === "Resolved") {
+                return "resolved";
+            }
+
+            return "pending";
+        }
+
+
+        /* =================================================
+           DASHBOARD COUNTS
+        ================================================= */
+
+        function updateDashboardCounts() {
+
+            const rows =
+                document
+                    .querySelectorAll("#complaintTable tr");
+
+
+            let pending = 0;
+            let progress = 0;
+            let resolved = 0;
+
+
+            rows.forEach(row => {
+
+                if (row.dataset.status === "Pending") {
+                    pending++;
+                }
+
+                if (row.dataset.status === "In Progress") {
+                    progress++;
+                }
+
+                if (row.dataset.status === "Resolved") {
+                    resolved++;
+                }
+
+            });
+
+
+            document
+                .getElementById("pendingCount")
+                .textContent = pending;
+
+
+            document
+                .getElementById("progressCount")
+                .textContent = progress;
+
+
+            document
+                .getElementById("resolvedCount")
+                .textContent = resolved;
+            
+            document
+                .getElementById("assignedCount")
+                .textContent = rows.length;
+
+
+        }
+
+
+        /* =================================================
+           SCHEDULE
+        ================================================= */
+
+        function addSchedule() {
+
+            openModal(`
+
+        <h2>Add Schedule Task</h2>
+
+        <div class="form-group">
+
+            <label>Time</label>
+
+            <input type="time"
+                   id="taskTime">
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Task</label>
+
+            <input id="taskName"
+                   placeholder="Enter task">
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Location</label>
+
+            <input id="taskLocation"
+                   placeholder="Enter location">
+
+        </div>
+
+        <br>
+
+        <button class="btn btn-green"
+                onclick="saveTask()">
+            Add Task
+        </button>
+
+    `);
+        }
+
+
+        function saveTask() {
+
+            const time =
+                document.getElementById("taskTime").value;
+
+            const task =
+                document.getElementById("taskName").value.trim();
+
+            const location =
+                document.getElementById("taskLocation").value.trim();
+
+
+            if (!time || !task || !location) {
+
+                showToast(
+                    "Please fill all task details"
+                );
+
+                return;
+            }
+
+
+            const item =
+                document.createElement("div");
+
+
+            item.className =
+                "schedule-item";
+
+
+            item.innerHTML = `
+
+        <div class="schedule-time">
+            ${formatTime(time)}
+        </div>
+
+        <div style="flex:1">
+
+            <h4>${task}</h4>
+
+            <p>${location}</p>
+
+        </div>
+
+        <button class="btn btn-gray"
+                onclick="completeTask(this)">
+            Mark Done
+        </button>
+
+    `;
+
+
+            document
+                .getElementById("scheduleList")
+                .appendChild(item);
+
+
+            closeModal();
+
+
+            showToast(
+                "Task added successfully"
+            );
+        }
+
+
+        function formatTime(time) {
+
+            const parts =
+                time.split(":");
+
+            let hour =
+                parseInt(parts[0]);
+
+            const minute =
+                parts[1];
+
+            const suffix =
+                hour >= 12 ? "PM" : "AM";
+
+
+            hour =
+                hour % 12 || 12;
+
+
+            return hour + ":" +
+                minute + " " +
+                suffix;
+        }
+
+
+        function completeTask(button) {
+
+            const item =
+                button.closest(".schedule-item");
+
+
+            item.style.opacity = ".55";
+
+
+            button.textContent =
+                "✓ Completed";
+
+
+            button.className =
+                "btn btn-green";
+
+
+            button.onclick = null;
+
+
+            showToast(
+                "Task marked as completed"
+            );
+        }
+
+
+        /* =================================================
+           NOTIFICATIONS
+        ================================================= */
+
+        function markRead(button) {
+
+            const notification =
+                button.closest(".notification");
+
+
+            notification.classList.remove("unread");
+
+
+            button.textContent =
+                "Delete";
+
+
+            button.onclick =
+                function () {
+                    deleteNotification(this);
+                };
+
+
+            showToast(
+                "Notification marked as read"
+            );
+
+            updateHeaderNotificationBadge();
+        }
+
+
+        function deleteNotification(button) {
+
+            button
+                .closest(".notification")
+                .remove();
+
+
+            showToast(
+                "Notification deleted"
+            );
+
+            updateHeaderNotificationBadge();
+        }
+
+
+        function markAllRead() {
+
+            document
+                .querySelectorAll(".notification")
+                .forEach(notification => {
+
+                    notification
+                        .classList
+                        .remove("unread");
+
+
+                    const button =
+                        notification.querySelector("button");
+
+
+                    if (button) {
+
+                        button.textContent =
+                            "Delete";
+
+
+                        button.onclick =
+                            function () {
+                                deleteNotification(this);
+                            };
+
+                    }
+
+                });
+
+
+            showToast(
+                "All notifications marked as read"
+            );
+
+            updateHeaderNotificationBadge();
+        }
+
+
+        /* =================================================
+           PROFILE
+        ================================================= */
+
+        function saveProfile() {
+
+            const profile = {
+
+                name:
+                    document.getElementById("officerName").value,
+
+                employeeId:
+                    document.getElementById("employeeId").value,
+
+                department:
+                    document.getElementById("department").value,
+
+                mobile:
+                    document.getElementById("officerMobile").value,
+
+                email:
+                    document.getElementById("officerEmail").value,
+
+                village:
+                    document.getElementById("assignedVillage").value,
+
+                address:
+                    document.getElementById("officerAddress").value
+
+            };
+
+
+            localStorage.setItem(
+                "gramasathiOfficerProfile",
+                JSON.stringify(profile)
+            );
+
+
+            showToast(
+                "Profile saved successfully"
+            );
+        }
+
+
+        function loadProfile() {
+
+            const saved =
+                localStorage.getItem(
+                    "gramasathiOfficerProfile"
+                );
+
+
+            if (!saved) {
+                return;
+            }
+
+
+            const profile =
+                JSON.parse(saved);
+
+
+            document.getElementById("officerName").value =
+                profile.name || "";
+
+            document.getElementById("employeeId").value =
+                profile.employeeId || "";
+
+            document.getElementById("department").value =
+                profile.department || "";
+
+            document.getElementById("officerMobile").value =
+                profile.mobile || "";
+
+            document.getElementById("officerEmail").value =
+                profile.email || "";
+
+            document.getElementById("assignedVillage").value =
+                profile.village || "";
+
+            document.getElementById("officerAddress").value =
+                profile.address || "";
+
+        }
+
+
+        /* =================================================
+           PROFILE IMAGE
+        ================================================= */
+
+        function changeProfileImage(input) {
+
+            const file =
+                input.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function (event) {
+
+                    document
+                        .getElementById("profilePhoto")
+                        .innerHTML =
+                        `<img src="${event.target.result}">`;
+
+
+                    localStorage.setItem(
+                        "gramasathiOfficerImage",
+                        event.target.result
+                    );
+
+                };
+
+
+            reader.readAsDataURL(file);
+        }
+
+
+        function loadProfileImage() {
+
+            const image =
+                localStorage.getItem(
+                    "gramasathiOfficerImage"
+                );
+
+
+            if (image) {
+
+                document
+                    .getElementById("profilePhoto")
+                    .innerHTML =
+                    `<img src="${image}">`;
+
+            }
+        }
+
+
+        /* =================================================
+           CHANGE PASSWORD
+        ================================================= */
+
+        function changePassword() {
+
+            openModal(`
+
+        <h2>Change Password</h2>
+
+        <div class="form-group">
+
+            <label>Current Password</label>
+
+            <input type="password"
+                   id="currentPassword">
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>New Password</label>
+
+            <input type="password"
+                   id="newPassword">
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Confirm Password</label>
+
+            <input type="password"
+                   id="confirmPassword">
+
+        </div>
+
+        <br>
+
+        <button class="btn btn-green"
+                onclick="savePassword()">
+            Update Password
+        </button>
+
+    `);
+        }
+
+
+        function savePassword() {
+
+            const current =
+                document.getElementById("currentPassword").value;
+
+            const newPassword =
+                document.getElementById("newPassword").value;
+
+            const confirm =
+                document.getElementById("confirmPassword").value;
+
+
+            if (!current || !newPassword || !confirm) {
+
+                showToast(
+                    "Please fill all password fields"
+                );
+
+                return;
+            }
+
+
+            if (newPassword.length < 6) {
+
+                showToast(
+                    "Password must contain at least 6 characters"
+                );
+
+                return;
+            }
+
+
+            if (newPassword !== confirm) {
+
+                showToast(
+                    "Passwords do not match"
+                );
+
+                return;
+            }
+
+
+            closeModal();
+
+
+            showToast(
+                "Password updated successfully"
+            );
+        }
+
+
+        /* =================================================
+           DARK MODE
+        ================================================= */
+
+        function toggleDarkMode() {
+
+            document
+                .body
+                .classList
+                .toggle("dark");
+
+
+            localStorage.setItem(
+                "gramasathiOfficerDarkMode",
+                document.body.classList.contains("dark")
+            );
+        }
+
+
+        function loadDarkMode() {
+
+            if (
+                localStorage.getItem(
+                    "gramasathiOfficerDarkMode"
+                ) === "true"
+            ) {
+
+                document
+                    .body
+                    .classList
+                    .add("dark");
+
+            }
+        }
+
+
+        /* =================================================
+           MODAL
+        ================================================= */
+
+        function openModal(content) {
+
+            document
+                .getElementById("modalContent")
+                .innerHTML = content;
+
+
+            document
+                .getElementById("modal")
+                .classList
+                .add("active");
+        }
+
+
+        function closeModal() {
+
+            document
+                .getElementById("modal")
+                .classList
+                .remove("active");
+        }
+
+
+        /* =================================================
+           TOAST
+        ================================================= */
+
+        function showToast(message) {
+
+            const toast =
+                document.getElementById("toast");
+
+
+            toast.textContent =
+                message;
+
+
+            toast.classList.add("show");
+
+
+            setTimeout(() => {
+
+                toast.classList.remove("show");
+
+            }, 2500);
+        }
+
+
+        /* =================================================
+           LOGOUT
+        ================================================= */
+
+        function logout() {
+
+            const confirmed =
+                confirm(
+                    "Are you sure you want to logout?"
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            /*
+              Existing login flow is kept separate.
+              If your login filename is different,
+              change only this filename.
+            */
+
+            window.location.href =
+                "login.html";
+        }
+
+
+        /* =================================================
+           ESCAPE KEY
+        ================================================= */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Escape") {
+
+                    closeSidebar();
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           MODAL OUTSIDE CLICK
+        ================================================= */
+
+        document
+            .getElementById("modal")
+            .addEventListener(
+                "click",
+                function (event) {
+
+                    if (event.target === this) {
+                        closeModal();
+                    }
+
+                }
+            );
+
+
+        /* =================================================
+           INITIAL LOAD
+        ================================================= */
+
+        loadProfile();
+        loadProfileImage();
+        loadDarkMode();
+        updateHeaderNotificationBadge();
+        loadComplaints();
+        loadTodaysWork();
+        loadRecentlyAssigned()
+        loadMyPerformance();
+    </script>
+
+</body>
+
+</html>
