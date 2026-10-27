@@ -1,19 +1,27 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
+import os
+import re
+import time
+import secrets
+from threading import Lock
+from werkzeug.security import generate_password_hash
+from dotenv import load_dotenv
+from pathlib import Path
 
+load_dotenv(Path(__file__).resolve().parent / ".env")
 app = Flask(__name__)
 CORS(app)
 
 
 # ==================== DATABASE ====================
-
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="gramsathi_user",
-        password="gramsathi123",
-        database="gramsathi_db"
+        host=os.getenv("DB_HOST", "localhost"),
+        user=os.getenv("DB_USER", "gramsathi_user"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME", "gramsathi_db")
     )
 
 
@@ -50,7 +58,7 @@ def error(message, code=400):
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({
-        "message": "GramaSathi Backend is running!"
+        "message": "GramSathi Backend is running!"
     })
 
 
@@ -126,6 +134,9 @@ def get_complaints():
             if col in columns
         ]
 
+        if not selected:
+            return error("No supported complaint columns found", 500)
+
         query = "SELECT " + ", ".join(
             f"`{col}`" for col in selected
         ) + " FROM complaints"
@@ -161,7 +172,6 @@ def get_complaints():
             query += " ORDER BY complaint_id DESC"
 
         cursor.execute(query, tuple(params))
-
         complaints = cursor.fetchall()
 
         return jsonify([
@@ -329,7 +339,6 @@ def create_complaint():
 )
 def update_complaint_status(complaint_id):
     data = request.get_json(silent=True) or {}
-
     status = data.get("status")
 
     allowed_statuses = [
@@ -676,6 +685,266 @@ def assign_complaint_to_officer(complaint_id):
 
         app.logger.exception("Complaint assignment failed")
         return error("Unable to assign complaint", 500)
+
+    finally:
+        close_db(conn, cursor)
+
+
+# ==================== FORGOT PASSWORD / OTP ====================
+
+otp_storage = {}
+reset_tokens = {}
+otp_lock = Lock()
+
+OTP_EXPIRY = 300
+RESET_TOKEN_EXPIRY = 300
+MAX_OTP_ATTEMPTS = 5
+
+
+def normalize_contact(contact):
+    return str(contact or "").strip().lower()
+
+
+def valid_contact(contact):
+    email_valid = re.fullmatch(
+        r"[^@\s]+@[^@\s]+\.[^@\s]+",
+        contact
+    )
+
+    phone_valid = re.fullmatch(
+        r"\+?\d{10,15}",
+        contact
+    )
+
+    return bool(email_valid or phone_valid)
+
+
+def valid_password(password):
+    return (
+        len(password) >= 8
+        and re.search(r"[A-Z]", password)
+        and re.search(r"[0-9]", password)
+        and re.search(r"[^A-Za-z0-9]", password)
+    )
+
+
+# ==================== SEND OTP ====================
+
+@app.route("/api/forgot-password/send-otp", methods=["POST"])
+def send_forgot_password_otp():
+    data = request.get_json(silent=True) or {}
+
+    contact = normalize_contact(data.get("contact"))
+
+    if not valid_contact(contact):
+        return error(
+            "Enter a valid mobile number or email.",
+            400
+        )
+
+    otp = f"{secrets.randbelow(1000000):06d}"
+
+    with otp_lock:
+        otp_storage[contact] = {
+            "otp": otp,
+            "expires": time.time() + OTP_EXPIRY,
+            "attempts": 0
+        }
+
+        # A newly requested OTP invalidates previous reset tokens
+        # associated with this contact.
+        expired_tokens = [
+            token for token, record in reset_tokens.items()
+            if record["contact"] == contact
+        ]
+
+        for token in expired_tokens:
+            reset_tokens.pop(token, None)
+
+    # DEVELOPMENT ONLY:
+    # OTP appears in the backend terminal.
+    # Do not use terminal logging as OTP delivery in production.
+    app.logger.warning(
+        "Development OTP generated for %s: %s",
+        contact,
+        otp
+    )
+
+    return jsonify({
+        "message": "OTP generated. Check backend terminal for testing.",
+        "expires_in": OTP_EXPIRY
+    }), 200
+
+
+# ==================== VERIFY OTP ====================
+
+@app.route("/api/forgot-password/verify-otp", methods=["POST"])
+def verify_forgot_password_otp():
+    data = request.get_json(silent=True) or {}
+
+    contact = normalize_contact(data.get("contact"))
+    entered_otp = str(data.get("otp", "")).strip()
+
+    if not contact or not re.fullmatch(r"\d{6}", entered_otp):
+        return error("Enter a valid 6-digit OTP.", 400)
+
+    with otp_lock:
+        record = otp_storage.get(contact)
+
+        if not record:
+            return error("Request an OTP first.", 400)
+
+        if time.time() > record["expires"]:
+            otp_storage.pop(contact, None)
+            return error(
+                "OTP expired. Request a new one.",
+                400
+            )
+
+        if record["attempts"] >= MAX_OTP_ATTEMPTS:
+            otp_storage.pop(contact, None)
+            return error(
+                "Too many attempts. Request a new OTP.",
+                429
+            )
+
+        record["attempts"] += 1
+
+        if not secrets.compare_digest(
+            entered_otp,
+            record["otp"]
+        ):
+            return error("Incorrect OTP.", 400)
+
+        otp_storage.pop(contact, None)
+
+        reset_token = secrets.token_urlsafe(32)
+
+        reset_tokens[reset_token] = {
+            "contact": contact,
+            "expires": time.time() + RESET_TOKEN_EXPIRY
+        }
+
+    return jsonify({
+        "message": "OTP verified successfully.",
+        "reset_token": reset_token,
+        "expires_in": RESET_TOKEN_EXPIRY
+    }), 200
+
+
+# ==================== RESET PASSWORD ====================
+
+@app.route(
+    "/api/forgot-password/reset-password",
+    methods=["POST"]
+)
+def reset_forgotten_password():
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return error("JSON request body is required.", 400)
+
+    reset_token = str(data.get("reset_token", "")).strip()
+    new_password = str(data.get("new_password", ""))
+    confirm_password = str(data.get("confirm_password", ""))
+
+    if not reset_token:
+        return error(
+            "Reset token is missing. Verify the OTP again.",
+            400
+        )
+
+    if not new_password or not confirm_password:
+        return error(
+            "Enter and confirm your new password.",
+            400
+        )
+
+    if not valid_password(new_password):
+        return error(
+            "Password must contain at least 8 characters, "
+            "one uppercase letter, one number, and one special character.",
+            400
+        )
+
+    if new_password != confirm_password:
+        return error("Passwords do not match.", 400)
+
+    # Check the token before doing database work.
+    with otp_lock:
+        token_record = reset_tokens.get(reset_token)
+
+        if not token_record:
+            return error(
+                "Invalid or already used reset token. Verify OTP again.",
+                400
+            )
+
+        if time.time() > token_record["expires"]:
+            reset_tokens.pop(reset_token, None)
+            return error(
+                "Reset token expired. Verify OTP again.",
+                400
+            )
+
+        contact = token_record["contact"]
+
+    conn = cursor = None
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # The currently confirmed account schema is officers only.
+        # User/Admin tables have not been confirmed.
+        cursor.execute("""
+            SELECT officer_id
+            FROM officers
+            WHERE LOWER(email) = %s
+               OR phone = %s
+            LIMIT 1
+        """, (contact, contact))
+
+        officer = cursor.fetchone()
+
+        if not officer:
+            return error(
+                "No matching officer account was found. "
+                "User/Admin password reset is not configured yet.",
+                404
+            )
+
+        password_hash = generate_password_hash(new_password)
+
+        cursor.execute("""
+            UPDATE officers
+            SET password_hash = %s
+            WHERE officer_id = %s
+        """, (
+            password_hash,
+            officer["officer_id"]
+        ))
+
+        if cursor.rowcount != 1:
+            conn.rollback()
+            return error("Password could not be updated.", 500)
+
+        conn.commit()
+
+        # Consume the token after a successful database update.
+        with otp_lock:
+            reset_tokens.pop(reset_token, None)
+
+        return jsonify({
+            "message": "Password reset successfully."
+        }), 200
+
+    except mysql.connector.Error:
+        if conn:
+            conn.rollback()
+
+        app.logger.exception("Password reset failed")
+        return error("Unable to reset password.", 500)
 
     finally:
         close_db(conn, cursor)

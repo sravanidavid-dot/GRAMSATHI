@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password</title>
+    <link rel="stylesheet" href="frg.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="left">
+            <div class="form-box">
+                <h2>Forgot Password?</h2>
+
+                <p>
+                    Enter your mobile number<br>
+                    or email to receive OTP
+                </p>
+
+                <input
+                    type="text"
+                    id="contactInput"
+                    placeholder="Mobile Number / Email">
+
+
+                <button type="button" id="sendOtpButton">
+                    Send OTP
+                </button>
+
+                    <p id="otpMessage"></p>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="illustration">
+                🔒
+            </div>
+            <h1>Reset Your Password</h1>
+            <p>Don't worry! We'll help you get back into your account.</p>
+        </div>
+
+    </div>
+<script>
+const API = "http://127.0.0.1:5000/api/forgot-password";
+
+document.getElementById("sendOtpButton").addEventListener("click", async () => {
+    const contact = document.getElementById("contactInput").value.trim();
+    const message = document.getElementById("otpMessage");
+
+    if (!contact) {
+        message.textContent = "Enter your mobile number or email.";
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API}/send-otp`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ contact })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem("resetMobile", contact);
+            window.location.href = "otp.html";
+        } else {
+            message.textContent = data.error || "Failed to generate OTP.";
+        }
+
+    } catch (error) {
+        message.textContent =
+            "Backend connection failed. Check whether app.py is running.";
+    }
+});
+</script>
+</body>
+</html>
