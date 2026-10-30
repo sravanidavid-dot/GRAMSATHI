@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GRAMSATHI - Government Schemes</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f8f3;
+            color: #222;
+        }
+
+        /* HEADER */
+
+        .header {
+            height: 70px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* BACK ARROW */
+
+        .back-arrow {
+            text-decoration: none;
+            color: #222;
+
+            font-size: 38px;
+            font-weight: 400;
+
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            border-radius: 8px;
+
+            transition: 0.2s;
+        }
+
+        .back-arrow:hover {
+            background: #f1f1f1;
+            color: #176b3a;
+        }
+
+        .logo {
+            font-size: 30px;
+            font-weight: bold;
+            color: #218c4b;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .notification {
+            position: relative;
+
+            font-size: 27px;
+
+            text-decoration: none;
+
+            color: #444;
+
+            cursor: pointer;
+        }
+
+        .notification span {
+            position: absolute;
+
+            top: -7px;
+            right: -8px;
+
+            width: 19px;
+            height: 19px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #e63b42;
+            color: white;
+
+            border-radius: 50%;
+
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .profile {
+            width: 40px;
+            height: 40px;
+
+            border-radius: 50%;
+
+            background: #e8f0f7;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+
+            cursor: pointer;
+        }
+
+        .profile-link {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        /* MAIN */
+
+        .container {
+            max-width: 1150px;
+            margin: auto;
+            padding: 30px 25px 60px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: #176b3a;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* SEARCH */
+
+        .search-box {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #218c4b;
+        }
+
+        /* CATEGORIES */
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .category-btn {
+            padding: 11px 18px;
+            border: none;
+            border-radius: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: #218c4b;
+            color: white;
+        }
+
+        /* TITLE */
+
+        .section-title {
+            font-size: 23px;
+            margin-bottom: 18px;
+        }
+
+        /* CARDS */
+
+        .scheme-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .scheme-card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .10);
+            border-bottom: 4px solid #218c4b;
+            transition: .2s;
+        }
+
+        .scheme-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .scheme-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            background: #e6f5eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 29px;
+            margin-bottom: 15px;
+        }
+
+        .scheme-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .scheme-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 13px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #eef7ff;
+            color: #2875a8;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-bottom: 13px;
+        }
+
+        .details-btn {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            border-radius: 7px;
+            background: #218c4b;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .details-btn:hover {
+            background: #176b3a;
+        }
+
+        /* ELIGIBILITY */
+
+        .eligibility-section {
+            margin-top: 40px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
+        }
+
+        .eligibility-section h2 {
+            color: #176b3a;
+            margin-bottom: 8px;
+        }
+
+        .eligibility-section p {
+            color: #666;
+            margin-bottom: 18px;
+        }
+
+        .eligibility-btn {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 7px;
+            background: #218c4b;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* MODAL */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .55);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 680px;
+            margin: 50px auto;
+            border-radius: 15px;
+            padding: 28px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            color: #176b3a;
+            margin-bottom: 10px;
+            padding-right: 30px;
+        }
+
+        .modal-content h3 {
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        .modal-content ul {
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+
+        .apply-btn {
+            margin-top: 22px;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 7px;
+            background: #218c4b;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        /* ELIGIBILITY FORM */
+
+        .form-group {
+            margin-top: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+        }
+
+        /* RESULT */
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .success {
+            background: #e8f7ed;
+            border-left: 5px solid #218c4b;
+        }
+
+        .warning {
+            background: #fff5df;
+            border-left: 5px solid #e5a400;
+        }
+
+        /* NO RESULT */
+
+        .no-result {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width:900px) {
+
+            .scheme-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width:600px) {
+
+            .scheme-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .header {
+                padding: 0 15px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <!-- Back Arrow -->
+        <a href="dashboard.html" class="back-arrow" aria-label="Back to Dashboard">
+            ←
+        </a>
+
+        <!-- Logo -->
+        <div class="logo">
+            GRAMSATHI
+        </div>
+
+        <!-- Right Side -->
+        <div class="header-right">
+
+            <!-- Notifications -->
+            <a href="notifications.html" class="notification" aria-label="Notifications">
+                🔔
+                <span>2</span>
+            </a>
+
+            <!-- Profile -->
+            <a href="profile.html" class="profile-link" aria-label="Profile">
+
+                <div class="profile">
+                    👤
+                </div>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- MAIN -->
+
+    <main class="container">
+
+        <h1 class="page-title">
+            🏛️ Government Schemes
+        </h1>
+
+        <p class="subtitle">
+            Explore government schemes and official services
+        </p>
+
+
+        <!-- SEARCH -->
+
+        <div class="search-box">
+
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search schemes..."
+                onkeyup="searchSchemes()">
+
+        </div>
+
+
+        <!-- CATEGORIES -->
+
+        <div class="categories">
+
+            <button class="category-btn active" onclick="filterCategory('All',this)">
+                All
+            </button>
+
+            <button class="category-btn" onclick="filterCategory('Farmers',this)">
+                🌾 Farmers
+            </button>
+
+            <button class="category-btn" onclick="filterCategory('Students',this)">
+                🎓 Students
+            </button>
+
+            <button class="category-btn" onclick="filterCategory('Health',this)">
+                🏥 Health
+            </button>
+
+            <button class="category-btn" onclick="filterCategory('Housing',this)">
+                🏠 Housing
+            </button>
+
+            <button class="category-btn" onclick="filterCategory('Employment',this)">
+                💼 Employment
+            </button>
+
+            <button class="category-btn" onclick="filterCategory('Artisans',this)">
+                🛠️ Artisans
+            </button>
+
+        </div>
+
+
+        <h2 class="section-title">
+            Available Government Schemes
+        </h2>
+
+
+        <div class="scheme-grid" id="schemeGrid">
+
+
+            <!-- PM KISAN -->
+
+            <div class="scheme-card" data-category="Farmers" data-name="PM KISAN Samman Nidhi">
+
+                <div class="scheme-icon">
+                    🌾
+                </div>
+
+                <h3>
+                    PM-KISAN Samman Nidhi
+                </h3>
+
+                <span class="tag">
+                    Farmers
+                </span>
+
+                <p>
+                    Income support scheme for eligible land-holding
+                    farmer families.
+                </p>
+
+                <button class="details-btn" onclick="showDetails('pmkisan')">
+                    View Details →
+                </button>
+
+            </div>
+
+
+            <!-- SCHOLARSHIP -->
+
+            <div class="scheme-card" data-category="Students" data-name="National Scholarship Portal">
+
+                <div class="scheme-icon">
+                    🎓
+                </div>
+
+                <h3>
+                    National Scholarship Portal
+                </h3>
+
+                <span class="tag">
+                    Students
+                </span>
+
+                <p>
+                    One-stop portal for various Central and State
+                    government scholarships.
+                </p>
+
+                <button class="details-btn" onclick="showDetails('nsp')">
+                    View Details →
+                </button>
+
+            </div>
+
+
+            <!-- PMAY -->
+
+            <div class="scheme-card" data-category="Housing" data-name="PMAY Gramin">
+
+                <div class="scheme-icon">
+                    🏠
+                </div>
+
+                <h3>
+                    PMAY - Gramin
+                </h3>
+
+                <span class="tag">
+                    Housing
+                </span>
+
+                <p>
+                    Government housing support for eligible rural
+                    households.
+                </p>
+
+                <button class="details-btn" onclick="showDetails('pmay')">
+                    View Details →
+                </button>
+
+            </div>
+
+
+            <!-- AYUSHMAN -->
+
+            <div class="scheme-card" data-category="Health" data-name="Ayushman Bharat PM JAY">
+
+                <div class="scheme-icon">
+                    🏥
+                </div>
+
+                <h3>
+                    Ayushman Bharat PM-JAY
+                </h3>
+
+                <span class="tag">
+                    Health
+                </span>
+
+                <p>
+                    Government health protection programme for
+                    eligible beneficiaries.
+                </p>
+
+                <button class="details-btn" onclick="showDetails('ayushman')">
+                    View Details →
+                </button>
+
+            </div>
+
+
+            <!-- PM SVANIDHI -->
+
+            <div class="scheme-card" data-category="Employment" data-name="PM SVANidhi">
+
+                <div class="scheme-icon">
+                    💼
+                </div>
+
+                <h3>
+                    PM SVANidhi
+                </h3>
+
+                <span class="tag">
+                    Employment
+                </span>
+
+                <p>
+                    Government support programme for eligible
+                    street vendors.
+                </p>
+
+                <button class="details-btn" onclick="showDetails('svanidhi')">
+                    View Details →
+                </button>
+
+            </div>
+
+
+            <!-- VISHWAKARMA -->
+
+            <div class="scheme-card" data-category="Artisans" data-name="PM Vishwakarma">
+
+                <div class="scheme-icon">
+                    🛠️
+                </div>
+
+                <h3>
+                    PM Vishwakarma
+                </h3>
+
+                <span class="tag">
+                    Artisans
+                </span>
+
+                <p>
+                    Support programme for eligible traditional
+                    artisans and craftspeople.
+                </p>
+
+                <button class="details-btn" onclick="showDetails('vishwakarma')">
+                    View Details →
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="no-result" id="noResult">
+            ❌ No schemes found.
+        </div>
+
+
+        <!-- ELIGIBILITY -->
+
+        <section class="eligibility-section">
+
+            <h2>
+                🔎 Check My Eligibility
+            </h2>
+
+            <p>
+                Enter basic information to identify scheme categories
+                you may want to explore.
+            </p>
+
+            <button class="eligibility-btn" onclick="openEligibility()">
+
+                Check My Eligibility
+
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <!-- DETAILS MODAL -->
+
+    <div class="modal" id="detailsModal">
+
+        <div class="modal-content">
+
+            <span class="close" onclick="closeDetails()">
+                ×
+            </span>
+
+            <h2 id="modalTitle">
+                Scheme
+            </h2>
+
+            <p id="modalDescription">
+            </p>
+
+
+            <h3>
+                🎁 Benefits
+            </h3>
+
+            <ul id="modalBenefits">
+            </ul>
+
+
+            <h3>
+                ✅ Eligibility
+            </h3>
+
+            <ul id="modalEligibility">
+            </ul>
+
+
+            <h3>
+                📄 Important Documents / Information
+            </h3>
+
+            <ul id="modalDocuments">
+            </ul>
+
+
+            <h3>
+                📝 How to Apply
+            </h3>
+
+            <ul>
+                <li>Read the official scheme guidelines.</li>
+                <li>Keep the required information/documents ready.</li>
+                <li>Use the official government portal or authorised channel.</li>
+                <li>Follow the application instructions on the official portal.</li>
+            </ul>
+
+
+            <button class="apply-btn" id="applyButton">
+
+                Apply / Official Portal →
+
+            </button>
+
+        </div>
+    </div>
+
+
+    <!-- ELIGIBILITY MODAL -->
+
+    <div class="modal" id="eligibilityModal">
+
+        <div class="modal-content">
+
+            <span class="close" onclick="closeEligibility()">
+                ×
+            </span>
+
+            <h2>
+                🔎 Check My Eligibility
+            </h2>
+
+
+            <div class="form-group">
+
+                <label>
+                    Age
+                </label>
+
+                <input type="number" id="age" placeholder="Enter age">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Occupation
+                </label>
+
+                <select id="occupation">
+
+                    <option value="">
+                        Select occupation
+                    </option>
+
+                    <option value="farmer">
+                        Farmer
+                    </option>
+
+                    <option value="student">
+                        Student
+                    </option>
+
+                    <option value="artisan">
+                        Artisan / Craftsperson
+                    </option>
+
+                    <option value="vendor">
+                        Street Vendor
+                    </option>
+
+                    <option value="employee">
+                        Employee
+                    </option>
+
+                    <option value="other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Do you live in a rural area?
+                </label>
+
+                <select id="rural">
+
+                    <option value="">
+                        Select
+                    </option>
+
+                    <option value="yes">
+                        Yes
+                    </option>
+
+                    <option value="no">
+                        No
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button class="eligibility-btn" style="margin-top:20px" onclick="checkEligibility()">
+
+                Check Schemes
+
+            </button>
+
+
+            <div id="eligibilityResult" class="result">
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+
+        /* SCHEME DATA */
+
+        const schemes = {
+
+            pmkisan: {
+
+                title: "PM-KISAN Samman Nidhi",
+
+                description:
+                    "PM-KISAN is a Central Sector scheme providing income support to eligible land-holding farmer families. The official portal states that eligible farmer families receive ₹6,000 per year in three equal instalments, subject to the scheme guidelines and exclusions.",
+
+                benefits: [
+                    "₹6,000 per year in three equal instalments for eligible farmer families",
+                    "Direct transfer to beneficiary bank accounts",
+                    "Online registration and beneficiary-status services are available"
+                ],
+
+                eligibility: [
+                    "Eligible land-holding farmer families",
+                    "State/UT authorities identify eligible beneficiaries",
+                    "Scheme exclusion categories apply"
+                ],
+
+                documents: [
+                    "Aadhaar / identity information as required",
+                    "Land and farmer registration information",
+                    "Bank account details",
+                    "Other information requested by the official portal"
+                ],
+
+                link: "https://www.pmkisan.gov.in/"
+
+            },
+
+
+            nsp: {
+
+                title: "National Scholarship Portal",
+
+                description:
+                    "National Scholarship Portal is a one-stop portal for scholarship services covering student application, processing, sanction and disbursal for participating Central and State government schemes.",
+
+                benefits: [
+                    "Access to multiple scholarship schemes through one portal",
+                    "Online scholarship application services",
+                    "Application and scholarship-status related services",
+                    "Academic Year 2026-27 schemes are listed on the portal"
+                ],
+
+                eligibility: [
+                    "Eligibility depends on the individual scholarship scheme",
+                    "Students must check the specific scheme criteria",
+                    "One Time Registration (OTR) is required for scholarship applications"
+                ],
+
+                documents: [
+                    "Student identity information",
+                    "Academic details",
+                    "Bank details where required",
+                    "Documents specified by the selected scholarship"
+                ],
+
+                link: "https://scholarships.gov.in/"
+
+            },
+
+
+            pmay: {
+
+                title: "Pradhan Mantri Awaas Yojana - Gramin",
+
+                description:
+                    "PMAY-G is the rural housing programme. The official PMAY-G portal provides an eligibility questionnaire covering rural residence, housing condition and several household exclusion criteria.",
+
+                benefits: [
+                    "Housing assistance for eligible rural households",
+                    "Official eligibility/self-survey information is available",
+                    "Beneficiary and scheme information can be checked through the official portal"
+                ],
+
+                eligibility: [
+                    "Applicant should meet the scheme's rural housing criteria",
+                    "Household housing condition is considered",
+                    "Several household asset/income and other exclusion conditions apply"
+                ],
+
+                documents: [
+                    "Identity information",
+                    "Household information",
+                    "Bank account information where applicable",
+                    "Other information required by the official process"
+                ],
+
+                link: "https://pmayg.nic.in/"
+
+            },
+
+
+            ayushman: {
+
+                title: "Ayushman Bharat PM-JAY",
+
+                description:
+                    "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana is a national health protection programme implemented through the National Health Authority and participating State Health Agencies.",
+
+                benefits: [
+                    "Health protection benefits for eligible beneficiaries",
+                    "Access through empanelled healthcare providers",
+                    "Official PM-JAY services and information are available through government portals"
+                ],
+
+                eligibility: [
+                    "Eligibility is based on the applicable beneficiary database and scheme rules",
+                    "State-specific implementation may apply",
+                    "Users should verify eligibility through official channels"
+                ],
+
+                documents: [
+                    "Beneficiary identification information",
+                    "Documents requested by the official verification process",
+                    "Other information as required by the State/PM-JAY system"
+                ],
+
+                link: "https://pmjay.gov.in/"
+
+            },
+
+
+            svanidhi: {
+
+                title: "PM SVANidhi",
+
+                description:
+                    "PM SVANidhi is a Government of India support programme for eligible street vendors. Applicants should verify current eligibility and application procedures through the official government channel.",
+
+                benefits: [
+                    "Support for eligible street vendors",
+                    "Digital application and scheme-related services",
+                    "Additional benefits may depend on applicable scheme conditions"
+                ],
+
+                eligibility: [
+                    "Eligible street vendors as defined under the scheme",
+                    "Eligibility and lending conditions are subject to official guidelines"
+                ],
+
+                documents: [
+                    "Identity information",
+                    "Street-vendor related information",
+                    "Bank account information",
+                    "Other documents requested during application"
+                ],
+
+                link: "https://pmsvanidhi.mohua.gov.in/"
+
+            },
+
+
+            vishwakarma: {
+
+                title: "PM Vishwakarma",
+
+                description:
+                    "PM Vishwakarma is a Government of India scheme for eligible traditional artisans and craftspeople. The official portal provides scheme-related services and application information.",
+
+                benefits: [
+                    "Support for eligible traditional artisans and craftspeople",
+                    "Scheme-related training and support",
+                    "Other benefits are subject to official scheme guidelines"
+                ],
+
+                eligibility: [
+                    "Eligible traditional artisans/craftspeople in covered trades",
+                    "Applicants must satisfy the scheme's conditions",
+                    "Verification is carried out through the prescribed process"
+                ],
+
+                documents: [
+                    "Identity information",
+                    "Mobile number",
+                    "Artisan/trade related information",
+                    "Other information requested by the official portal"
+                ],
+
+                link: "https://pmvishwakarma.gov.in/"
+
+            }
+
+        };
+
+
+        /* SHOW DETAILS */
+
+        function showDetails(id) {
+
+            let s = schemes[id];
+
+            document.getElementById("modalTitle").innerText = s.title;
+
+            document.getElementById("modalDescription").innerText = s.description;
+
+
+            document.getElementById("modalBenefits").innerHTML =
+                s.benefits.map(x => `<li>${x}</li>`).join("");
+
+
+            document.getElementById("modalEligibility").innerHTML =
+                s.eligibility.map(x => `<li>${x}</li>`).join("");
+
+
+            document.getElementById("modalDocuments").innerHTML =
+                s.documents.map(x => `<li>${x}</li>`).join("");
+
+
+            document.getElementById("applyButton").onclick = function () {
+
+                window.open(s.link, "_blank");
+
+            };
+
+
+            document.getElementById("detailsModal").style.display = "block";
+
+        }
+
+
+        /* CLOSE DETAILS */
+
+        function closeDetails() {
+
+            document.getElementById("detailsModal").style.display = "none";
+
+        }
+
+
+        /* SEARCH */
+
+        function searchSchemes() {
+
+            let input = document
+                .getElementById("searchInput")
+                .value
+                .toLowerCase();
+
+            let cards = document
+                .querySelectorAll(".scheme-card");
+
+            let found = false;
+
+            cards.forEach(card => {
+
+                let name = card
+                    .getAttribute("data-name")
+                    .toLowerCase();
+
+                let category = card
+                    .getAttribute("data-category")
+                    .toLowerCase();
+
+                if (
+                    name.includes(input) ||
+                    category.includes(input)
+                ) {
+
+                    card.style.display = "block";
+                    found = true;
+
+                } else {
+
+                    card.style.display = "none";
+
+                }
+
+            });
+
+
+            document.getElementById("noResult")
+                .style.display = found ? "none" : "block";
+
+        }
+
+
+        /* CATEGORY */
+
+        function filterCategory(category, button) {
+
+            document
+                .querySelectorAll(".category-btn")
+                .forEach(btn => {
+                    btn.classList.remove("active");
+                });
+
+            button.classList.add("active");
+
+            let cards = document
+                .querySelectorAll(".scheme-card");
+
+            let found = false;
+
+            cards.forEach(card => {
+
+                if (
+                    category === "All" ||
+                    card.getAttribute("data-category") === category
+                ) {
+
+                    card.style.display = "block";
+                    found = true;
+
+                } else {
+
+                    card.style.display = "none";
+
+                }
+
+            });
+
+            document.getElementById("noResult")
+                .style.display = found ? "none" : "block";
+
+        }
+
+
+        /* ELIGIBILITY MODAL */
+
+        function openEligibility() {
+
+            document.getElementById("eligibilityModal")
+                .style.display = "block";
+
+        }
+
+
+        function closeEligibility() {
+
+            document.getElementById("eligibilityModal")
+                .style.display = "none";
+
+        }
+
+
+        /* ELIGIBILITY CHECKER */
+
+        function checkEligibility() {
+
+            let age = document.getElementById("age").value;
+
+            let occupation = document
+                .getElementById("occupation").value;
+
+            let rural = document
+                .getElementById("rural").value;
+
+            let result = document
+                .getElementById("eligibilityResult");
+
+
+            if (!age || !occupation || !rural) {
+
+                result.style.display = "block";
+
+                result.className = "result warning";
+
+                result.innerHTML =
+                    "⚠️ Please fill all the fields.";
+
+                return;
+
+            }
+
+
+            let recommendations = [];
+
+
+            /* FARMER */
+
+            if (occupation === "farmer") {
+
+                recommendations.push("🌾 PM-KISAN Samman Nidhi");
+
+            }
+
+
+            /* STUDENT */
+
+            if (occupation === "student") {
+
+                recommendations.push("🎓 National Scholarship Portal");
+
+            }
+
+
+            /* ARTISAN */
+
+            if (occupation === "artisan") {
+
+                recommendations.push("🛠️ PM Vishwakarma");
+
+            }
+
+
+            /* STREET VENDOR */
+
+            if (occupation === "vendor") {
+
+                recommendations.push("💼 PM SVANidhi");
+
+            }
+
+
+            /* RURAL */
+
+            if (rural === "yes") {
+
+                recommendations.push("🏠 PMAY-G");
+
+            }
+
+
+            /* HEALTH */
+
+            recommendations.push("🏥 Ayushman Bharat PM-JAY");
+
+
+            result.style.display = "block";
+
+            result.className = "result success";
+
+            result.innerHTML =
+                "<strong>✓ Schemes to explore:</strong><br><br>" +
+                recommendations
+                    .map(x => "<div>" + x + "</div>")
+                    .join("") +
+                "<br><small>These are suggestions for further checking. Final eligibility must be verified against the official scheme rules.</small>";
+
+        }
+
+
+        /* OUTSIDE CLICK */
+
+        window.onclick = function (event) {
+
+            let details = document
+                .getElementById("detailsModal");
+
+            let eligibility = document
+                .getElementById("eligibilityModal");
+
+            if (event.target === details) {
+
+                details.style.display = "none";
+
+            }
+
+            if (event.target === eligibility) {
+
+                eligibility.style.display = "none";
+
+            }
+
+        };
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,3578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GramaSathi - Admin Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        :root {
+            --green: #087f3e;
+            --dark-green: #05652f;
+            --light-green: #eaf8ef;
+            --bg: #f4f7f5;
+            --white: #fff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --blue: #2563eb;
+            --red: #dc2626;
+            --orange: #ea580c;
+            --purple: #7c3aed;
+            --shadow: 0 5px 20px rgba(0, 0, 0, .08);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .15);
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .menu-btn {
+            position: absolute;
+            left: 18px;
+            width: 46px;
+            height: 46px;
+            border: 0;
+            background: transparent;
+            color: white;
+            font-size: 29px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, .15);
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -290px;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            z-index: 1200;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, .18);
+            transition: .3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            height: 70px;
+            background: var(--green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: 0;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            padding: 16px 12px;
+        }
+
+        .sidebar-menu button {
+            width: 100%;
+            border: 0;
+            background: white;
+            color: #333;
+            text-align: left;
+            padding: 14px 15px;
+            margin-bottom: 6px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .sidebar-menu button:hover,
+        .sidebar-menu button.active {
+            background: var(--light-green);
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        .sidebar-menu .logout {
+            color: var(--red);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 1100;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            max-width: 1500px;
+            margin: auto;
+            padding: 95px 25px 30px;
+        }
+
+        .page {
+            display: none;
+            position: relative;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* EVERY PAGE CROSS */
+
+        .page-close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: #eef2f0;
+            color: #333;
+            font-size: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            transition: .2s;
+        }
+
+        .page-close:hover {
+            background: var(--red);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .page-title {
+            margin-bottom: 22px;
+            padding-right: 55px;
+        }
+
+        .page-title h2 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            color: var(--muted);
+        }
+
+        /* ================= WELCOME ================= */
+
+        .welcome {
+            background: linear-gradient(110deg, #e9f9ef, #f8fffb);
+            border-radius: 17px;
+            min-height: 180px;
+            padding: 30px;
+            margin-bottom: 23px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #d8f0df;
+        }
+
+        .welcome h2 {
+            color: var(--green);
+            font-size: 28px;
+            margin-bottom: 9px;
+        }
+
+        .welcome p {
+            color: #557063;
+            font-size: 15px;
+        }
+
+        .welcome-badge {
+            display: inline-block;
+            margin-top: 16px;
+            background: white;
+            color: var(--green);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .06);
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 23px;
+        }
+
+        .stat {
+            background: white;
+            border-radius: 14px;
+            padding: 21px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--green);
+        }
+
+        .stat:nth-child(2) {
+            border-left-color: var(--orange);
+        }
+
+        .stat:nth-child(3) {
+            border-left-color: var(--blue);
+        }
+
+        .stat:nth-child(4) {
+            border-left-color: #16a34a;
+        }
+
+        .stat h3 {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .stat .number {
+            font-size: 31px;
+            font-weight: bold;
+        }
+
+        .stat small {
+            color: var(--muted);
+            display: block;
+            margin-top: 7px;
+        }
+
+        /* ================= CARD ================= */
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .card-header h3 {
+            font-size: 19px;
+        }
+
+        /* ================= QUICK ACTIONS ================= */
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .quick-btn {
+            border: 0;
+            background: var(--light-green);
+            color: var(--green);
+            padding: 18px 12px;
+            border-radius: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* ================= FILTERS ================= */
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .search,
+        select,
+        .form-group input,
+        .form-group textarea {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 11px 13px;
+            outline: none;
+            background: white;
+        }
+
+        .search {
+            min-width: 240px;
+        }
+
+        select {
+            min-width: 150px;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px 11px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8faf9;
+            color: #374151;
+        }
+
+        tr:hover td {
+            background: #fafdfb;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #946200;
+        }
+
+        .progress {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .resolved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .active-status {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .blocked {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .btn {
+            border: 0;
+            border-radius: 7px;
+            padding: 9px 13px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-blue {
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-red {
+            background: var(--red);
+            color: white;
+        }
+
+        .btn-gray {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-purple {
+            background: var(--purple);
+            color: white;
+        }
+
+        .btn-orange {
+            background: var(--orange);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: .9;
+        }
+
+        /* ================= TWO COLUMN ================= */
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 22px;
+        }
+
+        /* ================= ACTIVITY ================= */
+
+        .activity {
+            display: flex;
+            gap: 13px;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--light-green);
+            color: var(--green);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .activity p {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .activity small {
+            color: var(--muted);
+        }
+
+        /* ================= NOTIFICATIONS ================= */
+
+        .notification {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .notification.unread {
+            border-left: 5px solid var(--green);
+            background: #f4fcf7;
+        }
+
+        .notification h4 {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .notification p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* ================= PROFILE ================= */
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 30px;
+        }
+
+        .profile-photo {
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            background: var(--light-green);
+            border: 4px solid #d7f0df;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 60px;
+            overflow: hidden;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1/-1;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        /* ================= SERVICE CARDS ================= */
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .service-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: .2s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--light-green);
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 13px;
+        }
+
+        .service-card h3 {
+            margin-bottom: 7px;
+        }
+
+        .service-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            width: 700px;
+            max-width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 17px;
+            top: 12px;
+            border: 0;
+            background: none;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ================= TOAST ================= */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #1f2937;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 9px;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: .3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================= DARK MODE ================= */
+
+        body.dark {
+            --bg: #111827;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --border: #374151;
+        }
+
+        body.dark .card,
+        body.dark .sidebar,
+        body.dark .modal-box,
+        body.dark .stat,
+        body.dark .service-card {
+            background: #1f2937;
+            color: #f3f4f6;
+        }
+
+        body.dark .sidebar-menu button,
+        body.dark .search,
+        body.dark select,
+        body.dark .form-group input,
+        body.dark .form-group textarea {
+            background: #1f2937;
+            color: white;
+            border-color: #374151;
+        }
+
+        body.dark th {
+            background: #111827;
+        }
+
+        body.dark .welcome {
+            background: #173523;
+        }
+
+        body.dark .page-close {
+            background: #374151;
+            color: white;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media(max-width:1100px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .service-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width:700px) {
+
+            .main {
+                padding: 90px 14px 25px;
+            }
+
+            .header h1 {
+                font-size: 19px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .search,
+            select {
+                width: 100%;
+            }
+
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-close {
+                width: 36px;
+                height: 36px;
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =================================================
+     HEADER
+================================================= -->
+
+    <header class="header">
+
+        <button class="menu-btn" onclick="openSidebar()">
+            ☰
+        </button>
+
+        <h1>Admin Dashboard</h1>
+
+    </header>
+
+
+    <!-- =================================================
+     SIDEBAR
+================================================= -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-header">
+
+            <h2>GramaSathi</h2>
+
+            <button class="close-btn" onclick="closeSidebar()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="sidebar-menu">
+
+            <button class="active" onclick="showPage('dashboard',this)">
+                📊 Dashboard
+            </button>
+
+            <button onclick="showPage('complaints',this)">
+                📋 Complaints
+            </button>
+
+            <button onclick="showPage('users',this)">
+                👥 Users
+            </button>
+
+            <button onclick="showPage('services',this)">
+                🛠️ Services
+            </button>
+
+            <button onclick="showPage('notifications',this)">
+                🔔 Notifications
+            </button>
+
+            <button onclick="showPage('activity',this)">
+                🕒 Activity Log
+            </button>
+
+            <button onclick="showPage('profile',this)">
+                👤 Admin Profile
+            </button>
+
+            <button onclick="toggleDarkMode()">
+                🌙 Dark Mode
+            </button>
+
+            <button class="logout" onclick="logout()">
+                🚪 Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <div class="overlay" id="overlay" onclick="closeSidebar()">
+    </div>
+
+
+    <!-- =================================================
+     MAIN
+================================================= -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+     DASHBOARD
+================================================= -->
+
+        <section class="page active" id="dashboard">
+
+            <button class="page-close" onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="welcome">
+
+                <h2>Hello, Admin 👋</h2>
+
+                <p>
+                    Manage complaints, users, services and
+                    village operations from one place.
+                </p>
+
+                <span class="welcome-badge">
+                    🟢 Admin Account • Active
+                </span>
+
+            </div>
+
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <h3>Total Complaints</h3>
+
+                    <div class="number">
+                        248
+                    </div>
+
+                    <small>
+                        All registered complaints
+                    </small>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <h3>Pending Complaints</h3>
+
+                    <div class="number">
+                        42
+                    </div>
+
+                    <small>
+                        Waiting for action
+                    </small>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <h3>In Progress</h3>
+
+                    <div class="number">
+                        31
+                    </div>
+
+                    <small>
+                        Currently being handled
+                    </small>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <h3>Resolved</h3>
+
+                    <div class="number">
+                        175
+                    </div>
+
+                    <small>
+                        Successfully resolved
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>Quick Actions</h3>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+                    <button class="quick-btn" onclick="showPage('complaints')">
+                        📋 Manage Complaints
+                    </button>
+
+                    <button class="quick-btn" onclick="showPage('users')">
+                        👥 Manage Users
+                    </button>
+
+                    <button class="quick-btn" onclick="showPage('services')">
+                        🛠️ Manage Services
+                    </button>
+
+                    <button class="quick-btn" onclick="showPage('notifications')">
+                        🔔 Notifications
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="two-column">
+
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h3>Recent Complaints</h3>
+
+                        <button class="btn btn-green" onclick="showPage('complaints')">
+                            View All
+                        </button>
+
+                    </div>
+
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Citizen</th>
+                                    <th>Issue</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>#GC101</td>
+                                    <td>Ravi Kumar</td>
+                                    <td>Street Light</td>
+
+                                    <td>
+                                        <span class="status pending">
+                                            Pending
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <button class="btn btn-blue" onclick="viewComplaint(
+                                        'GC101',
+                                        'Ravi Kumar',
+                                        'Street Light',
+                                        'Street light not working near main road',
+                                        'Pending')">
+                                            View
+                                        </button>
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td>#GC102</td>
+                                    <td>Priya</td>
+                                    <td>Water Supply</td>
+
+                                    <td>
+                                        <span class="status progress">
+                                            In Progress
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <button class="btn btn-blue" onclick="viewComplaint(
+                                        'GC102',
+                                        'Priya',
+                                        'Water Supply',
+                                        'Water supply stopped',
+                                        'In Progress')">
+                                            View
+                                        </button>
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td>#GC110</td>
+                                    <td>Ramesh</td>
+                                    <td>Road Damage</td>
+
+                                    <td>
+                                        <span class="status resolved">
+                                            Resolved
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <button class="btn btn-blue" onclick="viewComplaint(
+                                        'GC110',
+                                        'Ramesh',
+                                        'Road Damage',
+                                        'Road damaged near village entrance',
+                                        'Resolved')">
+                                            View
+                                        </button>
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h3>System Overview</h3>
+
+                    </div>
+
+
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            👥
+                        </div>
+
+                        <div>
+
+                            <p>
+                                <strong>1,240</strong>
+                                registered citizens
+                            </p>
+
+                            <small>
+                                Total Users
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            👮
+                        </div>
+
+                        <div>
+
+                            <p>
+                                <strong>38</strong>
+                                active officers
+                            </p>
+
+                            <small>
+                                Active Officers
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            🛠️
+                        </div>
+
+                        <div>
+
+                            <p>
+                                <strong>12</strong>
+                                active services
+                            </p>
+
+                            <small>
+                                Available Services
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            🔔
+                        </div>
+
+                        <div>
+
+                            <p>
+                                <strong>5</strong>
+                                unread notifications
+                            </p>
+
+                            <small>
+                                Need Attention
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>Recent Admin Activity</h3>
+
+                    <button class="btn btn-green" onclick="showPage('activity')">
+                        View Activity
+                    </button>
+
+                </div>
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <p>
+                            Complaint <strong>#GC110</strong>
+                            was marked as resolved.
+                        </p>
+
+                        <small>
+                            Today, 10:35 AM
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        👤
+                    </div>
+
+                    <div>
+
+                        <p>
+                            New officer account was created.
+                        </p>
+
+                        <small>
+                            Today, 09:20 AM
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        🛠️
+                    </div>
+
+                    <div>
+
+                        <p>
+                            Water Supply service information was updated.
+                        </p>
+
+                        <small>
+                            Yesterday, 05:15 PM
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     COMPLAINTS
+================================================= -->
+
+        <section class="page" id="complaints">
+
+            <button class="page-close" onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>Manage Complaints</h2>
+
+                <p>
+                    View, monitor and manage all citizen complaints.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="filters">
+
+                    <input class="search" id="complaintSearch" placeholder="🔍 Search complaint..."
+                        oninput="filterComplaints()">
+
+
+                    <select id="complaintStatus" onchange="filterComplaints()">
+
+                        <option value="all">
+                            All Status
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="In Progress">
+                            In Progress
+                        </option>
+
+                        <option value="Resolved">
+                            Resolved
+                        </option>
+
+                    </select>
+
+
+                    <select id="complaintCategory" onchange="filterComplaints()">
+
+                        <option value="all">
+                            All Categories
+                        </option>
+
+                        <option value="Water">
+                            Water
+                        </option>
+
+                        <option value="Electricity">
+                            Electricity
+                        </option>
+
+                        <option value="Road">
+                            Road
+                        </option>
+
+                        <option value="Sanitation">
+                            Sanitation
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>ID</th>
+                                <th>Citizen</th>
+                                <th>Category</th>
+                                <th>Complaint</th>
+                                <th>Officer</th>
+                                <th>Status</th>
+                                <th>Action</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="complaintTable">
+
+
+                            <tr data-status="Pending" data-category="Electricity">
+
+                                <td>#GC101</td>
+                                <td>Ravi Kumar</td>
+                                <td>Electricity</td>
+                                <td>Street light not working</td>
+                                <td>Officer Suresh</td>
+
+                                <td>
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    <button class="btn btn-blue" onclick="viewComplaint(
+                                    'GC101',
+                                    'Ravi Kumar',
+                                    'Electricity',
+                                    'Street light not working',
+                                    'Pending')">
+                                        View
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+
+                            <tr data-status="In Progress" data-category="Water">
+
+                                <td>#GC102</td>
+                                <td>Priya</td>
+                                <td>Water</td>
+                                <td>Water supply problem</td>
+                                <td>Officer Ramesh</td>
+
+                                <td>
+                                    <span class="status progress">
+                                        In Progress
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    <button class="btn btn-blue" onclick="viewComplaint(
+                                    'GC102',
+                                    'Priya',
+                                    'Water',
+                                    'Water supply problem',
+                                    'In Progress')">
+                                        View
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+
+                            <tr data-status="Pending" data-category="Road">
+
+                                <td>#GC107</td>
+                                <td>Arjun</td>
+                                <td>Road</td>
+                                <td>Road damaged near entrance</td>
+                                <td>Officer Kumar</td>
+
+                                <td>
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    <button class="btn btn-blue" onclick="viewComplaint(
+                                    'GC107',
+                                    'Arjun',
+                                    'Road',
+                                    'Road damaged near entrance',
+                                    'Pending')">
+                                        View
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+
+                            <tr data-status="Resolved" data-category="Water">
+
+                                <td>#GC110</td>
+                                <td>Ramesh</td>
+                                <td>Water</td>
+                                <td>Pipeline leakage</td>
+                                <td>Officer Suresh</td>
+
+                                <td>
+                                    <span class="status resolved">
+                                        Resolved
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    <button class="btn btn-blue" onclick="viewComplaint(
+                                    'GC110',
+                                    'Ramesh',
+                                    'Water',
+                                    'Pipeline leakage',
+                                    'Resolved')">
+                                        View
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     USERS
+================================================= -->
+
+        <section class="page" id="users">
+
+            <button class="page-close" onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>Manage Users</h2>
+
+                <p>
+                    Manage citizens and officers registered in GramaSathi.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="filters">
+
+                    <input class="search" id="userSearch" placeholder="🔍 Search users..." oninput="filterUsers()">
+
+
+                    <select id="userType" onchange="filterUsers()">
+
+                        <option value="all">
+                            All Users
+                        </option>
+
+                        <option value="Citizen">
+                            Citizens
+                        </option>
+
+                        <option value="Officer">
+                            Officers
+                        </option>
+
+                    </select>
+
+
+                    <button class="btn btn-green" onclick="addUser()">
+                        + Add User
+                    </button>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Mobile</th>
+                                <th>Role</th>
+                                <th>Village</th>
+                                <th>Status</th>
+                                <th>Action</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="userTable">
+
+                            <tr data-role="Citizen">
+
+                                <td>USR001</td>
+                                <td>Ravi Kumar</td>
+                                <td>9876543210</td>
+                                <td>Citizen</td>
+                                <td>Village A</td>
+
+                                <td>
+                                    <span class="status active-status">
+                                        Active
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="userAction(this,'Ravi Kumar')">
+                                        Manage
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr data-role="Citizen">
+
+                                <td>USR002</td>
+                                <td>Priya</td>
+                                <td>9876501234</td>
+                                <td>Citizen</td>
+                                <td>Village B</td>
+
+                                <td>
+                                    <span class="status active-status">
+                                        Active
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="userAction(this,'Priya')">
+                                        Manage
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr data-role="Officer">
+
+                                <td>OFF001</td>
+                                <td>Officer Suresh</td>
+                                <td>9876543000</td>
+                                <td>Officer</td>
+                                <td>Village A</td>
+
+                                <td>
+                                    <span class="status active-status">
+                                        Active
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="userAction(this,'Officer Suresh')">
+                                        Manage
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr data-role="Officer">
+
+                                <td>OFF002</td>
+                                <td>Officer Kumar</td>
+                                <td>9876543222</td>
+                                <td>Officer</td>
+                                <td>Village C</td>
+
+                                <td>
+                                    <span class="status blocked">
+                                        Blocked
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-blue" onclick="userAction(this,'Officer Kumar')">
+                                        Manage
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     SERVICES
+================================================= -->
+
+        <section class="page" id="services">
+
+            <button class="page-close" onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>Manage Services</h2>
+
+                <p>
+                    Manage services available to citizens.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>Available Services</h3>
+
+                    <button class="btn btn-green" onclick="addService()">
+                        + Add Service
+                    </button>
+
+                </div>
+
+
+                <div class="service-grid">
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            💧
+                        </div>
+
+                        <h3>Water Supply</h3>
+
+                        <p>
+                            Report water supply problems,
+                            pipeline issues and related complaints.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                        <br><br>
+
+                        <button class="btn btn-blue" onclick="editService('Water Supply')">
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            💡
+                        </div>
+
+                        <h3>Electricity</h3>
+
+                        <p>
+                            Report street light and electricity
+                            related problems.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                        <br><br>
+
+                        <button class="btn btn-blue" onclick="editService('Electricity')">
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            🛣️
+                        </div>
+
+                        <h3>Roads</h3>
+
+                        <p>
+                            Report damaged roads, potholes and
+                            village transportation issues.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                        <br><br>
+
+                        <button class="btn btn-blue" onclick="editService('Roads')">
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            🗑️
+                        </div>
+
+                        <h3>Sanitation</h3>
+
+                        <p>
+                            Report garbage collection and
+                            sanitation related issues.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                        <br><br>
+
+                        <button class="btn btn-blue" onclick="editService('Sanitation')">
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            🏥
+                        </div>
+
+                        <h3>Health</h3>
+
+                        <p>
+                            Access and report basic village
+                            health service issues.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                        <br><br>
+
+                        <button class="btn btn-blue" onclick="editService('Health')">
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            🏫
+                        </div>
+
+                        <h3>Education</h3>
+
+                        <p>
+                            Manage complaints related to
+                            village schools and education.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                        <br><br>
+
+                        <button class="btn btn-blue" onclick="editService('Education')">
+                            Edit
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     NOTIFICATIONS
+================================================= -->
+
+        <section class="page" id="notifications">
+
+            <button class="page-close" onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>Notifications</h2>
+
+                <p>
+                    Monitor important system notifications and alerts.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>Recent Notifications</h3>
+
+                    <button class="btn btn-green" onclick="markAllRead()">
+                        Mark All Read
+                    </button>
+
+                </div>
+
+
+                <div id="notificationList">
+
+
+                    <div class="notification unread">
+
+                        <div>
+
+                            <h4>New Complaint Received</h4>
+
+                            <p>
+                                New complaint #GC107 was submitted by a citizen.
+                            </p>
+
+                        </div>
+
+                        <button class="btn btn-gray" onclick="markRead(this)">
+                            Mark Read
+                        </button>
+
+                    </div>
+
+
+                    <div class="notification unread">
+
+                        <div>
+
+                            <h4>Officer Action Required</h4>
+
+                            <p>
+                                Complaint #GC101 is waiting for officer verification.
+                            </p>
+
+                        </div>
+
+                        <button class="btn btn-gray" onclick="markRead(this)">
+                            Mark Read
+                        </button>
+
+                    </div>
+
+
+                    <div class="notification">
+
+                        <div>
+
+                            <h4>Complaint Resolved</h4>
+
+                            <p>
+                                Complaint #GC110 has been successfully resolved.
+                            </p>
+
+                        </div>
+
+                        <button class="btn btn-gray" onclick="deleteNotification(this)">
+                            Delete
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     ACTIVITY
+================================================= -->
+
+        <section class="page" id="activity">
+
+            <button class="page-close" onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>Activity Log</h2>
+
+                <p>
+                    Track important activities performed in the admin module.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <p>
+                            Complaint <strong>#GC110</strong>
+                            was marked as resolved.
+                        </p>
+
+                        <small>
+                            Today, 10:35 AM
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        👤
+                    </div>
+
+                    <div>
+
+                        <p>
+                            Officer Suresh account was updated.
+                        </p>
+
+                        <small>
+                            Today, 09:50 AM
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        🛠️
+                    </div>
+
+                    <div>
+
+                        <p>
+                            Water Supply service was edited.
+                        </p>
+
+                        <small>
+                            Yesterday, 05:15 PM
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        🔔
+                    </div>
+
+                    <div>
+
+                        <p>
+                            System notification was sent to officers.
+                        </p>
+
+                        <small>
+                            Yesterday, 02:20 PM
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+     ADMIN PROFILE
+================================================= -->
+
+        <section class="page" id="profile">
+
+            <button class="page-close" onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>Admin Profile</h2>
+
+                <p>
+                    Manage your administrator information.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="profile-grid">
+
+
+                    <div>
+
+                        <div class="profile-photo" id="profilePhoto">
+                            👨‍💼
+                        </div>
+
+                        <br>
+
+                        <input type="file" id="profileImage" accept="image/*" onchange="changeProfileImage(this)">
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="profile-form">
+
+
+                            <div class="form-group">
+
+                                <label>Full Name</label>
+
+                                <input id="adminName" value="Admin">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Admin ID</label>
+
+                                <input id="adminId" value="ADM-1001">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Department</label>
+
+                                <input id="adminDepartment" value="GramaSathi Administration">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Mobile Number</label>
+
+                                <input id="adminMobile" value="9876543210">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Email</label>
+
+                                <input id="adminEmail" value="admin@gramasathi.com">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Role</label>
+
+                                <input value="System Administrator" readonly>
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <label>Office Address</label>
+
+                                <textarea id="adminAddress">GramaSathi Administration Office</textarea>
+
+                            </div>
+
+                        </div>
+
+
+                        <br>
+
+                        <button class="btn btn-green" onclick="saveProfile()">
+                            💾 Save Profile
+                        </button>
+
+
+                        <button class="btn btn-purple" onclick="changePassword()">
+                            🔐 Change Password
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =================================================
+     MODAL
+================================================= -->
+
+    <div class="modal" id="modal">
+
+        <div class="modal-box">
+
+            <button class="modal-close" onclick="closeModal()">
+                ×
+            </button>
+
+            <div id="modalContent"></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="toast" id="toast">
+    </div>
+
+
+    <script>
+
+        /* =================================================
+           SIDEBAR
+        ================================================= */
+
+        function openSidebar() {
+
+            document
+                .getElementById("sidebar")
+                .classList.add("active");
+
+            document
+                .getElementById("overlay")
+                .classList.add("active");
+        }
+
+
+        function closeSidebar() {
+
+            document
+                .getElementById("sidebar")
+                .classList.remove("active");
+
+            document
+                .getElementById("overlay")
+                .classList.remove("active");
+        }
+
+
+        /* =================================================
+           PAGE NAVIGATION
+        ================================================= */
+
+        function showPage(pageId, button) {
+
+            document
+                .querySelectorAll(".page")
+                .forEach(page => {
+                    page.classList.remove("active");
+                });
+
+
+            const page =
+                document.getElementById(pageId);
+
+
+            if (page) {
+                page.classList.add("active");
+            }
+
+
+            document
+                .querySelectorAll(".sidebar-menu button")
+                .forEach(btn => {
+                    btn.classList.remove("active");
+                });
+
+
+            if (button) {
+                button.classList.add("active");
+            }
+
+
+            closeSidebar();
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+
+
+        /* =================================================
+           EVERY PAGE CROSS → DASHBOARD
+        ================================================= */
+
+        function closeOpenedPage() {
+
+            document
+                .querySelectorAll(".page")
+                .forEach(page => {
+                    page.classList.remove("active");
+                });
+
+
+            document
+                .getElementById("dashboard")
+                .classList.add("active");
+
+
+            document
+                .querySelectorAll(".sidebar-menu button")
+                .forEach(btn => {
+                    btn.classList.remove("active");
+                });
+
+
+            const dashboardButton =
+                document.querySelector(
+                    '.sidebar-menu button[onclick*="dashboard"]'
+                );
+
+
+            if (dashboardButton) {
+                dashboardButton.classList.add("active");
+            }
+
+
+            closeSidebar();
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+
+
+        /* =================================================
+           COMPLAINT FILTER
+        ================================================= */
+
+        function filterComplaints() {
+
+            const search =
+                document
+                    .getElementById("complaintSearch")
+                    .value
+                    .toLowerCase();
+
+
+            const status =
+                document
+                    .getElementById("complaintStatus")
+                    .value;
+
+
+            const category =
+                document
+                    .getElementById("complaintCategory")
+                    .value;
+
+
+            document
+                .querySelectorAll("#complaintTable tr")
+                .forEach(row => {
+
+                    const text =
+                        row.innerText.toLowerCase();
+
+                    const rowStatus =
+                        row.dataset.status;
+
+                    const rowCategory =
+                        row.dataset.category;
+
+
+                    const searchMatch =
+                        text.includes(search);
+
+                    const statusMatch =
+                        status === "all" ||
+                        rowStatus === status;
+
+                    const categoryMatch =
+                        category === "all" ||
+                        rowCategory === category;
+
+
+                    row.style.display =
+                        searchMatch &&
+                            statusMatch &&
+                            categoryMatch
+                            ? ""
+                            : "none";
+
+                });
+        }
+
+
+        /* =================================================
+           COMPLAINT DETAILS
+        ================================================= */
+
+        function viewComplaint(
+            id,
+            citizen,
+            category,
+            complaint,
+            status
+        ) {
+
+            openModal(`
+
+        <h2>Complaint Details</h2>
+
+        <div class="detail-row">
+            <strong>Complaint ID</strong>
+            <span>#${id}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Citizen</strong>
+            <span>${citizen}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Category</strong>
+            <span>${category}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Complaint</strong>
+            <span>${complaint}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Status</strong>
+            <span>${status}</span>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Update Status</label>
+
+            <select id="newComplaintStatus"
+                    style="width:100%;">
+
+                <option ${status === "Pending" ? "selected" : ""}>
+                    Pending
+                </option>
+
+                <option ${status === "In Progress" ? "selected" : ""}>
+                    In Progress
+                </option>
+
+                <option ${status === "Resolved" ? "selected" : ""}>
+                    Resolved
+                </option>
+
+            </select>
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Admin Remarks</label>
+
+            <textarea id="adminRemarks"
+                      placeholder="Enter remarks..."></textarea>
+
+        </div>
+
+        <br>
+
+        <button class="btn btn-green"
+                onclick="updateComplaint('${id}')">
+            Update Complaint
+        </button>
+
+    `);
+        }
+
+
+        /* =================================================
+           UPDATE COMPLAINT
+        ================================================= */
+
+        function updateComplaint(id) {
+
+            const newStatus =
+                document
+                    .getElementById("newComplaintStatus")
+                    .value;
+
+
+            document
+                .querySelectorAll("#complaintTable tr")
+                .forEach(row => {
+
+                    if (row.innerText.includes(id)) {
+
+                        row.dataset.status =
+                            newStatus;
+
+
+                        const statusElement =
+                            row.querySelector(
+                                "td:nth-child(6) .status"
+                            );
+
+
+                        if (statusElement) {
+
+                            statusElement.textContent =
+                                newStatus;
+
+                            statusElement.className =
+                                "status " +
+                                getStatusClass(newStatus);
+
+                        }
+
+                    }
+
+                });
+
+
+            closeModal();
+
+
+            showToast(
+                "Complaint #" +
+                id +
+                " updated successfully"
+            );
+        }
+
+
+        function getStatusClass(status) {
+
+            if (status === "Pending") {
+                return "pending";
+            }
+
+            if (status === "In Progress") {
+                return "progress";
+            }
+
+            if (status === "Resolved") {
+                return "resolved";
+            }
+
+            return "pending";
+        }
+
+
+        /* =================================================
+           USERS
+        ================================================= */
+
+        function filterUsers() {
+
+            const search =
+                document
+                    .getElementById("userSearch")
+                    .value
+                    .toLowerCase();
+
+
+            const type =
+                document
+                    .getElementById("userType")
+                    .value;
+
+
+            document
+                .querySelectorAll("#userTable tr")
+                .forEach(row => {
+
+                    const text =
+                        row.innerText.toLowerCase();
+
+                    const role =
+                        row.dataset.role;
+
+
+                    const searchMatch =
+                        text.includes(search);
+
+                    const typeMatch =
+                        type === "all" ||
+                        role === type;
+
+
+                    row.style.display =
+                        searchMatch &&
+                            typeMatch
+                            ? ""
+                            : "none";
+
+                });
+        }
+
+
+        function addUser() {
+
+            openModal(`
+
+        <h2>Add New User</h2>
+
+        <div class="form-group">
+
+            <label>Name</label>
+
+            <input id="newUserName"
+                   placeholder="Enter full name">
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Mobile Number</label>
+
+            <input id="newUserMobile"
+                   placeholder="Enter mobile number">
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Role</label>
+
+            <select id="newUserRole"
+                    style="width:100%;">
+
+                <option>Citizen</option>
+                <option>Officer</option>
+
+            </select>
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Village</label>
+
+            <input id="newUserVillage"
+                   placeholder="Enter village">
+
+        </div>
+
+        <br>
+
+        <button class="btn btn-green"
+                onclick="saveNewUser()">
+            Add User
+        </button>
+
+    `);
+        }
+
+
+        function saveNewUser() {
+
+            const name =
+                document
+                    .getElementById("newUserName")
+                    .value.trim();
+
+            const mobile =
+                document
+                    .getElementById("newUserMobile")
+                    .value.trim();
+
+            const role =
+                document
+                    .getElementById("newUserRole")
+                    .value;
+
+            const village =
+                document
+                    .getElementById("newUserVillage")
+                    .value.trim();
+
+
+            if (!name || !mobile || !village) {
+
+                showToast(
+                    "Please fill all user details"
+                );
+
+                return;
+            }
+
+
+            const id =
+                role === "Officer"
+                    ? "OFF" + Date.now().toString().slice(-4)
+                    : "USR" + Date.now().toString().slice(-4);
+
+
+            const row =
+                document.createElement("tr");
+
+
+            row.dataset.role =
+                role;
+
+
+            row.innerHTML = `
+
+        <td>${id}</td>
+
+        <td>${name}</td>
+
+        <td>${mobile}</td>
+
+        <td>${role}</td>
+
+        <td>${village}</td>
+
+        <td>
+            <span class="status active-status">
+                Active
+            </span>
+        </td>
+
+        <td>
+            <button class="btn btn-blue"
+                    onclick="userAction(this,'${name}')">
+                Manage
+            </button>
+        </td>
+
+    `;
+
+
+            document
+                .getElementById("userTable")
+                .appendChild(row);
+
+
+            closeModal();
+
+
+            showToast(
+                "User added successfully"
+            );
+        }
+
+
+        function userAction(button, name) {
+
+            openModal(`
+
+        <h2>Manage User</h2>
+
+        <p style="color:var(--muted);margin:15px 0;">
+            Manage account: <strong>${name}</strong>
+        </p>
+
+        <button class="btn btn-green"
+                onclick="showToast('User details updated')">
+            Edit User
+        </button>
+
+        <button class="btn btn-orange"
+                onclick="showToast('Password reset request sent')">
+            Reset Password
+        </button>
+
+        <button class="btn btn-red"
+                onclick="blockUser()">
+            Block User
+        </button>
+
+    `);
+        }
+
+
+        function blockUser() {
+
+            closeModal();
+
+            showToast(
+                "User account action completed"
+            );
+        }
+
+
+        /* =================================================
+           SERVICES
+        ================================================= */
+
+        function addService() {
+
+            openModal(`
+
+        <h2>Add Service</h2>
+
+        <div class="form-group">
+
+            <label>Service Name</label>
+
+            <input id="newService"
+                   placeholder="Enter service name">
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Description</label>
+
+            <textarea id="newServiceDescription"
+                      placeholder="Enter service description"></textarea>
+
+        </div>
+
+        <br>
+
+        <button class="btn btn-green"
+                onclick="saveService()">
+            Add Service
+        </button>
+
+    `);
+        }
+
+
+        function saveService() {
+
+            const name =
+                document
+                    .getElementById("newService")
+                    .value.trim();
+
+
+            if (!name) {
+
+                showToast(
+                    "Enter service name"
+                );
+
+                return;
+            }
+
+
+            closeModal();
+
+
+            showToast(
+                name +
+                " service added successfully"
+            );
+        }
+
+
+        function editService(service) {
+
+            openModal(`
+
+        <h2>Edit Service</h2>
+
+        <div class="form-group">
+
+            <label>Service Name</label>
+
+            <input value="${service}"
+                   id="editServiceName">
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Description</label>
+
+            <textarea>Manage ${service} related citizen complaints and services.</textarea>
+
+        </div>
+
+        <br>
+
+        <button class="btn btn-green"
+                onclick="saveServiceEdit()">
+            Save Changes
+        </button>
+
+    `);
+        }
+
+
+        function saveServiceEdit() {
+
+            closeModal();
+
+            showToast(
+                "Service updated successfully"
+            );
+        }
+
+
+        /* =================================================
+           NOTIFICATIONS
+        ================================================= */
+
+        function markRead(button) {
+
+            const notification =
+                button.closest(".notification");
+
+
+            notification
+                .classList
+                .remove("unread");
+
+
+            button.textContent =
+                "Delete";
+
+
+            button.onclick =
+                function () {
+                    deleteNotification(this);
+                };
+
+
+            showToast(
+                "Notification marked as read"
+            );
+        }
+
+
+        function deleteNotification(button) {
+
+            button
+                .closest(".notification")
+                .remove();
+
+
+            showToast(
+                "Notification deleted"
+            );
+        }
+
+
+        function markAllRead() {
+
+            document
+                .querySelectorAll(".notification")
+                .forEach(notification => {
+
+                    notification
+                        .classList
+                        .remove("unread");
+
+                    const button =
+                        notification.querySelector("button");
+
+
+                    if (button) {
+
+                        button.textContent =
+                            "Delete";
+
+                        button.onclick =
+                            function () {
+                                deleteNotification(this);
+                            };
+
+                    }
+
+                });
+
+
+            showToast(
+                "All notifications marked as read"
+            );
+        }
+
+
+        /* =================================================
+           PROFILE
+        ================================================= */
+
+        function saveProfile() {
+
+            const profile = {
+
+                name:
+                    document.getElementById("adminName").value,
+
+                id:
+                    document.getElementById("adminId").value,
+
+                department:
+                    document.getElementById("adminDepartment").value,
+
+                mobile:
+                    document.getElementById("adminMobile").value,
+
+                email:
+                    document.getElementById("adminEmail").value,
+
+                address:
+                    document.getElementById("adminAddress").value
+
+            };
+
+
+            localStorage.setItem(
+                "gramasathiAdminProfile",
+                JSON.stringify(profile)
+            );
+
+
+            showToast(
+                "Admin profile saved successfully"
+            );
+        }
+
+
+        function loadProfile() {
+
+            const saved =
+                localStorage.getItem(
+                    "gramasathiAdminProfile"
+                );
+
+
+            if (!saved) {
+                return;
+            }
+
+
+            const profile =
+                JSON.parse(saved);
+
+
+            document.getElementById("adminName").value =
+                profile.name || "";
+
+            document.getElementById("adminId").value =
+                profile.id || "";
+
+            document.getElementById("adminDepartment").value =
+                profile.department || "";
+
+            document.getElementById("adminMobile").value =
+                profile.mobile || "";
+
+            document.getElementById("adminEmail").value =
+                profile.email || "";
+
+            document.getElementById("adminAddress").value =
+                profile.address || "";
+        }
+
+
+        /* =================================================
+           PROFILE IMAGE
+        ================================================= */
+
+        function changeProfileImage(input) {
+
+            const file =
+                input.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function (event) {
+
+                    document
+                        .getElementById("profilePhoto")
+                        .innerHTML =
+                        `<img src="${event.target.result}">`;
+
+
+                    localStorage.setItem(
+                        "gramasathiAdminImage",
+                        event.target.result
+                    );
+
+                };
+
+
+            reader.readAsDataURL(file);
+        }
+
+
+        function loadProfileImage() {
+
+            const image =
+                localStorage.getItem(
+                    "gramasathiAdminImage"
+                );
+
+
+            if (image) {
+
+                document
+                    .getElementById("profilePhoto")
+                    .innerHTML =
+                    `<img src="${image}">`;
+
+            }
+        }
+
+
+        /* =================================================
+           PASSWORD
+        ================================================= */
+
+        function changePassword() {
+
+            openModal(`
+
+        <h2>Change Password</h2>
+
+        <div class="form-group">
+
+            <label>Current Password</label>
+
+            <input type="password"
+                   id="currentPassword">
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>New Password</label>
+
+            <input type="password"
+                   id="newPassword">
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+
+            <label>Confirm Password</label>
+
+            <input type="password"
+                   id="confirmPassword">
+
+        </div>
+
+        <br>
+
+        <button class="btn btn-green"
+                onclick="savePassword()">
+            Update Password
+        </button>
+
+    `);
+        }
+
+
+        function savePassword() {
+
+            const current =
+                document.getElementById("currentPassword").value;
+
+            const newPassword =
+                document.getElementById("newPassword").value;
+
+            const confirm =
+                document.getElementById("confirmPassword").value;
+
+
+            if (!current || !newPassword || !confirm) {
+
+                showToast(
+                    "Please fill all password fields"
+                );
+
+                return;
+            }
+
+
+            if (newPassword.length < 6) {
+
+                showToast(
+                    "Password must contain at least 6 characters"
+                );
+
+                return;
+            }
+
+
+            if (newPassword !== confirm) {
+
+                showToast(
+                    "Passwords do not match"
+                );
+
+                return;
+            }
+
+
+            closeModal();
+
+
+            showToast(
+                "Password updated successfully"
+            );
+        }
+
+
+        /* =================================================
+           DARK MODE
+        ================================================= */
+
+        function toggleDarkMode() {
+
+            document
+                .body
+                .classList
+                .toggle("dark");
+
+
+            localStorage.setItem(
+                "gramasathiAdminDarkMode",
+                document.body.classList.contains("dark")
+            );
+        }
+
+
+        function loadDarkMode() {
+
+            if (
+                localStorage.getItem(
+                    "gramasathiAdminDarkMode"
+                ) === "true"
+            ) {
+
+                document
+                    .body
+                    .classList
+                    .add("dark");
+
+            }
+        }
+
+
+        /* =================================================
+           MODAL
+        ================================================= */
+
+        function openModal(content) {
+
+            document
+                .getElementById("modalContent")
+                .innerHTML = content;
+
+
+            document
+                .getElementById("modal")
+                .classList
+                .add("active");
+        }
+
+
+        function closeModal() {
+
+            document
+                .getElementById("modal")
+                .classList
+                .remove("active");
+        }
+
+
+        /* =================================================
+           TOAST
+        ================================================= */
+
+        function showToast(message) {
+
+            const toast =
+                document.getElementById("toast");
+
+
+            toast.textContent =
+                message;
+
+
+            toast.classList.add("show");
+
+
+            setTimeout(() => {
+
+                toast.classList.remove("show");
+
+            }, 2500);
+        }
+
+
+        /* =================================================
+           LOGOUT
+        ================================================= */
+
+        function logout() {
+
+            const confirmed =
+                confirm(
+                    "Are you sure you want to logout?"
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            /*
+              Your existing login flow remains separate.
+              Change only login.html if your existing
+              login page has another filename.
+            */
+
+            window.location.href =
+                "login.html";
+        }
+
+
+        /* =================================================
+           ESCAPE
+        ================================================= */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Escape") {
+
+                    closeSidebar();
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           MODAL OUTSIDE CLICK
+        ================================================= */
+
+        document
+            .getElementById("modal")
+            .addEventListener(
+                "click",
+                function (event) {
+
+                    if (event.target === this) {
+                        closeModal();
+                    }
+
+                }
+            );
+
+
+        /* =================================================
+           INITIAL LOAD
+        ================================================= */
+
+        loadProfile();
+        loadProfileImage();
+        loadDarkMode();
+
+    </script>
+
+</body>
+
+</html>
+<script>
+/* GramaSathi Flask + SQLite integration layer */
+const API = '/api';
+const api = async (path, options={}) => {
+  const res = await fetch(API + path, {headers:{'Content-Type':'application/json'}, ...options});
+  const data = await res.json().catch(()=>({}));
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+};
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const statusClass = s => s==='Resolved' ? 'resolved' : s==='In Progress' ? 'progress' : s==='Blocked' || s==='Inactive' ? 'pending' : s==='Active' ? 'active-status' : 'pending';
+function setTableRows(selector, rows) { document.querySelector(selector).innerHTML = rows; }
+async function loadDashboardData(){
+ try {
+  const d=await api('/dashboard');
+  const nums=document.querySelectorAll('#dashboard .stats .stat .number');
+  [d.total,d.pending,d.progress,d.resolved].forEach((n,i)=>{if(nums[i]) nums[i].textContent=n;});
+  const tbody=document.querySelector('#dashboard .two-column table tbody');
+  if(tbody) tbody.innerHTML=d.recent.map(c=>`<tr><td>#${esc(c.code)}</td><td>${esc(c.citizen)}</td><td>${esc(c.category)}</td><td><span class="status ${statusClass(c.status)}">${esc(c.status)}</span></td><td><button class="btn btn-blue" onclick="viewComplaintById(${c.id})">View</button></td></tr>`).join('');
+  const overview=document.querySelectorAll('#dashboard .two-column .activity p');
+  if(overview[0]) overview[0].innerHTML=`<strong>${d.users}</strong> registered users`;
+  if(overview[1]) overview[1].innerHTML=`<strong>${d.services}</strong> available services`;
+ } catch(e){showToast('Could not load dashboard: '+e.message)}
+}
+async function loadComplaints(){
+ try { const rows=await api('/complaints'); window.gsComplaints=rows;
+  setTableRows('#complaintTable',rows.map(c=>`<tr data-status="${esc(c.status)}" data-category="${esc(c.category)}"><td>#${esc(c.code)}</td><td>${esc(c.citizen)}</td><td>${esc(c.category)}</td><td>${esc(c.description)}</td><td>${esc(c.officer||'-')}</td><td><span class="status ${statusClass(c.status)}">${esc(c.status)}</span></td><td><button class="btn btn-blue" onclick="viewComplaintById(${c.id})">View</button></td></tr>`).join(''));
+  if(typeof filterComplaints==='function') filterComplaints();
+ } catch(e){showToast('Could not load complaints: '+e.message)}
+}
+function viewComplaintById(id){const c=(window.gsComplaints||[]).find(x=>x.id===id);if(c)viewComplaint(c.code,c.citizen,c.category,c.description,c.status,c.id,c.officer,c.remarks)}
+function viewComplaint(code,citizen,category,description,status,rowId=null,officer='',remarks=''){
+ const c=(window.gsComplaints||[]).find(x=>x.code===code); rowId=rowId||c?.id;
+ openModal(`<h2>Complaint #${esc(code)}</h2><p style="margin:14px 0"><strong>Citizen:</strong> ${esc(citizen)}</p><p style="margin:14px 0"><strong>Category:</strong> ${esc(category)}</p><p style="margin:14px 0"><strong>Description:</strong> ${esc(description)}</p><div class="form-group"><label>Assigned Officer</label><input id="gsOfficer" value="${esc(officer)}"></div><br><div class="form-group"><label>Update Status</label><select id="newComplaintStatus" style="width:100%"><option ${status==='Pending'?'selected':''}>Pending</option><option ${status==='In Progress'?'selected':''}>In Progress</option><option ${status==='Resolved'?'selected':''}>Resolved</option></select></div><br><div class="form-group"><label>Admin Remarks</label><textarea id="adminRemarks">${esc(remarks)}</textarea></div><br><button class="btn btn-green" onclick="updateComplaint(${rowId})">Update Complaint</button>`);
+}
+async function updateComplaint(id){try{await api('/complaints/'+id,{method:'PATCH',body:JSON.stringify({status:document.getElementById('newComplaintStatus').value,remarks:document.getElementById('adminRemarks').value,officer:document.getElementById('gsOfficer').value})});closeModal();await Promise.all([loadComplaints(),loadDashboardData(),loadActivity()]);showToast('Complaint updated successfully');}catch(e){showToast(e.message)}}
+async function loadUsers(){try{const rows=await api('/users');window.gsUsers=rows;setTableRows('#userTable',rows.map(u=>`<tr data-role="${esc(u.role)}"><td>${esc(u.code)}</td><td>${esc(u.name)}</td><td>${esc(u.mobile)}</td><td>${esc(u.role)}</td><td>${esc(u.village)}</td><td><span class="status ${statusClass(u.status)}">${esc(u.status)}</span></td><td><button class="btn btn-blue" onclick="userActionById(${u.id})">Manage</button></td></tr>`).join(''));filterUsers();}catch(e){showToast(e.message)}}
+function userActionById(id){const u=(window.gsUsers||[]).find(x=>x.id===id);if(!u)return;openModal(`<h2>Manage User</h2><p style="margin:15px 0">Account: <strong>${esc(u.name)}</strong></p><p>Mobile: ${esc(u.mobile)}</p><p>Role: ${esc(u.role)}</p><p>Village: ${esc(u.village)}</p><p>Status: <strong>${esc(u.status)}</strong></p><br><button class="btn ${u.status==='Blocked'?'btn-green':'btn-red'}" onclick="toggleUserStatus(${u.id},'${u.status==='Blocked'?'Active':'Blocked'}')">${u.status==='Blocked'?'Unblock User':'Block User'}</button>`)}
+function userAction(button,name){const u=(window.gsUsers||[]).find(x=>x.name===name);if(u)userActionById(u.id);else showToast('User not found')}
+async function toggleUserStatus(id,status){try{await api('/users/'+id,{method:'PATCH',body:JSON.stringify({status})});closeModal();await Promise.all([loadUsers(),loadDashboardData(),loadActivity()]);showToast('User status changed to '+status)}catch(e){showToast(e.message)}}
+async function saveNewUser(){const data={name:document.getElementById('newUserName').value.trim(),mobile:document.getElementById('newUserMobile').value.trim(),role:document.getElementById('newUserRole').value,village:document.getElementById('newUserVillage').value.trim()};if(!data.name||!data.mobile||!data.village){showToast('Please fill all user details');return}try{await api('/users',{method:'POST',body:JSON.stringify(data)});closeModal();await Promise.all([loadUsers(),loadDashboardData(),loadActivity()]);showToast('User added successfully')}catch(e){showToast(e.message)}}
+async function loadServices(){try{const rows=await api('/services');window.gsServices=rows;const grid=document.querySelector('#services .service-grid');grid.innerHTML=rows.map(s=>`<div class="service-card"><div class="service-icon">${esc(s.icon||'🛠️')}</div><h3>${esc(s.name)}</h3><p>${esc(s.description)}</p><br><span class="status ${statusClass(s.status)}">${esc(s.status)}</span><br><br><button class="btn btn-blue" onclick="editServiceById(${s.id})">Edit</button></div>`).join('')}catch(e){showToast(e.message)}}
+async function saveService(){const name=document.getElementById('newService').value.trim(),description=document.getElementById('newServiceDescription').value.trim();if(!name){showToast('Enter service name');return}try{await api('/services',{method:'POST',body:JSON.stringify({name,description})});closeModal();await Promise.all([loadServices(),loadDashboardData(),loadActivity()]);showToast('Service added successfully')}catch(e){showToast(e.message)}}
+function editServiceById(id){const s=(window.gsServices||[]).find(x=>x.id===id);if(!s)return;openModal(`<h2>Edit Service</h2><div class="form-group"><label>Service Name</label><input id="editServiceName" value="${esc(s.name)}"></div><br><div class="form-group"><label>Description</label><textarea id="editServiceDescription">${esc(s.description)}</textarea></div><br><div class="form-group"><label>Status</label><select id="editServiceStatus"><option ${s.status==='Active'?'selected':''}>Active</option><option ${s.status==='Inactive'?'selected':''}>Inactive</option></select></div><br><button class="btn btn-green" onclick="saveServiceEdit(${s.id})">Save Changes</button>`)}
+function editService(name){const s=(window.gsServices||[]).find(x=>x.name===name);if(s)editServiceById(s.id);else showToast('Service not found')}
+async function saveServiceEdit(id){try{await api('/services/'+id,{method:'PATCH',body:JSON.stringify({name:document.getElementById('editServiceName').value.trim(),description:document.getElementById('editServiceDescription').value.trim(),status:document.getElementById('editServiceStatus').value})});closeModal();await Promise.all([loadServices(),loadDashboardData(),loadActivity()]);showToast('Service updated successfully')}catch(e){showToast(e.message)}}
+async function loadNotifications(){try{const rows=await api('/notifications');window.gsNotifications=rows;document.getElementById('notificationList').innerHTML=rows.map(n=>`<div class="notification ${n.is_read?'':'unread'}"><div><h4>${esc(n.title)}</h4><p>${esc(n.message)}</p><small>${esc(n.created_at)}</small></div><button class="btn btn-gray" onclick="${n.is_read?`deleteNotificationById(${n.id})`:`markNotificationRead(${n.id})`}">${n.is_read?'Delete':'Mark Read'}</button></div>`).join('')||'<p>No notifications.</p>'}catch(e){showToast(e.message)}}
+async function markNotificationRead(id){try{await api('/notifications/'+id,{method:'PATCH',body:JSON.stringify({action:'read'})});await Promise.all([loadNotifications(),loadActivity()]);showToast('Notification marked as read')}catch(e){showToast(e.message)}}
+async function deleteNotificationById(id){try{await api('/notifications/'+id,{method:'PATCH',body:JSON.stringify({action:'delete'})});await Promise.all([loadNotifications(),loadActivity()]);showToast('Notification deleted')}catch(e){showToast(e.message)}}
+function markRead(button){const n=button.closest('.notification');const idx=Array.from(n.parentNode.children).indexOf(n);const item=(window.gsNotifications||[])[idx];if(item)markNotificationRead(item.id)}
+function deleteNotification(button){const n=button.closest('.notification');const idx=Array.from(n.parentNode.children).indexOf(n);const item=(window.gsNotifications||[])[idx];if(item)deleteNotificationById(item.id)}
+async function markAllRead(){try{await api('/notifications/read-all',{method:'POST'});await Promise.all([loadNotifications(),loadActivity()]);showToast('All notifications marked as read')}catch(e){showToast(e.message)}}
+async function saveProfile(){const profile={name:document.getElementById('adminName').value,id:document.getElementById('adminId').value,department:document.getElementById('adminDepartment').value,mobile:document.getElementById('adminMobile').value,email:document.getElementById('adminEmail').value,address:document.getElementById('adminAddress').value};try{await api('/profile',{method:'PUT',body:JSON.stringify(profile)});showToast('Admin profile saved successfully')}catch(e){showToast(e.message)}}
+async function loadProfileFromApi(){try{const p=await api('/profile');for(const [id,key] of [['adminName','name'],['adminId','id'],['adminDepartment','department'],['adminMobile','mobile'],['adminEmail','email'],['adminAddress','address']])document.getElementById(id).value=p[key]||''}catch(e){showToast(e.message)}}
+async function loadActivity(){try{const rows=await api('/activity');const section=document.querySelector('#activity .card');section.innerHTML=rows.map(a=>`<div class="activity"><div class="activity-icon">✓</div><div><p><strong>${esc(a.action)}</strong> ${esc(a.details)}</p><small>${esc(a.created_at)}</small></div></div>`).join('')||'<p>No activity yet.</p>'}catch(e){showToast(e.message)}}
+// Override filters so filtering continues to work with server-rendered rows.
+function filterComplaints(){const search=(document.getElementById('complaintSearch')?.value||'').toLowerCase(),status=document.getElementById('complaintStatus')?.value||'all',category=document.getElementById('complaintCategory')?.value||'all';document.querySelectorAll('#complaintTable tr').forEach(r=>{const ok=r.innerText.toLowerCase().includes(search)&&(status==='all'||r.dataset.status===status)&&(category==='all'||r.dataset.category===category);r.style.display=ok?'':'none'})}
+function filterUsers(){const search=(document.getElementById('userSearch')?.value||'').toLowerCase(),role=document.getElementById('userType')?.value||'all';document.querySelectorAll('#userTable tr').forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(search)&&(role==='all'||r.dataset.role===role)?'':'none'})}
+// When navigating to a module, refresh its current database records.
+const oldShowPage=showPage;
+showPage=function(pageId,button){oldShowPage(pageId,button);if(pageId==='complaints')loadComplaints();if(pageId==='users')loadUsers();if(pageId==='services')loadServices();if(pageId==='notifications')loadNotifications();if(pageId==='activity')loadActivity();if(pageId==='profile')loadProfileFromApi();};
+document.addEventListener('DOMContentLoaded',()=>{});
+Promise.all([loadDashboardData(),loadComplaints(),loadUsers(),loadServices(),loadNotifications(),loadProfileFromApi(),loadActivity()]);
+</script>

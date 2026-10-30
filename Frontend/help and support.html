@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GramaSathi - Help & Support</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f8f3;
+            color: #222;
+        }
+
+        /* HEADER */
+
+        .header {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #087c48;
+        }
+
+        .back-arrow {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            font-size: 32px;
+            color: #222;
+            cursor: pointer;
+
+            line-height: 1;
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 7px;
+
+            transition: 0.2s;
+        }
+
+        .back-arrow:hover {
+            background: #eef7f1;
+            color: #087c48;
+        }
+
+        /* MAIN */
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto 60px;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .title h2 {
+            font-size: 27px;
+            margin-bottom: 8px;
+            color: #176b3a;
+        }
+
+        .title p {
+            color: #666;
+            font-size: 15px;
+        }
+
+        /* COMMON BOX */
+
+        .support-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .support-box h3 {
+            color: #187d45;
+            margin-bottom: 18px;
+        }
+
+        /* FAQ */
+
+        .faq {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+
+        .faq:last-child {
+            border-bottom: none;
+        }
+
+        .question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            gap: 15px;
+        }
+
+        .question p {
+            line-height: 1.4;
+        }
+
+        .question span {
+            color: #168b4b;
+            font-size: 22px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .answer {
+            display: none;
+            color: #666;
+            line-height: 1.6;
+            padding-top: 10px;
+            font-size: 14px;
+        }
+
+        /* CONTACT */
+
+        .contact-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .contact-card {
+            flex: 1;
+            min-width: 220px;
+            background: #fafdfb;
+            padding: 22px;
+            text-align: center;
+            border-radius: 12px;
+            border: 1px solid #e2eee6;
+        }
+
+        .icon {
+            width: 55px;
+            height: 55px;
+            margin: 0 auto 12px;
+
+            border-radius: 50%;
+            background: #e5f5ea;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 27px;
+        }
+
+        .contact-card h4 {
+            margin-bottom: 8px;
+        }
+
+        .contact-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .contact-card a {
+            color: #168b4b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact-card a:hover {
+            text-decoration: underline;
+        }
+
+        /* SUPPORT BUTTON */
+
+        .complaint-btn {
+            display: block;
+            margin: 25px auto 0;
+
+            background: #168b4b;
+            color: white;
+
+            border: none;
+            padding: 13px 25px;
+            border-radius: 7px;
+
+            cursor: pointer;
+            font-size: 15px;
+
+            transition: 0.2s;
+        }
+
+        .complaint-btn:hover {
+            background: #106b39;
+        }
+
+        /* SUPPORT FORM */
+
+        .support-form {
+            display: none;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #ddd;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+
+            border: 1px solid #ccc;
+            border-radius: 7px;
+
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #168b4b;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .submit-btn,
+        .cancel-btn {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .submit-btn {
+            background: #168b4b;
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background: #106b39;
+        }
+
+        .cancel-btn {
+            background: #eeeeee;
+            color: #333;
+        }
+
+        .cancel-btn:hover {
+            background: #dddddd;
+        }
+
+        /* ERROR */
+
+        .form-error {
+            display: none;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #fff0f0;
+            color: #b3261e;
+            border-left: 4px solid #d93025;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        /* SUCCESS */
+
+        .success-box {
+            display: none;
+            margin-top: 20px;
+            padding: 16px;
+
+            background: #e8f7ed;
+            border-left: 5px solid #168b4b;
+            border-radius: 7px;
+
+            color: #176b3a;
+            line-height: 1.6;
+        }
+
+        .success-box strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* QUICK HELP */
+
+        .quick-help {
+            background: #eef8f1;
+            border: 1px solid #d6eadc;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .quick-help h4 {
+            color: #176b3a;
+            margin-bottom: 7px;
+        }
+
+        .quick-help p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width: 700px) {
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .back-arrow {
+                left: 10px;
+            }
+
+            .container {
+                width: 94%;
+                margin-top: 20px;
+            }
+
+            .support-box {
+                padding: 20px;
+            }
+
+            .contact-container {
+                flex-direction: column;
+            }
+
+            .contact-card {
+                min-width: 100%;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .submit-btn,
+            .cancel-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <button class="back-arrow" onclick="goBack()" aria-label="Back to Dashboard">
+            ←
+        </button>
+
+        <h1>GRAMSATHI</h1>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="container">
+
+        <div class="title">
+
+            <h2>Help & Support</h2>
+
+            <p>
+                Find answers or get help with GramaSathi services
+            </p>
+
+        </div>
+
+
+        <!-- FAQ -->
+
+        <div class="support-box">
+
+            <h3>Frequently Asked Questions</h3>
+
+
+            <div class="faq">
+
+                <div class="question" onclick="toggleAnswer(0)">
+
+                    <p>
+                        How can I raise a complaint?
+                    </p>
+
+                    <span id="icon0">+</span>
+
+                </div>
+
+                <div class="answer" id="answer0">
+
+                    Go to the <strong>Raise Complaint</strong> section
+                    from the dashboard. Enter the complaint details,
+                    provide the location and submit your complaint.
+
+                </div>
+
+            </div>
+
+
+            <div class="faq">
+
+                <div class="question" onclick="toggleAnswer(1)">
+
+                    <p>
+                        How can I track my complaint?
+                    </p>
+
+                    <span id="icon1">+</span>
+
+                </div>
+
+                <div class="answer" id="answer1">
+
+                    Open the <strong>My Complaints</strong> section to
+                    view your complaints and select a complaint to see
+                    its current status and tracking timeline.
+
+                </div>
+
+            </div>
+
+
+            <div class="faq">
+
+                <div class="question" onclick="toggleAnswer(2)">
+
+                    <p>
+                        What does Pending mean?
+                    </p>
+
+                    <span id="icon2">+</span>
+
+                </div>
+
+                <div class="answer" id="answer2">
+
+                    Pending means your complaint has been successfully
+                    submitted but action has not yet started.
+
+                </div>
+
+            </div>
+
+
+            <div class="faq">
+
+                <div class="question" onclick="toggleAnswer(3)">
+
+                    <p>
+                        What does In Progress mean?
+                    </p>
+
+                    <span id="icon3">+</span>
+
+                </div>
+
+                <div class="answer" id="answer3">
+
+                    In Progress means the concerned officer has received
+                    the complaint and action is currently being taken.
+
+                </div>
+
+            </div>
+
+
+            <div class="faq">
+
+                <div class="question" onclick="toggleAnswer(4)">
+
+                    <p>
+                        What does Resolved mean?
+                    </p>
+
+                    <span id="icon4">+</span>
+
+                </div>
+
+                <div class="answer" id="answer4">
+
+                    Resolved means the reported issue has been addressed
+                    or completed by the concerned authority.
+
+                </div>
+
+            </div>
+
+
+            <div class="faq">
+
+                <div class="question" onclick="toggleAnswer(5)">
+
+                    <p>
+                        Where can I see my notifications?
+                    </p>
+
+                    <span id="icon5">+</span>
+
+                </div>
+
+                <div class="answer" id="answer5">
+
+                    Open the <strong>Notifications</strong> section from
+                    the dashboard. You can see complaint submission,
+                    status updates and other notifications there.
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONTACT SUPPORT -->
+
+        <div class="support-box">
+
+            <h3>Contact Support</h3>
+
+
+            <div class="contact-container">
+
+
+                <!-- CALL -->
+
+                <div class="contact-card">
+
+                    <div class="icon">
+                        📞
+                    </div>
+
+                    <h4>Call Us</h4>
+
+                    <p>
+                        <a href="tel:18001234567">
+                            1800-123-4567
+                        </a>
+                    </p>
+
+                    <p>
+                        Available 9 AM - 6 PM
+                    </p>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="contact-card">
+
+                    <div class="icon">
+                        ✉️
+                    </div>
+
+                    <h4>Email Us</h4>
+
+                    <p>
+                        <a href="mailto:support@gramsathi.com">
+                            support@gramsathi.com
+                        </a>
+                    </p>
+
+                    <p>
+                        We will respond as soon as possible.
+                    </p>
+
+                </div>
+
+
+                <!-- REQUEST -->
+
+                <div class="contact-card">
+
+                    <div class="icon">
+                        💬
+                    </div>
+
+                    <h4>Support Request</h4>
+
+                    <p>
+                        Submit your issue through the support request
+                        form below.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUICK HELP -->
+
+            <div class="quick-help">
+
+                <h4>
+                    💡 Before submitting a request
+                </h4>
+
+                <p>
+                    For complaint-related issues, first check
+                    <strong>My Complaints</strong> and
+                    <strong>Notifications</strong> to see the latest
+                    status of your complaint.
+                </p>
+
+            </div>
+
+
+            <!-- OPEN FORM -->
+
+            <button class="complaint-btn"
+                id="openRequestBtn"
+                onclick="openRequestForm()">
+
+                Submit Support Request
+
+            </button>
+
+
+            <!-- SUPPORT FORM -->
+
+            <div class="support-form" id="supportForm">
+
+                <h3>
+                    Submit a Support Request
+                </h3>
+
+
+                <div class="form-error" id="formError">
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="supportName">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="supportName"
+                        placeholder="Enter your name">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="supportContact">
+                        Mobile / Email
+                    </label>
+
+                    <input
+                        type="text"
+                        id="supportContact"
+                        placeholder="Enter mobile number or email">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="supportType">
+                        Issue Type
+                    </label>
+
+                    <select id="supportType">
+
+                        <option value="">
+                            Select issue type
+                        </option>
+
+                        <option value="Complaint">
+                            Complaint Related
+                        </option>
+
+                        <option value="Login">
+                            Login / Account
+                        </option>
+
+                        <option value="Profile">
+                            Profile
+                        </option>
+
+                        <option value="Notification">
+                            Notifications
+                        </option>
+
+                        <option value="Technical">
+                            Technical Issue
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="supportMessage">
+                        Describe Your Issue
+                    </label>
+
+                    <textarea
+                        id="supportMessage"
+                        placeholder="Explain your issue..."></textarea>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        class="submit-btn"
+                        onclick="submitRequest()">
+
+                        Submit Request
+
+                    </button>
+
+                    <button
+                        class="cancel-btn"
+                        onclick="closeRequestForm()">
+
+                        Cancel
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="success-box"
+                    id="successBox">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* FAQ */
+
+        function toggleAnswer(index) {
+
+            const answer =
+                document.getElementById("answer" + index);
+
+            const icon =
+                document.getElementById("icon" + index);
+
+
+            if (answer.style.display === "block") {
+
+                answer.style.display = "none";
+
+                icon.textContent = "+";
+
+            } else {
+
+                answer.style.display = "block";
+
+                icon.textContent = "−";
+
+            }
+
+        }
+
+
+        /* BACK */
+
+        function goBack() {
+
+            window.location.href = "dashboard.html";
+
+        }
+
+
+        /* OPEN SUPPORT FORM */
+
+        function openRequestForm() {
+
+            const form =
+                document.getElementById("supportForm");
+
+            const button =
+                document.getElementById("openRequestBtn");
+
+
+            form.style.display = "block";
+
+            button.style.display = "none";
+
+
+            form.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
+
+
+        /* CLOSE SUPPORT FORM */
+
+        function closeRequestForm() {
+
+            const form =
+                document.getElementById("supportForm");
+
+            const button =
+                document.getElementById("openRequestBtn");
+
+            const error =
+                document.getElementById("formError");
+
+            const success =
+                document.getElementById("successBox");
+
+
+            form.style.display = "none";
+
+            button.style.display = "block";
+
+            error.style.display = "none";
+
+            success.style.display = "none";
+
+        }
+
+
+        /* SUBMIT SUPPORT REQUEST */
+
+        function submitRequest() {
+
+            const name =
+                document.getElementById("supportName")
+                    .value.trim();
+
+            const contact =
+                document.getElementById("supportContact")
+                    .value.trim();
+
+            const type =
+                document.getElementById("supportType")
+                    .value;
+
+            const message =
+                document.getElementById("supportMessage")
+                    .value.trim();
+
+            const error =
+                document.getElementById("formError");
+
+            const success =
+                document.getElementById("successBox");
+
+
+            error.style.display = "none";
+
+            success.style.display = "none";
+
+
+            /* VALIDATION */
+
+            if (!name || !contact || !type || !message) {
+
+                error.textContent =
+                    "Please fill all the fields before submitting.";
+
+                error.style.display = "block";
+
+                return;
+
+            }
+
+
+            if (message.length < 10) {
+
+                error.textContent =
+                    "Please describe your issue in at least 10 characters.";
+
+                error.style.display = "block";
+
+                return;
+
+            }
+
+
+            /* DEMO SUPPORT REQUEST */
+
+            const requestId =
+                "SR" +
+                Date.now().toString().slice(-8);
+
+
+            success.innerHTML =
+                "<strong>✓ Support request submitted successfully.</strong>" +
+                "Your request ID is <strong>" +
+                requestId +
+                "</strong>." +
+                "<br>Please keep this ID for future reference.";
+
+
+            success.style.display = "block";
+
+
+            /* CLEAR FORM */
+
+            document.getElementById("supportName").value = "";
+            document.getElementById("supportContact").value = "";
+            document.getElementById("supportType").value = "";
+            document.getElementById("supportMessage").value = "";
+
+
+            success.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+        }
+
+    </script>
+
+</body>
+
+</html>

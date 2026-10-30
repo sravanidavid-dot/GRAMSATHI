@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Complaint Tracking - GramSathi
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="complaint-tracking.css">
+
+
+    <style>
+
+        .loading-box,
+        .error-box {
+
+            text-align: center;
+
+            padding: 35px 20px;
+
+            color: #666;
+
+        }
+
+
+        .error-box {
+
+            color: #c62828;
+
+        }
+
+
+        .retry-btn {
+
+            margin-top: 15px;
+
+            padding: 10px 20px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #1b5e20;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+        }
+
+
+        .complaint-summary {
+
+            background: #f5faf5;
+
+            border-radius: 12px;
+
+            padding: 15px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .summary-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 8px 0;
+
+            border-bottom:
+                1px solid #e5e5e5;
+
+        }
+
+
+        .summary-row:last-child {
+
+            border-bottom: none;
+
+        }
+
+
+        .summary-label {
+
+            color: #777;
+
+            font-size: 13px;
+
+        }
+
+
+        .summary-value {
+
+            color: #222;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            text-align: right;
+
+        }
+
+
+        .current-status {
+
+            margin-bottom: 25px;
+
+            padding: 14px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            background: #eef7ee;
+
+        }
+
+
+        .current-status-label {
+
+            display: block;
+
+            color: #777;
+
+            font-size: 12px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .current-status-value {
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+            color: #1b5e20;
+
+        }
+
+
+        .resolution-box {
+
+            margin-top: 20px;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            background: #f1f8e9;
+
+        }
+
+
+        .resolution-box h3 {
+
+            margin:
+                0 0 8px;
+
+            font-size: 15px;
+
+            color: #2e7d32;
+
+        }
+
+
+        .resolution-box p {
+
+            margin: 0;
+
+            color: #555;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .timeline-note {
+
+            margin-top: 6px;
+
+            font-size: 13px;
+
+            color: #666;
+
+        }
+
+
+        .waiting-text {
+
+            color: #999;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="phone-screen">
+
+
+        <!-- Header -->
+
+        <header class="header">
+
+            <button
+                class="back-btn"
+                onclick="goBack()">
+
+                ←
+
+            </button>
+
+
+            <h2>
+                Complaint Tracking
+            </h2>
+
+        </header>
+
+
+        <!-- Tracking -->
+
+        <main
+            class="tracking-container"
+            id="trackingContainer">
+
+            <div class="loading-box">
+
+                Loading complaint tracking...
+
+            </div>
+
+        </main>
+
+
+    </div>
+
+
+    <script>
+
+        const API_BASE_URL =
+            "http://127.0.0.1:5001";
+
+
+        let complaintId = null;
+
+
+        /* =====================================
+           GET COMPLAINT ID
+        ===================================== */
+
+        function getComplaintId() {
+
+            const params =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+
+            return params.get("id");
+
+        }
+
+
+        /* =====================================
+           USER ID
+        ===================================== */
+
+        function getUserId() {
+
+            return localStorage.getItem(
+                "gramasathiUserId"
+            );
+
+        }
+
+
+        /* =====================================
+           BACK
+        ===================================== */
+
+        function goBack() {
+
+            window.location.href =
+                "my-complaints.html";
+
+        }
+
+
+        /* =====================================
+           HOME
+        ===================================== */
+
+        function goHome() {
+
+            window.location.href =
+                "dashboard.html";
+
+        }
+
+
+        /* =====================================
+           LOAD TRACKING
+        ===================================== */
+
+        async function loadTracking() {
+
+            const container =
+                document.getElementById(
+                    "trackingContainer"
+                );
+
+
+            const userId =
+                getUserId();
+
+
+            complaintId =
+                getComplaintId();
+
+
+            if (!userId) {
+
+                showError(
+                    "Your login session was not found. Please login again."
+                );
+
+                return;
+
+            }
+
+
+            if (!complaintId) {
+
+                showError(
+                    "Complaint ID was not provided."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/api/complaints/${encodeURIComponent(
+                            complaintId
+                        )}`
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+                    throw new Error(
+                        data.message ||
+                        "Unable to load complaint."
+                    );
+
+                }
+
+
+                const complaint =
+                    data.complaint;
+
+
+                const history =
+                    data.history || [];
+
+
+                /*
+                 * Make sure this complaint
+                 * belongs to current user.
+                 */
+
+                if (
+                    complaint.user_id &&
+                    Number(
+                        complaint.user_id
+                    ) !== Number(userId)
+                ) {
+
+                    throw new Error(
+                        "You are not authorized to view this complaint."
+                    );
+
+                }
+
+
+                renderTracking(
+                    complaint,
+                    history
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Tracking error:",
+                    error
+                );
+
+
+                showError(
+                    error.message ||
+                    "Unable to load complaint tracking."
+                );
+
+            }
+
+        }
+
+
+        /* =====================================
+           RENDER
+        ===================================== */
+
+        function renderTracking(
+            complaint,
+            history
+        ) {
+
+            const container =
+                document.getElementById(
+                    "trackingContainer"
+                );
+
+
+            const status =
+                complaint.status ||
+                "Pending";
+
+
+            container.innerHTML = `
+
+                <!-- Complaint ID -->
+
+                <div class="complaint-id">
+
+                    <span>
+                        Complaint ID
+                    </span>
+
+                    <strong id="complaintId">
+
+                        ${escapeHtml(
+                            complaint.complaint_id
+                        )}
+
+                    </strong>
+
+                </div>
+
+
+                <!-- Summary -->
+
+                <div class="complaint-summary">
+
+
+                    <div class="summary-row">
+
+                        <span class="summary-label">
+                            Title
+                        </span>
+
+                        <span class="summary-value">
+
+                            ${escapeHtml(
+                                complaint.title
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span class="summary-label">
+                            Category
+                        </span>
+
+                        <span class="summary-value">
+
+                            ${escapeHtml(
+                                complaint.category
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span class="summary-label">
+                            Location
+                        </span>
+
+                        <span class="summary-value">
+
+                            ${escapeHtml(
+                                complaint.location ||
+                                complaint.village ||
+                                "-"
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span class="summary-label">
+                            Submitted
+                        </span>
+
+                        <span class="summary-value">
+
+                            ${formatDateTime(
+                                complaint.created_at
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- Current Status -->
+
+                <div class="current-status">
+
+                    <span class="current-status-label">
+
+                        Current Status
+
+                    </span>
+
+
+                    <span class="current-status-value">
+
+                        ${escapeHtml(status)}
+
+                    </span>
+
+                </div>
+
+
+                <!-- Timeline -->
+
+                <div class="timeline">
+
+                    ${createTimeline(
+                        complaint,
+                        history
+                    )}
+
+                </div>
+
+
+                ${
+                    complaint.resolution_note
+                    ? `
+
+                        <div class="resolution-box">
+
+                            <h3>
+                                Resolution Note
+                            </h3>
+
+                            <p>
+
+                                ${escapeHtml(
+                                    complaint.resolution_note
+                                )}
+
+                            </p>
+
+                        </div>
+
+                    `
+                    : ""
+                }
+
+
+                <!-- Home -->
+
+                <button
+                    class="home-button"
+                    onclick="goHome()">
+
+                    Go to Home
+
+                </button>
+
+            `;
+
+        }
+
+
+        /* =====================================
+           CREATE TIMELINE
+        ===================================== */
+
+        function createTimeline(
+            complaint,
+            history
+        ) {
+
+            const timeline = [];
+
+
+            /*
+             * Submitted
+             */
+
+            timeline.push({
+
+                status:
+                    "Submitted",
+
+                title:
+                    "Complaint Submitted",
+
+                description:
+                    "Your complaint was submitted successfully.",
+
+                date:
+                    complaint.created_at,
+
+                completed:
+                    true
+
+            });
+
+
+            /*
+             * History records
+             */
+
+            const pendingHistory =
+                history.find(
+                    item =>
+                        item.status ===
+                        "Pending"
+                );
+
+
+            const progressHistory =
+                history.find(
+                    item =>
+                        item.status ===
+                        "In Progress"
+                );
+
+
+            const resolvedHistory =
+                history.find(
+                    item =>
+                        item.status ===
+                        "Resolved"
+                );
+
+
+            /*
+             * Pending
+             */
+
+            if (
+                complaint.status ===
+                "Pending"
+            ) {
+
+                timeline.push({
+
+                    status:
+                        "Pending",
+
+                    title:
+                        "Pending Review",
+
+                    description:
+                        pendingHistory &&
+                        pendingHistory.note
+                            ? pendingHistory.note
+                            : "Your complaint is waiting for review and assignment.",
+
+                    date:
+                        pendingHistory
+                            ? pendingHistory.created_at
+                            : complaint.created_at,
+
+                    completed:
+                        true
+
+                });
+
+            }
+
+
+            /*
+             * In Progress
+             */
+
+            if (
+                complaint.status ===
+                "In Progress" ||
+                progressHistory
+            ) {
+
+                timeline.push({
+
+                    status:
+                        "In Progress",
+
+                    title:
+                        "In Progress",
+
+                    description:
+                        progressHistory &&
+                        progressHistory.note
+                            ? progressHistory.note
+                            : "Your complaint is currently being processed.",
+
+                    date:
+                        progressHistory
+                            ? progressHistory.created_at
+                            : null,
+
+                    completed:
+                        complaint.status ===
+                            "In Progress" ||
+                        complaint.status ===
+                            "Resolved",
+
+                    active:
+                        complaint.status ===
+                        "In Progress"
+
+                });
+
+            }
+
+
+            /*
+             * Resolved
+             */
+
+            if (
+                complaint.status ===
+                "Resolved" ||
+                resolvedHistory
+            ) {
+
+                timeline.push({
+
+                    status:
+                        "Resolved",
+
+                    title:
+                        "Resolved",
+
+                    description:
+                        resolvedHistory &&
+                        resolvedHistory.note
+                            ? resolvedHistory.note
+                            : complaint.resolution_note ||
+                              "Your complaint has been resolved.",
+
+                    date:
+                        resolvedHistory
+                            ? resolvedHistory.created_at
+                            : null,
+
+                    completed:
+                        complaint.status ===
+                        "Resolved",
+
+                    active:
+                        complaint.status ===
+                        "Resolved"
+
+                });
+
+            }
+
+
+            /*
+             * Future steps
+             */
+
+            if (
+                complaint.status ===
+                "Pending"
+            ) {
+
+                timeline.push({
+
+                    status:
+                        "In Progress",
+
+                    title:
+                        "In Progress",
+
+                    description:
+                        "This step will appear when the concerned officer starts working on your complaint.",
+
+                    date:
+                        null,
+
+                    completed:
+                        false
+
+                });
+
+
+                timeline.push({
+
+                    status:
+                        "Resolved",
+
+                    title:
+                        "Resolved",
+
+                    description:
+                        "Waiting for complaint resolution.",
+
+                    date:
+                        null,
+
+                    completed:
+                        false
+
+                });
+
+            }
+
+
+            if (
+                complaint.status ===
+                "In Progress"
+            ) {
+
+                timeline.push({
+
+                    status:
+                        "Resolved",
+
+                    title:
+                        "Resolved",
+
+                    description:
+                        "Waiting for complaint resolution.",
+
+                    date:
+                        null,
+
+                    completed:
+                        false
+
+                });
+
+            }
+
+
+            return timeline
+                .map(
+                    item =>
+                        createTimelineItem(
+                            item
+                        )
+                )
+                .join("");
+
+        }
+
+
+        /* =====================================
+           TIMELINE ITEM
+        ===================================== */
+
+        function createTimelineItem(
+            item
+        ) {
+
+            let className =
+                "timeline-item";
+
+
+            if (
+                item.completed
+            ) {
+
+                className +=
+                    " completed";
+
+            }
+
+
+            if (
+                item.active
+            ) {
+
+                className +=
+                    " active";
+
+            }
+
+
+            if (
+                !item.completed
+            ) {
+
+                className +=
+                    " pending";
+
+            }
+
+
+            let icon =
+                "○";
+
+
+            if (
+                item.completed
+            ) {
+
+                icon =
+                    "✓";
+
+            } else if (
+                item.active
+            ) {
+
+                icon =
+                    "●";
+
+            }
+
+
+            const dateText =
+                item.date
+                    ? formatDateTime(
+                        item.date
+                    )
+                    : "Waiting for update";
+
+
+            return `
+
+                <div
+                    class="${className}">
+
+
+                    <div class="timeline-dot">
+
+                        ${icon}
+
+                    </div>
+
+
+                    <div class="timeline-content">
+
+
+                        <h3>
+
+                            ${escapeHtml(
+                                item.title
+                            )}
+
+                        </h3>
+
+
+                        <p>
+
+                            ${escapeHtml(
+                                item.description
+                            )}
+
+                        </p>
+
+
+                        <span>
+
+                            ${escapeHtml(
+                                dateText
+                            )}
+
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+        }
+
+
+        /* =====================================
+           ERROR
+        ===================================== */
+
+        function showError(
+            message
+        ) {
+
+            const container =
+                document.getElementById(
+                    "trackingContainer"
+                );
+
+
+            container.innerHTML = `
+
+                <div class="error-box">
+
+                    <h3>
+                        Unable to Load Tracking
+                    </h3>
+
+                    <p>
+
+                        ${escapeHtml(
+                            message
+                        )}
+
+                    </p>
+
+
+                    <button
+                        class="retry-btn"
+                        onclick="loadTracking()">
+
+                        Retry
+
+                    </button>
+
+                </div>
+
+            `;
+
+        }
+
+
+        /* =====================================
+           DATE FORMAT
+        ===================================== */
+
+        function formatDateTime(
+            dateString
+        ) {
+
+            if (!dateString) {
+
+                return "-";
+
+            }
+
+
+            const date =
+                new Date(
+                    dateString
+                );
+
+
+            if (
+                isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return dateString;
+
+            }
+
+
+            return date.toLocaleString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           HTML ESCAPE
+        ===================================== */
+
+        function escapeHtml(
+            value
+        ) {
+
+            if (
+                value === null ||
+                value === undefined
+            ) {
+
+                return "";
+
+            }
+
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        /* =====================================
+           PAGE LOAD
+        ===================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                loadTracking();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

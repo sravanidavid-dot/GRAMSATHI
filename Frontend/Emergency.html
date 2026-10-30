@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Emergency Contacts - GramaSathi</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #e8f8ed;
+            color: #171717;
+        }
+
+        .emergency-panel {
+            width: 100%;
+            max-width: 1100px;
+            min-height: 100vh;
+            margin: auto;
+            background: #e8f8ed;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .panel-header {
+            padding: 30px 34px 20px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .panel-header h1 {
+            color: #087d4d;
+            font-size: 32px;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+
+        .panel-header p {
+            color: #777;
+            font-size: 16px;
+        }
+
+        .close-btn {
+            width: 54px;
+            height: 54px;
+            flex: none;
+
+            border: 0;
+            border-radius: 50%;
+
+            background: #d8f3df;
+            color: #333;
+
+            font-size: 36px;
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: #087d4d;
+            color: white;
+        }
+
+        .close-btn:active {
+            transform: scale(0.94);
+        }
+
+        /* =========================
+           EMERGENCY NOTE
+        ========================= */
+
+        .emergency-note {
+            margin: 0 34px 5px;
+            padding: 13px 16px;
+
+            background: #fff8e6;
+            border: 1px solid #f1d58b;
+            border-radius: 10px;
+
+            color: #765c19;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           CONTACTS
+        ========================= */
+
+        .contacts {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+
+            padding: 24px 34px 40px;
+        }
+
+        .contact-card {
+            min-height: 145px;
+            padding: 16px;
+
+            display: grid;
+            grid-template-columns: 62px 1fr;
+            align-items: center;
+            gap: 12px;
+
+            background: #f3fff6;
+            border-radius: 14px;
+
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+
+            transition: 0.2s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 14px rgba(0, 0, 0, 0.09);
+        }
+
+        /* =========================
+           ICON
+        ========================= */
+
+        .contact-icon {
+            width: 62px;
+            height: 62px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 15px;
+            background: #e0f5e7;
+
+            font-size: 34px;
+        }
+
+        .contact-icon.sos {
+            font-size: 20px;
+            font-weight: 900;
+
+            color: #fff;
+            background: #ef4b48;
+        }
+
+        /* =========================
+           DETAILS
+        ========================= */
+
+        .contact-details h2 {
+            font-size: 18px;
+            line-height: 1.1;
+            margin-bottom: 5px;
+        }
+
+        .contact-details p {
+            color: #777;
+            font-size: 12px;
+            line-height: 1.15;
+            margin-bottom: 4px;
+        }
+
+        .contact-details strong {
+            color: #087d4d;
+            font-size: 21px;
+        }
+
+        /* =========================
+           CALL BUTTON
+        ========================= */
+
+        .call-btn {
+            width: 50px;
+            height: 50px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #079653;
+            color: #fff;
+
+            text-decoration: none;
+            font-size: 25px;
+
+            grid-column: 2;
+            justify-self: end;
+
+            margin-top: -50px;
+
+            transition: 0.2s ease;
+        }
+
+        .call-btn:hover {
+            background: #056f3d;
+        }
+
+        .call-btn:active {
+            transform: scale(0.94);
+        }
+
+        /* =========================
+           FOOTER NOTE
+        ========================= */
+
+        .footer-note {
+            text-align: center;
+            padding: 0 25px 25px;
+
+            color: #777;
+            font-size: 12px;
+        }
+
+        /* =========================
+           TABLET
+        ========================= */
+
+        @media (max-width: 850px) {
+
+            .contacts {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .panel-header {
+                padding: 24px 18px 16px;
+            }
+
+            .panel-header h1 {
+                font-size: 27px;
+            }
+
+            .panel-header p {
+                font-size: 14px;
+            }
+
+            .close-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 34px;
+            }
+
+            .emergency-note {
+                margin: 0 18px 5px;
+                font-size: 12px;
+            }
+
+            .contacts {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+
+                padding: 18px 10px 28px;
+            }
+
+            .contact-card {
+                min-height: 135px;
+                padding: 11px;
+
+                grid-template-columns: 48px 1fr;
+                gap: 7px;
+            }
+
+            .contact-icon {
+                width: 48px;
+                height: 48px;
+
+                border-radius: 12px;
+                font-size: 26px;
+            }
+
+            .contact-icon.sos {
+                font-size: 15px;
+            }
+
+            .contact-details h2 {
+                font-size: 14px;
+            }
+
+            .contact-details p {
+                font-size: 9px;
+            }
+
+            .contact-details strong {
+                font-size: 17px;
+            }
+
+            .call-btn {
+                width: 40px;
+                height: 40px;
+
+                font-size: 20px;
+                margin-top: -40px;
+            }
+        }
+
+        /* =========================
+           SMALL MOBILE
+        ========================= */
+
+        @media (max-width: 430px) {
+
+            .contacts {
+                gap: 8px;
+                padding-left: 7px;
+                padding-right: 7px;
+            }
+
+            .contact-card {
+                padding: 8px;
+                min-height: 120px;
+
+                grid-template-columns: 43px 1fr;
+                gap: 5px;
+            }
+
+            .contact-icon {
+                width: 43px;
+                height: 43px;
+
+                font-size: 23px;
+            }
+
+            .contact-details h2 {
+                font-size: 12px;
+            }
+
+            .contact-details p {
+                font-size: 8px;
+            }
+
+            .contact-details strong {
+                font-size: 15px;
+            }
+
+            .call-btn {
+                width: 36px;
+                height: 36px;
+
+                font-size: 18px;
+                margin-top: -36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="emergency-panel">
+
+        <!-- =========================
+             HEADER
+        ========================= -->
+
+        <header class="panel-header">
+
+            <div>
+                <h1>Emergency Contacts</h1>
+
+                <p>
+                    Quick access to emergency services
+                </p>
+            </div>
+
+            <button
+                class="close-btn"
+                onclick="closePanel()"
+                aria-label="Close">
+                ×
+            </button>
+
+        </header>
+
+
+        <!-- =========================
+             IMPORTANT NOTE
+        ========================= -->
+
+        <div class="emergency-note">
+            <strong>Emergency?</strong>
+            Tap the call button beside the service you need.
+        </div>
+
+
+        <!-- =========================
+             CONTACTS
+        ========================= -->
+
+        <main class="contacts">
+
+            <!-- Police -->
+
+            <div class="contact-card">
+
+                <div class="contact-icon">
+                    🚓
+                </div>
+
+                <div class="contact-details">
+
+                    <h2>Police</h2>
+
+                    <p>
+                        Police Emergency
+                    </p>
+
+                    <strong>100</strong>
+
+                </div>
+
+                <a
+                    class="call-btn"
+                    href="tel:100"
+                    aria-label="Call Police">
+                    ☎
+                </a>
+
+            </div>
+
+
+            <!-- Ambulance -->
+
+            <div class="contact-card">
+
+                <div class="contact-icon">
+                    🚑
+                </div>
+
+                <div class="contact-details">
+
+                    <h2>Ambulance</h2>
+
+                    <p>
+                        Medical Emergency
+                    </p>
+
+                    <strong>108</strong>
+
+                </div>
+
+                <a
+                    class="call-btn"
+                    href="tel:108"
+                    aria-label="Call Ambulance">
+                    ☎
+                </a>
+
+            </div>
+
+
+            <!-- Fire -->
+
+            <div class="contact-card">
+
+                <div class="contact-icon">
+                    🚒
+                </div>
+
+                <div class="contact-details">
+
+                    <h2>Fire &amp; Rescue</h2>
+
+                    <p>
+                        Fire Emergency
+                    </p>
+
+                    <strong>101</strong>
+
+                </div>
+
+                <a
+                    class="call-btn"
+                    href="tel:101"
+                    aria-label="Call Fire and Rescue">
+                    ☎
+                </a>
+
+            </div>
+
+
+            <!-- National Emergency -->
+
+            <div class="contact-card">
+
+                <div class="contact-icon sos">
+                    SOS
+                </div>
+
+                <div class="contact-details">
+
+                    <h2>National Emergency</h2>
+
+                    <p>
+                        Unified Emergency Service
+                    </p>
+
+                    <strong>112</strong>
+
+                </div>
+
+                <a
+                    class="call-btn"
+                    href="tel:112"
+                    aria-label="Call National Emergency">
+                    ☎
+                </a>
+
+            </div>
+
+
+            <!-- Women Helpline -->
+
+            <div class="contact-card">
+
+                <div class="contact-icon">
+                    👩
+                </div>
+
+                <div class="contact-details">
+
+                    <h2>Women Helpline</h2>
+
+                    <p>
+                        Women Safety
+                    </p>
+
+                    <strong>181</strong>
+
+                </div>
+
+                <a
+                    class="call-btn"
+                    href="tel:181"
+                    aria-label="Call Women Helpline">
+                    ☎
+                </a>
+
+            </div>
+
+
+            <!-- Child Helpline -->
+
+            <div class="contact-card">
+
+                <div class="contact-icon">
+                    👶
+                </div>
+
+                <div class="contact-details">
+
+                    <h2>Child Helpline</h2>
+
+                    <p>
+                        Child Safety
+                    </p>
+
+                    <strong>1098</strong>
+
+                </div>
+
+                <a
+                    class="call-btn"
+                    href="tel:1098"
+                    aria-label="Call Child Helpline">
+                    ☎
+                </a>
+
+            </div>
+
+
+            <!-- Electricity -->
+
+            <div class="contact-card">
+
+                <div class="contact-icon">
+                    ⚡
+                </div>
+
+                <div class="contact-details">
+
+                    <h2>Electricity</h2>
+
+                    <p>
+                        Electricity Emergency
+                    </p>
+
+                    <strong>1912</strong>
+
+                </div>
+
+                <a
+                    class="call-btn"
+                    href="tel:1912"
+                    aria-label="Call Electricity Emergency">
+                    ☎
+                </a>
+
+            </div>
+
+
+            <!-- Gas -->
+
+            <div class="contact-card">
+
+                <div class="contact-icon">
+                    🔥
+                </div>
+
+                <div class="contact-details">
+
+                    <h2>Gas Emergency</h2>
+
+                    <p>
+                        Gas Emergency Service
+                    </p>
+
+                    <strong>1906</strong>
+
+                </div>
+
+                <a
+                    class="call-btn"
+                    href="tel:1906"
+                    aria-label="Call Gas Emergency">
+                    ☎
+                </a>
+
+            </div>
+
+        </main>
+
+
+        <div class="footer-note">
+            For immediate danger, use the appropriate emergency service.
+        </div>
+
+    </section>
+
+
+    <script>
+
+        /* =========================
+           CLOSE PANEL
+        ========================= */
+
+        function closePanel() {
+
+            window.location.href =
+                "dashboard.html";
+
+        }
+
+    </script>
+
+</body>
+
+</html>

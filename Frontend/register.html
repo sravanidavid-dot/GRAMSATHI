@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create New Account - GramaSathi</title>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #effaf6;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 400;
+            color: #222;
+            margin-bottom: 25px;
+        }
+
+        .input-box {
+            width: 100%;
+            height: 55px;
+
+            background-color: white;
+
+            border: 1px solid #dedede;
+            border-radius: 10px;
+
+            margin-bottom: 12px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 16px;
+        }
+
+        .input-box input,
+        .input-box select {
+            width: 100%;
+            height: 100%;
+
+            border: none;
+            outline: none;
+
+            background: transparent;
+
+            font-size: 17px;
+            color: #333;
+        }
+
+        .input-box input::placeholder {
+            color: #999;
+        }
+
+        .input-box select {
+            cursor: pointer;
+        }
+
+        .role-title {
+            text-align: left;
+            font-size: 14px;
+            color: #555;
+            margin: 4px 0 7px 4px;
+        }
+
+        .role-box {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .role-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .role-option input {
+            display: none;
+        }
+
+        .role-option label {
+            display: block;
+            padding: 14px 8px;
+
+            background: white;
+            border: 1px solid #dedede;
+            border-radius: 10px;
+
+            color: #555;
+            font-size: 14px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .role-option label i {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .role-option input:checked + label {
+            background: #e7f8ed;
+            border-color: #00ad4f;
+            color: #00863d;
+            font-weight: bold;
+        }
+
+        .password-box {
+            position: relative;
+        }
+
+        .password-box input {
+            padding-right: 40px;
+        }
+
+        .eye {
+            position: absolute;
+            right: 16px;
+
+            font-size: 19px;
+            color: #777;
+
+            cursor: pointer;
+        }
+
+        .register-btn {
+            width: 100%;
+            height: 57px;
+
+            margin-top: 5px;
+
+            border: none;
+            border-radius: 10px;
+
+            background-color: #00ad4f;
+            color: white;
+
+            font-size: 19px;
+            cursor: pointer;
+        }
+
+        .register-btn:hover {
+            background-color: #009b46;
+        }
+
+        .register-btn:disabled {
+            background-color: #8bc9a7;
+            cursor: not-allowed;
+        }
+
+        .login-text {
+            margin-top: 20px;
+
+            font-size: 18px;
+            color: #777;
+        }
+
+        .login-text a {
+            color: #00a94f;
+            text-decoration: none;
+        }
+
+        .login-text a:hover {
+            text-decoration: underline;
+        }
+
+        #message {
+            display: none;
+
+            margin-bottom: 15px;
+            padding: 11px;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+        }
+
+        #message.success {
+            display: block;
+            background-color: #e7f8ed;
+            color: #08752f;
+            border: 1px solid #a8dfba;
+        }
+
+        #message.error {
+            display: block;
+            background-color: #ffecec;
+            color: #b00020;
+            border: 1px solid #f1aaaa;
+        }
+
+        @media (max-width: 500px) {
+
+            .container {
+                max-width: 390px;
+                padding: 12px 18px;
+            }
+
+            h1 {
+                font-size: 26px;
+                margin-bottom: 22px;
+            }
+
+            .input-box {
+                height: 52px;
+                margin-bottom: 10px;
+            }
+
+            .input-box input,
+            .input-box select {
+                font-size: 16px;
+            }
+
+            .role-box {
+                gap: 6px;
+            }
+
+            .role-option label {
+                font-size: 12px;
+                padding: 12px 5px;
+            }
+
+            .role-option label i {
+                font-size: 18px;
+            }
+
+            .register-btn {
+                height: 54px;
+                font-size: 18px;
+            }
+
+            .login-text {
+                font-size: 17px;
+                margin-top: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Create New Account</h1>
+
+        <div id="message"></div>
+
+        <form id="registerForm">
+
+            <!-- FULL NAME -->
+            <div class="input-box">
+                <input
+                    type="text"
+                    id="fullName"
+                    placeholder="Full Name"
+                    autocomplete="name"
+                    required>
+            </div>
+
+            <!-- MOBILE -->
+            <div class="input-box">
+                <input
+                    type="tel"
+                    id="mobile"
+                    placeholder="Mobile Number"
+                    maxlength="10"
+                    inputmode="numeric"
+                    autocomplete="tel"
+                    required>
+            </div>
+
+            <!-- EMAIL -->
+            <div class="input-box">
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Email"
+                    autocomplete="email"
+                    required>
+            </div>
+
+            <!-- VILLAGE -->
+            <div class="input-box">
+                <input
+                    type="text"
+                    id="village"
+                    placeholder="Village Name"
+                    autocomplete="address-level2"
+                    required>
+            </div>
+
+            <!-- ROLE -->
+            <div class="role-title">
+                Select Account Type
+            </div>
+
+            <div class="role-box">
+
+                <div class="role-option">
+                    <input
+                        type="radio"
+                        id="citizenRole"
+                        name="role"
+                        value="citizen"
+                        checked>
+
+                    <label for="citizenRole">
+                        <i class="fa-solid fa-user"></i>
+                        Citizen
+                    </label>
+                </div>
+
+                <div class="role-option">
+                    <input
+                        type="radio"
+                        id="officerRole"
+                        name="role"
+                        value="officer">
+
+                    <label for="officerRole">
+                        <i class="fa-solid fa-user-tie"></i>
+                        Officer
+                    </label>
+                </div>
+
+                <div class="role-option">
+                    <input
+                        type="radio"
+                        id="adminRole"
+                        name="role"
+                        value="admin">
+
+                    <label for="adminRole">
+                        <i class="fa-solid fa-user-shield"></i>
+                        Admin
+                    </label>
+                </div>
+
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="input-box password-box">
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Password"
+                    autocomplete="new-password"
+                    required>
+
+                <i
+                    class="fa-solid fa-eye-slash eye"
+                    onclick="togglePassword('password', this)">
+                </i>
+
+            </div>
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="input-box password-box">
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm Password"
+                    autocomplete="new-password"
+                    required>
+
+                <i
+                    class="fa-solid fa-eye-slash eye"
+                    onclick="togglePassword('confirmPassword', this)">
+                </i>
+
+            </div>
+
+            <!-- REGISTER -->
+            <button
+                type="submit"
+                class="register-btn"
+                id="registerButton">
+
+                Register
+
+            </button>
+
+        </form>
+
+        <div class="login-text">
+
+            Already have an account?
+
+            <a href="login.html">
+                Login
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* =========================================
+           SHOW / HIDE PASSWORD
+        ========================================= */
+
+        function togglePassword(id, icon) {
+
+            const input =
+                document.getElementById(id);
+
+            if (input.type === "password") {
+
+                input.type = "text";
+
+                icon.classList.remove(
+                    "fa-eye-slash"
+                );
+
+                icon.classList.add(
+                    "fa-eye"
+                );
+
+            } else {
+
+                input.type = "password";
+
+                icon.classList.remove(
+                    "fa-eye"
+                );
+
+                icon.classList.add(
+                    "fa-eye-slash"
+                );
+            }
+        }
+
+
+        /* =========================================
+           MESSAGE
+        ========================================= */
+
+        function showMessage(message, type) {
+
+            const messageBox =
+                document.getElementById("message");
+
+            messageBox.textContent = message;
+
+            messageBox.className = type;
+        }
+
+
+        /* =========================================
+           REGISTER
+        ========================================= */
+
+        document
+            .getElementById("registerForm")
+            .addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    const fullName =
+                        document
+                            .getElementById("fullName")
+                            .value
+                            .trim();
+
+
+                    const mobile =
+                        document
+                            .getElementById("mobile")
+                            .value
+                            .trim();
+
+
+                    const email =
+                        document
+                            .getElementById("email")
+                            .value
+                            .trim()
+                            .toLowerCase();
+
+
+                    const village =
+                        document
+                            .getElementById("village")
+                            .value
+                            .trim();
+
+
+                    const password =
+                        document
+                            .getElementById("password")
+                            .value;
+
+
+                    const confirmPassword =
+                        document
+                            .getElementById("confirmPassword")
+                            .value;
+
+
+                    const role =
+                        document
+                            .querySelector(
+                                'input[name="role"]:checked'
+                            )
+                            .value;
+
+
+                    const registerButton =
+                        document.getElementById(
+                            "registerButton"
+                        );
+
+
+                    document
+                        .getElementById("message")
+                        .className = "";
+
+
+                    /* =====================================
+                       VALIDATION
+                    ===================================== */
+
+                    if (fullName.length < 2) {
+
+                        showMessage(
+                            "Please enter a valid full name.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (!/^[0-9]{10}$/.test(mobile)) {
+
+                        showMessage(
+                            "Please enter a valid 10-digit mobile number.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (
+                        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                        .test(email)
+                    ) {
+
+                        showMessage(
+                            "Please enter a valid email address.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (village.length < 2) {
+
+                        showMessage(
+                            "Please enter your village name.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (password.length < 8) {
+
+                        showMessage(
+                            "Password must contain at least 8 characters.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (password !== confirmPassword) {
+
+                        showMessage(
+                            "Passwords do not match!",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (
+                        !["citizen", "officer", "admin"]
+                        .includes(role)
+                    ) {
+
+                        showMessage(
+                            "Please select a valid account type.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    /* =====================================
+                       BUTTON LOADING
+                    ===================================== */
+
+                    registerButton.disabled = true;
+
+                    registerButton.textContent =
+                        "Registering...";
+
+
+                    try {
+
+                        /* =================================
+                           SEND TO FLASK
+                        ================================= */
+
+                        const response =
+                            await fetch(
+                                "http://127.0.0.1:5001/api/register",
+                                {
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body: JSON.stringify({
+
+                                        name: fullName,
+
+                                        mobile: mobile,
+
+                                        email: email,
+
+                                        village: village,
+
+                                        password: password,
+
+                                        role: role
+                                    })
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        /* =================================
+                           SUCCESS
+                        ================================= */
+
+                        if (
+                            response.ok &&
+                            data.success
+                        ) {
+
+                            showMessage(
+                                "Registration successful! Redirecting to login...",
+                                "success"
+                            );
+
+
+                            document
+                                .getElementById(
+                                    "registerForm"
+                                )
+                                .reset();
+
+
+                            setTimeout(
+                                function () {
+
+                                    window.location.href =
+                                        "login.html";
+
+                                },
+                                1200
+                            );
+
+                            return;
+                        }
+
+
+                        /* =================================
+                           BACKEND ERROR
+                        ================================= */
+
+                        showMessage(
+                            data.message ||
+                            data.error ||
+                            "Registration failed.",
+                            "error"
+                        );
+
+                    }
+
+                    catch (error) {
+
+                        console.error(
+                            "Registration Error:",
+                            error
+                        );
+
+
+                        showMessage(
+                            "Cannot connect to GramaSathi server. Please start Flask backend on port 5001.",
+                            "error"
+                        );
+
+                    }
+
+                    finally {
+
+                        registerButton.disabled =
+                            false;
+
+                        registerButton.textContent =
+                            "Register";
+                    }
+
+                }
+            );
+
+    </script>
+
+</body>
+
+</html>

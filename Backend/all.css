@@ -1,0 +1,165 @@
+* {
+  box-sizing: border-box;
+}
+
+.services-page {
+  min-height: 100vh;
+  width: 100%;
+  background: #ffffff;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.services-container {
+  width: 100%;
+  max-width: 390px;
+  min-height: 100vh;
+
+  padding: 35px 18px 30px;
+
+  background: #ffffff;
+}
+
+/* Heading */
+
+.services-container h1 {
+  margin: 0 0 24px;
+
+  text-align: center;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: #222;
+}
+
+/* Grid */
+
+.services-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 10px;
+}
+
+/* Service card */
+
+.service-card {
+  height: 82px;
+
+  border: 1px solid #eeeeee;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  padding: 8px 4px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.service-card:active {
+  transform: scale(0.96);
+}
+
+/* Icon */
+
+.service-icon {
+  width: 27px;
+  height: 27px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 21px;
+
+  margin-bottom: 7px;
+}
+
+/* Text */
+
+.service-card span {
+  display: block;
+
+  width: 100%;
+
+  text-align: center;
+
+  font-size: 7px;
+  line-height: 9px;
+
+  font-weight: 600;
+
+  color: #333;
+
+  white-space: normal;
+}
+
+/* Tablet */
+
+@media (min-width: 600px) {
+  .services-container {
+    max-width: 430px;
+
+    padding: 40px 22px;
+  }
+
+  .services-container h1 {
+    font-size: 20px;
+  }
+
+  .service-card {
+    height: 90px;
+  }
+
+  .service-card span {
+    font-size: 9px;
+    line-height: 11px;
+  }
+
+  .service-icon {
+    font-size: 24px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 360px) {
+  .services-container {
+    padding: 28px 14px;
+  }
+
+  .services-grid {
+    gap: 8px;
+  }
+
+  .service-card {
+    height: 76px;
+  }
+
+  .service-card span {
+    font-size: 6.5px;
+    line-height: 8px;
+  }
+}

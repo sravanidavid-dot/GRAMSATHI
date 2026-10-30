@@ -1,0 +1,262 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #eef7f1;
+    color: #333;
+}
+
+
+/* Main mobile screen */
+
+.phone-screen {
+    width: 100%;
+    max-width: 730px;
+    min-height: 100vh;
+    margin: auto;
+    background: #f7fbf8;
+}
+
+
+/* ================= HEADER ================= */
+
+.header {
+    height: 65px;
+    background: white;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 16px;
+
+    position: relative;
+
+    border-bottom: 1px solid #e1e1e1;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.header h2 {
+    position: absolute;
+
+    left: 50%;
+    transform: translateX(-50%);
+
+    font-size: 18px;
+
+    color: #075f32;
+
+    white-space: nowrap;
+}
+
+.back-btn {
+    border: none;
+    background: #e7f5ec;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+
+    font-size: 22px;
+
+    color: #087b42;
+
+    cursor: pointer;
+}
+
+.notification {
+    margin-left: auto;
+
+    font-size: 21px;
+}
+
+
+/* ================= TABS ================= */
+
+.tabs {
+    background: white;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 12px 12px;
+
+    border-bottom: 1px solid #e3e3e3;
+
+    overflow-x: auto;
+}
+
+.tab {
+    border: 1px solid #d9e5dd;
+
+    background: #f5f8f6;
+
+    color: #555;
+
+    font-size: 11px;
+
+    padding: 8px 13px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition: 0.2s;
+}
+
+.tab:hover {
+    background: #e7f5ec;
+    color: #087b42;
+}
+
+.tab.active {
+    background: #079447;
+
+    border-color: #079447;
+
+    color: white;
+
+    font-weight: bold;
+
+    box-shadow: 0 2px 5px rgba(7, 148, 71, 0.25);
+}
+
+
+/* ================= COMPLAINT LIST ================= */
+
+#complaintList {
+    padding: 15px 12px;
+}
+
+
+/* ================= COMPLAINT CARD ================= */
+
+.complaint-card {
+    min-height: 88px;
+
+    background: white;
+
+    border-radius: 10px;
+
+    margin-bottom: 12px;
+
+    padding: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border: 1px solid #e1ebe4;
+
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.07);
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.complaint-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #9bd5b3;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
+}
+
+
+/* ================= COMPLAINT INFO ================= */
+
+.complaint-info h3 {
+    font-size: 13px;
+
+    color: #222;
+
+    margin-bottom: 7px;
+}
+
+.complaint-info p {
+    font-size: 12px;
+
+    color: #555;
+
+    margin-bottom: 5px;
+}
+
+.complaint-info span {
+    font-size: 10px;
+
+    color: #999;
+}
+
+
+/* ================= STATUS ================= */
+
+.status {
+    font-size: 10px;
+
+    font-weight: bold;
+
+    white-space: nowrap;
+
+    padding: 6px 9px;
+
+    border-radius: 5px;
+
+    margin-left: 8px;
+}
+
+
+/* Pending */
+
+.status.pending {
+    background: #fff3d9;
+
+    color: #d18b13;
+}
+
+
+/* In Progress */
+
+.status.progress {
+    background: #e3f3ff;
+
+    color: #1688c5;
+}
+
+
+/* Resolved */
+
+.status.resolved {
+    background: #e2f6e9;
+
+    color: #138b4b;
+}
+
+
+/* ================= DESKTOP ================= */
+
+@media (min-width: 600px) {
+
+    .phone-screen {
+        min-height: 700px;
+
+        margin-top: 30px;
+
+        border-radius: 15px;
+
+        overflow: hidden;
+
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+    }
+}

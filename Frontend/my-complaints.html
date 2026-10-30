@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Complaints - GramSathi</title>
+
+    <link rel="stylesheet" href="complaint.css">
+
+    <style>
+        .loading-message,
+        .empty-message,
+        .error-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .error-message {
+            color: #c62828;
+        }
+
+        .empty-message h3 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .empty-message p {
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            border: none;
+            background: #1b5e20;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .complaint-card {
+            cursor: pointer;
+        }
+
+        .complaint-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .complaint-card:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div class="phone-screen">
+
+        <!-- Header -->
+        <header class="header">
+
+            <button class="back-btn" onclick="goBack()">
+                ←
+            </button>
+
+            <h2>My Complaints</h2>
+
+        </header>
+
+
+        <!-- Status Tabs -->
+        <div class="tabs">
+
+            <button class="tab active"
+                    onclick="filterComplaints('All', this)">
+                <h3>All</h3>
+            </button>
+
+            <button class="tab"
+                    onclick="filterComplaints('Pending', this)">
+                <h3>Pending</h3>
+            </button>
+
+            <button class="tab"
+                    onclick="filterComplaints('In Progress', this)">
+                <h3>In Progress</h3>
+            </button>
+
+            <button class="tab"
+                    onclick="filterComplaints('Resolved', this)">
+                <h3>Resolved</h3>
+            </button>
+
+        </div>
+
+
+        <!-- Complaint List -->
+        <main id="complaintList">
+
+            <div class="loading-message">
+                Loading your complaints...
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <script>
+
+        const API_BASE_URL =
+            "http://127.0.0.1:5001";
+
+
+        let allComplaints = [];
+
+        let currentFilter = "All";
+
+
+        /* =====================================
+           GET LOGGED-IN USER
+        ===================================== */
+
+        function getUserId() {
+
+            return localStorage.getItem(
+                "gramasathiUserId"
+            );
+
+        }
+
+
+        /* =====================================
+           BACK TO DASHBOARD
+        ===================================== */
+
+        function goBack() {
+
+            window.location.href =
+                "dashboard.html";
+
+        }
+
+
+        /* =====================================
+           LOAD COMPLAINTS
+        ===================================== */
+
+        async function loadComplaints() {
+
+            const userId =
+                getUserId();
+
+
+            const complaintList =
+                document.getElementById(
+                    "complaintList"
+                );
+
+
+            if (!userId) {
+
+                complaintList.innerHTML = `
+
+                    <div class="error-message">
+
+                        <h3>
+                            Login Required
+                        </h3>
+
+                        <p>
+                            Please login again
+                            to view your complaints.
+                        </p>
+
+                        <button
+                            class="retry-btn"
+                            onclick="goToLogin()">
+
+                            Login
+
+                        </button>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            complaintList.innerHTML = `
+
+                <div class="loading-message">
+                    Loading your complaints...
+                </div>
+
+            `;
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/api/complaints/user/${userId}`
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+                    throw new Error(
+                        data.message ||
+                        "Unable to load complaints."
+                    );
+
+                }
+
+
+                allComplaints =
+                    data.complaints || [];
+
+
+                renderComplaints(
+                    currentFilter
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Load complaints error:",
+                    error
+                );
+
+
+                complaintList.innerHTML = `
+
+                    <div class="error-message">
+
+                        <h3>
+                            Unable to Load
+                        </h3>
+
+                        <p>
+                            ${escapeHtml(
+                                error.message ||
+                                "Please try again."
+                            )}
+                        </p>
+
+                        <button
+                            class="retry-btn"
+                            onclick="loadComplaints()">
+
+                            Retry
+
+                        </button>
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+        /* =====================================
+           RENDER COMPLAINTS
+        ===================================== */
+
+        function renderComplaints(
+            status
+        ) {
+
+            const complaintList =
+                document.getElementById(
+                    "complaintList"
+                );
+
+
+            let complaints =
+                allComplaints;
+
+
+            if (status !== "All") {
+
+                complaints =
+                    allComplaints.filter(
+                        complaint =>
+                            complaint.status ===
+                            status
+                    );
+
+            }
+
+
+            if (complaints.length === 0) {
+
+                complaintList.innerHTML = `
+
+                    <div class="empty-message">
+
+                        <h3>
+
+                            No ${
+                                status === "All"
+                                    ? ""
+                                    : status + " "
+                            }Complaints
+
+                        </h3>
+
+                        <p>
+
+                            You don't have any
+                            complaints ${
+                                status === "All"
+                                    ? ""
+                                    : "with this status"
+                            } yet.
+
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            complaintList.innerHTML =
+                complaints
+                    .map(
+                        complaint =>
+                            createComplaintCard(
+                                complaint
+                            )
+                    )
+                    .join("");
+
+        }
+
+
+        /* =====================================
+           CREATE COMPLAINT CARD
+        ===================================== */
+
+        function createComplaintCard(
+            complaint
+        ) {
+
+            const statusClass =
+                getStatusClass(
+                    complaint.status
+                );
+
+
+            const date =
+                formatDate(
+                    complaint.created_at
+                );
+
+
+            return `
+
+                <div
+                    class="complaint-card"
+                    data-status="${escapeHtml(
+                        complaint.status
+                    )}"
+                    onclick="openDetails('${escapeHtml(
+                        complaint.complaint_id
+                    )}')">
+
+                    <div class="complaint-info">
+
+                        <h3>
+                            ${escapeHtml(
+                                complaint.complaint_id
+                            )}
+                        </h3>
+
+                        <p>
+                            ${escapeHtml(
+                                complaint.category
+                            )}
+                        </p>
+
+                        <span>
+                            ${date}
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="status ${statusClass}">
+
+                        ${escapeHtml(
+                            complaint.status
+                        )}
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        /* =====================================
+           OPEN COMPLAINT TRACKING
+        ===================================== */
+
+        function openDetails(
+            complaintId
+        ) {
+
+            window.location.href =
+                `complaint-tracking.html?id=${encodeURIComponent(
+                    complaintId
+                )}`;
+
+        }
+
+
+        /* =====================================
+           FILTER
+        ===================================== */
+
+        function filterComplaints(
+            status,
+            button
+        ) {
+
+            currentFilter =
+                status;
+
+
+            document
+                .querySelectorAll(".tab")
+                .forEach(tab => {
+
+                    tab.classList.remove(
+                        "active"
+                    );
+
+                });
+
+
+            if (button) {
+
+                button.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            renderComplaints(
+                status
+            );
+
+        }
+
+
+        /* =====================================
+           STATUS CLASS
+        ===================================== */
+
+        function getStatusClass(
+            status
+        ) {
+
+            if (
+                status === "Pending"
+            ) {
+
+                return "pending";
+
+            }
+
+
+            if (
+                status === "In Progress"
+            ) {
+
+                return "progress";
+
+            }
+
+
+            if (
+                status === "Resolved"
+            ) {
+
+                return "resolved";
+
+            }
+
+
+            return "";
+
+        }
+
+
+        /* =====================================
+           DATE FORMAT
+        ===================================== */
+
+        function formatDate(
+            dateString
+        ) {
+
+            if (!dateString) {
+
+                return "-";
+
+            }
+
+
+            const date =
+                new Date(dateString);
+
+
+            if (
+                isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return dateString;
+
+            }
+
+
+            return date.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           HTML ESCAPE
+        ===================================== */
+
+        function escapeHtml(
+            value
+        ) {
+
+            if (
+                value === null ||
+                value === undefined
+            ) {
+
+                return "";
+
+            }
+
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        /* =====================================
+           LOGIN
+        ===================================== */
+
+        function goToLogin() {
+
+            window.location.href =
+                "login(2).html";
+
+        }
+
+
+        /* =====================================
+           PAGE LOAD
+        ===================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                loadComplaints();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

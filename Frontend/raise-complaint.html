@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Raise Complaint - GramSathi</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f5faf6;
+            color: #222;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            height: 65px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            border-bottom: 1px solid #e5e5e5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #079447;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .logo {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            font-weight: bold;
+            color: #079447;
+        }
+
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .notification,
+        .profile {
+            text-decoration: none;
+            font-size: 22px;
+            position: relative;
+            color: #222;
+        }
+
+        .notification span {
+            position: absolute;
+            top: -7px;
+            right: -8px;
+            width: 17px;
+            height: 17px;
+            background: #e53935;
+            color: white;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main-container {
+            width: 100%;
+            max-width: 650px;
+            margin: 35px auto;
+            padding: 0 20px 50px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1f1f1f;
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        /* ================= FORM CARD ================= */
+
+        .complaint-card {
+            background: white;
+            padding: 28px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        .form-group {
+            margin-bottom: 21px;
+        }
+
+        .form-group > label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group > label span {
+            font-weight: normal;
+            color: #777;
+            font-size: 12px;
+        }
+
+        /* ================= INPUTS ================= */
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #d8d8d8;
+            border-radius: 8px;
+            padding: 13px 14px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #079447;
+            box-shadow: 0 0 0 2px rgba(7, 148, 71, 0.08);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* ================= PHOTO UPLOAD ================= */
+
+        .upload-box {
+            position: relative;
+            width: 100%;
+            height: 190px;
+            border: 2px dashed #b9d9c5;
+            background: #f8fcf9;
+            border-radius: 10px;
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            overflow: hidden;
+            padding: 15px;
+            transition: 0.2s;
+        }
+
+        .upload-box:hover {
+            border-color: #079447;
+            background: #f2faf4;
+        }
+
+        .upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .camera {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .upload-content strong {
+            color: #333;
+            font-size: 14px;
+        }
+
+        .upload-content small {
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .upload-box input[type="file"] {
+            display: none;
+        }
+
+        /* ================= SELECTED IMAGE ================= */
+
+        .preview-image {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* ================= REMOVE BUTTON ================= */
+
+        .remove-photo {
+            display: none;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: #e53935;
+            color: white;
+            font-size: 20px;
+            line-height: 30px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .remove-photo:hover {
+            background: #c62828;
+        }
+
+        /* ================= PHOTO ERROR ================= */
+
+        .photo-error {
+            display: none;
+            margin-top: 6px;
+            color: #d32f2f;
+            font-size: 12px;
+        }
+
+        /* ================= SUBMIT BUTTON ================= */
+
+        .submit-btn {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 8px;
+            background: #079447;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #067b3b;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* ================= ERROR ================= */
+
+        .complaint-error {
+            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: #ffe8e8;
+            color: #b00020;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* ================= SUCCESS ================= */
+
+        .success-message {
+            display: none;
+            background: white;
+            margin-top: 25px;
+            padding: 30px 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #079447;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .success-message h2 {
+            color: #222;
+            margin-bottom: 8px;
+        }
+
+        .success-message p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .complaint-id {
+            color: #222 !important;
+            margin-top: 15px;
+        }
+
+        .complaint-id strong {
+            color: #079447;
+        }
+
+        /* ================= SUCCESS BUTTONS ================= */
+
+        .success-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 22px;
+        }
+
+        .success-buttons a,
+        .success-buttons button {
+            padding: 11px 16px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .success-buttons a {
+            background: #079447;
+            color: white;
+        }
+
+        .success-buttons button {
+            border: 1px solid #079447;
+            background: white;
+            color: #079447;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 600px) {
+
+            .header {
+                padding: 0 16px;
+            }
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .main-container {
+                margin-top: 25px;
+                padding: 0 15px 40px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .complaint-card {
+                padding: 20px;
+            }
+
+            .success-buttons {
+                flex-direction: column;
+            }
+
+            .success-buttons a,
+            .success-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="header">
+
+        <a href="dashboard.html" class="back-btn">
+            ←
+        </a>
+
+        <div class="logo">
+            GRAMSATHI
+        </div>
+
+        <div class="header-right">
+
+            <a href="notifications.html" class="notification">
+                🔔
+                <span>2</span>
+            </a>
+
+            <a href="profile.html" class="profile">
+                👤
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main-container">
+
+        <h1>
+            Raise a Complaint
+        </h1>
+
+        <p class="subtitle">
+            Help us improve your village by reporting issues.
+        </p>
+
+
+        <!-- ================= FORM ================= -->
+
+        <form id="complaintForm" class="complaint-card">
+
+            <!-- CATEGORY -->
+
+            <div class="form-group">
+
+                <label for="category">
+                    Complaint Category
+                </label>
+
+                <select id="category" required>
+
+                    <option value="">
+                        Select Category
+                    </option>
+
+                    <option value="Roads">
+                        🛣️ Roads
+                    </option>
+
+                    <option value="Water Supply">
+                        💧 Water Supply
+                    </option>
+
+                    <option value="Electricity">
+                        💡 Electricity
+                    </option>
+
+                    <option value="Drainage">
+                        🚰 Drainage
+                    </option>
+
+                    <option value="Garbage">
+                        🗑️ Garbage
+                    </option>
+
+                    <option value="Street Lights">
+                        💡 Street Lights
+                    </option>
+
+                    <option value="Other">
+                        ⚙️ Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- TITLE -->
+
+            <div class="form-group">
+
+                <label for="title">
+                    Complaint Title
+                </label>
+
+                <input
+                    type="text"
+                    id="title"
+                    placeholder="Enter a short title"
+                    required
+                >
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="form-group">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Describe the issue in detail..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <!-- LOCATION -->
+
+            <div class="form-group">
+
+                <label for="location">
+                    Location / Village
+                </label>
+
+                <input
+                    type="text"
+                    id="location"
+                    placeholder="Enter village or location"
+                    required
+                >
+
+            </div>
+
+
+            <!-- PHOTO -->
+
+            <div class="form-group">
+
+                <label>
+                    Upload Photo
+                    <span>(Optional)</span>
+                </label>
+
+                <label
+                    class="upload-box"
+                    id="uploadBox"
+                    for="photo"
+                >
+
+                    <div
+                        class="upload-content"
+                        id="uploadContent"
+                    >
+
+                        <div class="camera">
+                            📷
+                        </div>
+
+                        <strong>
+                            Choose a photo
+                        </strong>
+
+                        <small>
+                            JPG, PNG up to 5MB
+                        </small>
+
+                    </div>
+
+
+                    <img
+                        id="previewImage"
+                        class="preview-image"
+                        src=""
+                        alt="Selected complaint photo"
+                    >
+
+
+                    <button
+                        type="button"
+                        id="removePhotoBtn"
+                        class="remove-photo"
+                        onclick="removePhoto(event)"
+                    >
+                        ×
+                    </button>
+
+
+                    <input
+                        type="file"
+                        id="photo"
+                        accept="image/png, image/jpeg"
+                    >
+
+                </label>
+
+                <p
+                    id="photoError"
+                    class="photo-error"
+                ></p>
+
+            </div>
+
+
+            <!-- SUBMIT -->
+
+            <button
+                type="submit"
+                class="submit-btn"
+            >
+                Submit Complaint →
+            </button>
+
+        </form>
+
+
+        <!-- ================= SUCCESS ================= -->
+
+        <div
+            id="successMessage"
+            class="success-message"
+        >
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h2>
+                Complaint Submitted!
+            </h2>
+
+            <p>
+                Your complaint has been submitted successfully.
+            </p>
+
+            <p class="complaint-id">
+
+                Complaint ID:
+
+                <strong id="complaintId"></strong>
+
+            </p>
+
+
+            <div class="success-buttons">
+
+                <a href="my-complaints.html">
+                    View My Complaints
+                </a>
+
+                <button
+                    type="button"
+                    onclick="newComplaint()"
+                >
+                    Raise Another Complaint
+                </button>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        /* =========================
+           PHOTO ELEMENTS
+        ========================= */
+
+        const photoInput =
+            document.getElementById("photo");
+
+        const uploadContent =
+            document.getElementById("uploadContent");
+
+        const previewImage =
+            document.getElementById("previewImage");
+
+        const removePhotoBtn =
+            document.getElementById("removePhotoBtn");
+
+        const photoError =
+            document.getElementById("photoError");
+
+
+        /* =========================
+           PHOTO SELECT
+        ========================= */
+
+        photoInput.addEventListener(
+            "change",
+            function () {
+
+                const file =
+                    this.files[0];
+
+                if (!file) {
+                    return;
+                }
+
+
+                /* CHECK FILE TYPE */
+
+                if (
+                    file.type !== "image/jpeg" &&
+                    file.type !== "image/png"
+                ) {
+
+                    photoError.textContent =
+                        "Please select a JPG or PNG image.";
+
+                    photoError.style.display =
+                        "block";
+
+                    removePhoto();
+
+                    return;
+                }
+
+
+                /* CHECK FILE SIZE */
+
+                if (
+                    file.size >
+                    5 * 1024 * 1024
+                ) {
+
+                    photoError.textContent =
+                        "Photo size must be less than 5MB.";
+
+                    photoError.style.display =
+                        "block";
+
+                    removePhoto();
+
+                    return;
+                }
+
+
+                photoError.style.display =
+                    "none";
+
+
+                /* READ IMAGE */
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload =
+                    function (event) {
+
+                        previewImage.src =
+                            event.target.result;
+
+                        previewImage.style.display =
+                            "block";
+
+                        uploadContent.style.display =
+                            "none";
+
+                        removePhotoBtn.style.display =
+                            "block";
+
+                    };
+
+
+                reader.readAsDataURL(file);
+
+            }
+        );
+
+
+        /* =========================
+           REMOVE PHOTO
+        ========================= */
+
+        function removePhoto(event) {
+
+            if (event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+            }
+
+
+            photoInput.value = "";
+
+            previewImage.src = "";
+
+            previewImage.style.display =
+                "none";
+
+            uploadContent.style.display =
+                "flex";
+
+            removePhotoBtn.style.display =
+                "none";
+
+            photoError.style.display =
+                "none";
+
+        }
+
+
+        /* =========================
+           FORM ELEMENTS
+        ========================= */
+
+        const complaintForm =
+            document.getElementById(
+                "complaintForm"
+            );
+
+        const successMessage =
+            document.getElementById(
+                "successMessage"
+            );
+
+        const complaintId =
+            document.getElementById(
+                "complaintId"
+            );
+
+
+        /* =========================
+           FLASK BACKEND
+        ========================= */
+
+        const API_BASE_URL =
+            "http://127.0.0.1:5001";
+
+
+        /* =========================
+           GET LOGGED USER ID
+        ========================= */
+
+        function getUserId() {
+
+            return localStorage.getItem(
+                "gramasathiUserId"
+            );
+
+        }
+
+
+        /* =========================
+           SHOW ERROR
+        ========================= */
+
+        function showComplaintError(message) {
+
+            let errorBox =
+                document.getElementById(
+                    "complaintError"
+                );
+
+
+            if (!errorBox) {
+
+                errorBox =
+                    document.createElement(
+                        "div"
+                    );
+
+                errorBox.id =
+                    "complaintError";
+
+                errorBox.className =
+                    "complaint-error";
+
+                complaintForm.appendChild(
+                    errorBox
+                );
+
+            }
+
+
+            errorBox.textContent =
+                message;
+
+        }
+
+
+        /* =========================
+           CLEAR ERROR
+        ========================= */
+
+        function clearComplaintError() {
+
+            const errorBox =
+                document.getElementById(
+                    "complaintError"
+                );
+
+
+            if (errorBox) {
+
+                errorBox.remove();
+
+            }
+
+        }
+
+
+        /* =========================
+           SUBMIT COMPLAINT
+        ========================= */
+
+        complaintForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                clearComplaintError();
+
+
+                /* GET USER ID */
+
+                const userId =
+                    getUserId();
+
+
+                if (!userId) {
+
+                    showComplaintError(
+                        "Your login session was not found. Please login again."
+                    );
+
+                    return;
+
+                }
+
+
+                /* GET FORM VALUES */
+
+                const category =
+                    document
+                        .getElementById(
+                            "category"
+                        )
+                        .value
+                        .trim();
+
+
+                const title =
+                    document
+                        .getElementById(
+                            "title"
+                        )
+                        .value
+                        .trim();
+
+
+                const description =
+                    document
+                        .getElementById(
+                            "description"
+                        )
+                        .value
+                        .trim();
+
+
+                const location =
+                    document
+                        .getElementById(
+                            "location"
+                        )
+                        .value
+                        .trim();
+
+
+                /* VALIDATION */
+
+                if (
+                    category === "" ||
+                    title === "" ||
+                    description === "" ||
+                    location === ""
+                ) {
+
+                    showComplaintError(
+                        "Please fill all required fields."
+                    );
+
+                    return;
+
+                }
+
+
+                /* BUTTON */
+
+                const submitButton =
+                    complaintForm.querySelector(
+                        ".submit-btn"
+                    );
+
+
+                const originalText =
+                    submitButton.textContent;
+
+
+                submitButton.disabled =
+                    true;
+
+
+                submitButton.textContent =
+                    "Submitting...";
+
+
+                try {
+
+                    /* =========================
+                       SEND TO FLASK
+                    ========================= */
+
+                    const response =
+                        await fetch(
+                            `${API_BASE_URL}/api/complaints`,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        user_id:
+                                            Number(userId),
+
+                                        title:
+                                            title,
+
+                                        category:
+                                            category,
+
+                                        description:
+                                            description,
+
+                                        village:
+                                            location,
+
+                                        location:
+                                            location
+
+                                    })
+                            }
+                        );
+
+
+                    /* READ RESPONSE */
+
+                    const data =
+                        await response.json();
+
+
+                    /* CHECK RESPONSE */
+
+                    if (
+                        !response.ok ||
+                        !data.success
+                    ) {
+
+                        throw new Error(
+                            data.message ||
+                            "Complaint submission failed."
+                        );
+
+                    }
+
+
+                    /* =========================
+                       SUCCESS
+                    ========================= */
+
+                    complaintId.textContent =
+                        data.complaint_id ||
+                        "Generated";
+
+
+                    complaintForm.style.display =
+                        "none";
+
+
+                    successMessage.style.display =
+                        "block";
+
+
+                    successMessage.scrollIntoView({
+                        behavior: "smooth"
+                    });
+
+
+                    console.log(
+                        "Complaint submitted successfully:",
+                        data
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Complaint submission error:",
+                        error
+                    );
+
+
+                    showComplaintError(
+                        error.message ||
+                        "Unable to submit complaint. Please try again."
+                    );
+
+
+                } finally {
+
+                    submitButton.disabled =
+                        false;
+
+                    submitButton.textContent =
+                        originalText;
+
+                }
+
+            }
+        );
+
+
+        /* =========================
+           RAISE ANOTHER COMPLAINT
+        ========================= */
+
+        function newComplaint() {
+
+            complaintForm.reset();
+
+            removePhoto();
+
+            clearComplaintError();
+
+
+            successMessage.style.display =
+                "none";
+
+
+            complaintForm.style.display =
+                "block";
+
+
+            window.scrollTo({
+
+                top: 0,
+
+                behavior: "smooth"
+
+            });
+
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,227 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================
+   MAIN SPLASH SCREEN
+========================================= */
+
+.splash-screen {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+
+    text-align: center;
+
+    background-image: url("images/1slide.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+/* =========================================
+   APP NAME
+========================================= */
+
+h1 {
+    position: relative;
+    z-index: 5;
+
+    padding-top: clamp(55px, 10vh, 100px);
+
+    color: #086b36;
+
+    font-size: clamp(28px, 4vw, 42px);
+
+    line-height: 1.2;
+
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
+}
+
+
+/* =========================================
+   TAGLINE
+========================================= */
+
+.tagline {
+    position: relative;
+    z-index: 5;
+
+    margin-top: 12px;
+
+    color: #333;
+
+    font-size: clamp(13px, 1.5vw, 17px);
+
+    line-height: 1.6;
+
+    font-weight: 500;
+}
+
+
+/* =========================================
+   LOADING SECTION
+========================================= */
+
+.loading-section {
+    position: absolute;
+
+    left: 50%;
+    bottom: clamp(60px, 10vh, 100px);
+
+    transform: translateX(-50%);
+
+    width: 150px;
+
+    z-index: 20;
+}
+
+
+/* =========================================
+   LOADER
+========================================= */
+
+.loader {
+    width: clamp(38px, 4vw, 48px);
+    height: clamp(38px, 4vw, 48px);
+
+    margin: auto;
+
+    border-style: solid;
+    border-width: 4px;
+
+    border-color: #d5e8d7;
+    border-top-color: #08783c;
+
+    border-radius: 50%;
+
+    animation: spin 0.9s linear infinite;
+}
+
+
+/* =========================================
+   LOADING TEXT
+========================================= */
+
+.loading-section p {
+    margin-top: 12px;
+
+    color: #222;
+
+    font-size: clamp(12px, 1.4vw, 15px);
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   LOADER ANIMATION
+========================================= */
+
+@keyframes spin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (min-width: 601px) and (max-width: 1024px) {
+
+    h1 {
+        padding-top: 80px;
+    }
+
+    .loading-section {
+        bottom: 90px;
+    }
+
+}
+
+
+/* =========================================
+   LAPTOP / DESKTOP
+========================================= */
+
+@media (min-width: 1025px) {
+
+    h1 {
+        padding-top: 80px;
+    }
+
+    .loading-section {
+        bottom: 90px;
+    }
+
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+    h1 {
+        padding-top: 55px;
+    }
+
+    .tagline {
+        font-size: 12px;
+    }
+
+    .loading-section {
+        bottom: 60px;
+    }
+
+}
+
+
+/* =========================================
+   LANDSCAPE PHONES
+========================================= */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    h1 {
+        padding-top: 20px;
+        font-size: 24px;
+    }
+
+    .tagline {
+        margin-top: 5px;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .loading-section {
+        bottom: 45px;
+    }
+
+}

@@ -1,0 +1,765 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Announcements - GramSathi</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7f5;
+            color: #222;
+        }
+
+        /* Header */
+        .header {
+            background: #ffffff;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            border: none;
+            background: none;
+            font-size: 25px;
+            cursor: pointer;
+            color: #222;
+        }
+
+        .header h2 {
+            font-size: 22px;
+            color: #1f6f43;
+        }
+
+        /* Main */
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            color: #1f6f43;
+            margin-bottom: 18px;
+        }
+
+        /* Search */
+        .search-box {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 25px;
+        }
+
+        .search-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 35px 20px;
+            color: #1f6f43;
+            font-size: 15px;
+        }
+
+        /* Announcement Card */
+        .announcement-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 18px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+        }
+
+        .announcement-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .announcement-title {
+            color: #1f6f43;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .category {
+            background: #e7f4eb;
+            color: #1f6f43;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .description {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .date {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 15px;
+        }
+
+        .read-btn {
+            border: none;
+            background: #1f6f43;
+            color: white;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .read-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Full Details */
+        .details {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            color: #444;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        /* No Result */
+        .no-result {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: #777;
+            background: white;
+            border-radius: 12px;
+        }
+
+        /* Error */
+        .error-message {
+            display: none;
+            text-align: center;
+            padding: 30px 20px;
+            color: #b42318;
+            background: #fff1f0;
+            border-radius: 12px;
+            margin-bottom: 18px;
+        }
+
+        .retry-btn {
+            margin-top: 12px;
+            border: none;
+            background: #1f6f43;
+            color: white;
+            padding: 9px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+
+            .container {
+                margin-top: 20px;
+            }
+
+            .announcement-top {
+                flex-direction: column;
+            }
+
+            .category {
+                width: fit-content;
+            }
+
+            .header {
+                padding: 15px 18px;
+            }
+
+            .header h2 {
+                font-size: 19px;
+            }
+
+            .announcement-title {
+                font-size: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+
+        <button
+            class="back-btn"
+            onclick="goToDashboard()"
+            aria-label="Back to dashboard">
+            ←
+        </button>
+
+        <h2>Announcements</h2>
+
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="container">
+
+        <h2 class="page-title">
+            Latest Announcements
+        </h2>
+
+
+        <!-- Search -->
+        <div class="search-box">
+
+            <span>🔍</span>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search announcements..."
+                autocomplete="off">
+
+        </div>
+
+
+        <!-- Loading -->
+        <div
+            class="loading"
+            id="loadingMessage">
+            Loading announcements...
+        </div>
+
+
+        <!-- Error -->
+        <div
+            class="error-message"
+            id="errorMessage">
+
+            <div>
+                Unable to load announcements.
+            </div>
+
+            <button
+                class="retry-btn"
+                onclick="loadAnnouncements()">
+                Try Again
+            </button>
+
+        </div>
+
+
+        <!-- Dynamic Announcements -->
+        <div id="announcementsContainer"></div>
+
+
+        <!-- No Result -->
+        <div
+            class="no-result"
+            id="noResult">
+
+            No announcements found.
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        const API_BASE_URL =
+            "http://127.0.0.1:5001";
+
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+        const announcementsContainer =
+            document.getElementById(
+                "announcementsContainer"
+            );
+
+        const loadingMessage =
+            document.getElementById(
+                "loadingMessage"
+            );
+
+        const errorMessage =
+            document.getElementById(
+                "errorMessage"
+            );
+
+        const noResult =
+            document.getElementById(
+                "noResult"
+            );
+
+
+        let announcements = [];
+
+
+        /* =========================================
+           LOAD ANNOUNCEMENTS FROM BACKEND
+        ========================================= */
+
+        async function loadAnnouncements() {
+
+            loadingMessage.style.display = "block";
+
+            errorMessage.style.display = "none";
+
+            noResult.style.display = "none";
+
+            announcementsContainer.innerHTML = "";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/api/announcements`
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to fetch announcements"
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                if (!data.success) {
+
+                    throw new Error(
+                        data.message ||
+                        "Unable to load announcements"
+                    );
+
+                }
+
+
+                announcements =
+                    Array.isArray(
+                        data.announcements
+                    )
+                        ? data.announcements
+                        : [];
+
+
+                loadingMessage.style.display =
+                    "none";
+
+
+                renderAnnouncements(
+                    announcements
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Announcements Error:",
+                    error
+                );
+
+
+                loadingMessage.style.display =
+                    "none";
+
+                errorMessage.style.display =
+                    "block";
+
+            }
+
+        }
+
+
+        /* =========================================
+           RENDER ANNOUNCEMENTS
+        ========================================= */
+
+        function renderAnnouncements(
+            list
+        ) {
+
+            announcementsContainer.innerHTML =
+                "";
+
+
+            if (!list.length) {
+
+                noResult.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
+            noResult.style.display =
+                "none";
+
+
+            list.forEach(function (
+                announcement
+            ) {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "announcement-card";
+
+
+                const title =
+                    escapeHTML(
+                        announcement.title ||
+                        "Announcement"
+                    );
+
+
+                const category =
+                    escapeHTML(
+                        announcement.category ||
+                        "General"
+                    );
+
+
+                const message =
+                    escapeHTML(
+                        announcement.message ||
+                        ""
+                    );
+
+
+                const date =
+                    formatDate(
+                        announcement.created_at
+                    );
+
+
+                card.innerHTML = `
+
+                    <div class="announcement-top">
+
+                        <h3 class="announcement-title">
+                            ${title}
+                        </h3>
+
+                        <span class="category">
+                            ${category}
+                        </span>
+
+                    </div>
+
+
+                    <p class="description">
+                        ${getShortDescription(
+                            announcement.message || ""
+                        )}
+                    </p>
+
+
+                    <p class="date">
+                        Posted: ${date}
+                    </p>
+
+
+                    <button
+                        class="read-btn"
+                        onclick="toggleDetails(this)">
+
+                        Read More
+
+                    </button>
+
+
+                    <div class="details">
+
+                        ${message}
+
+                    </div>
+
+                `;
+
+
+                announcementsContainer.appendChild(
+                    card
+                );
+
+            });
+
+        }
+
+
+        /* =========================================
+           SHORT DESCRIPTION
+        ========================================= */
+
+        function getShortDescription(
+            message
+        ) {
+
+            const cleanText =
+                String(message)
+                    .replace(/\s+/g, " ")
+                    .trim();
+
+
+            if (cleanText.length <= 160) {
+
+                return escapeHTML(
+                    cleanText
+                );
+
+            }
+
+
+            return escapeHTML(
+                cleanText.substring(
+                    0,
+                    160
+                ) + "..."
+            );
+
+        }
+
+
+        /* =========================================
+           READ MORE / READ LESS
+        ========================================= */
+
+        function toggleDetails(
+            button
+        ) {
+
+            const details =
+                button.nextElementSibling;
+
+
+            if (
+                details.style.display ===
+                "block"
+            ) {
+
+                details.style.display =
+                    "none";
+
+                button.textContent =
+                    "Read More";
+
+            } else {
+
+                details.style.display =
+                    "block";
+
+                button.textContent =
+                    "Read Less";
+
+            }
+
+        }
+
+
+        /* =========================================
+           SEARCH
+        ========================================= */
+
+        searchInput.addEventListener(
+            "input",
+            function () {
+
+                const searchText =
+                    this.value
+                        .toLowerCase()
+                        .trim();
+
+
+                if (!searchText) {
+
+                    renderAnnouncements(
+                        announcements
+                    );
+
+                    return;
+
+                }
+
+
+                const filtered =
+                    announcements.filter(
+                        function (announcement) {
+
+                            const title =
+                                String(
+                                    announcement.title ||
+                                    ""
+                                ).toLowerCase();
+
+
+                            const message =
+                                String(
+                                    announcement.message ||
+                                    ""
+                                ).toLowerCase();
+
+
+                            const category =
+                                String(
+                                    announcement.category ||
+                                    ""
+                                ).toLowerCase();
+
+
+                            return (
+                                title.includes(
+                                    searchText
+                                ) ||
+                                message.includes(
+                                    searchText
+                                ) ||
+                                category.includes(
+                                    searchText
+                                )
+                            );
+
+                        }
+                    );
+
+
+                renderAnnouncements(
+                    filtered
+                );
+
+            }
+        );
+
+
+        /* =========================================
+           DATE FORMAT
+        ========================================= */
+
+        function formatDate(
+            dateValue
+        ) {
+
+            if (!dateValue) {
+
+                return "Date unavailable";
+
+            }
+
+
+            const date =
+                new Date(dateValue);
+
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return "Date unavailable";
+
+            }
+
+
+            return date.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric"
+                }
+            );
+
+        }
+
+
+        /* =========================================
+           HTML SAFETY
+        ========================================= */
+
+        function escapeHTML(
+            value
+        ) {
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =========================================
+           BACK TO DASHBOARD
+        ========================================= */
+
+        function goToDashboard() {
+
+            window.location.href =
+                "dashboard.html";
+
+        }
+
+
+        /* =========================================
+           LOAD WHEN PAGE OPENS
+        ========================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                loadAnnouncements();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Complaint Details - GramSathi</title>
+
+    <link rel="stylesheet"
+          href="complaint-details.css">
+
+</head>
+
+
+<body>
+
+<div class="page">
+
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <button class="back-button"
+                onclick="goBack()">
+
+            ←
+
+        </button>
+
+        <h2>Complaint Details</h2>
+
+    </header>
+
+
+
+    <!-- CONTENT -->
+
+    <main class="details-container">
+
+
+        <!-- Complaint ID -->
+
+        <div class="detail-row">
+
+            <span>Complaint ID</span>
+
+            <strong id="complaintId">
+                GC2024 0515 0001
+            </strong>
+
+        </div>
+
+
+
+        <!-- Category -->
+
+        <div class="detail-row">
+
+            <span>Category</span>
+
+            <strong id="category">
+                Roads
+            </strong>
+
+        </div>
+
+
+
+        <!-- Status -->
+
+        <div class="detail-row">
+
+            <span>Status</span>
+
+            <span id="status"
+                  class="status">
+
+                Pending
+
+            </span>
+
+        </div>
+
+
+
+        <!-- Date -->
+
+        <div class="detail-row">
+
+            <span>Date</span>
+
+            <strong id="date">
+                15 May 2024
+            </strong>
+
+        </div>
+
+
+
+        <!-- Description -->
+
+        <div class="description">
+
+            <h3>Description</h3>
+
+            <p id="description">
+
+                There is a big pothole on the main
+                road near the temple.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- PHOTO -->
+
+        <div class="photo-container">
+
+            <img id="complaintPhoto"
+                 src=""
+                 alt="Complaint Photo">
+
+        </div>
+
+
+
+        <!-- TIMELINE -->
+
+        <div class="timeline">
+
+
+            <!-- Submitted -->
+
+            <div class="timeline-item">
+
+                <div class="timeline-dot completed">
+                    ✓
+                </div>
+
+                <div class="timeline-content">
+
+                    <span class="now">
+                        Now
+                    </span>
+
+                    <h4>
+                        Complaint Submitted
+                    </h4>
+
+                    <p id="submittedDate">
+                        15 May 2024, 10:00 AM
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- In Progress -->
+
+            <div class="timeline-item">
+
+                <div class="timeline-dot active">
+                    ●
+                </div>
+
+                <div class="timeline-content">
+
+                    <h4>
+                        In Progress
+                    </h4>
+
+                    <p id="progressDate">
+                        Pending
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Resolved -->
+
+            <div class="timeline-item">
+
+                <div class="timeline-dot pending">
+                    ○
+                </div>
+
+                <div class="timeline-content">
+
+                    <h4>
+                        Resolved
+                    </h4>
+
+                    <p>
+                        Pending
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- TRACK BUTTON -->
+
+        <button class="track-button"
+                onclick="trackComplaint()">
+
+            Track Complaint
+
+        </button>
+
+
+    </main>
+
+</div>
+
+
+
+<script src="complaint-details.js"></script>
+
+</body>
+
+</html>

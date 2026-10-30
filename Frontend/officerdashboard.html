@@ -1,0 +1,3577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GramaSathi - Officer Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        :root {
+            --green: #087f3e;
+            --dark-green: #05652f;
+            --light-green: #eaf8ef;
+            --bg: #f4f7f5;
+            --white: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --blue: #2563eb;
+            --red: #dc2626;
+            --orange: #f59e0b;
+            --shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body.dark {
+            --bg: #111827;
+            --white: #1f2937;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --border: #374151;
+        }
+
+        /* HEADER */
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .menu-btn {
+            position: absolute;
+            left: 18px;
+            width: 45px;
+            height: 45px;
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 29px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .header-actions {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .header-action {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: transparent;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 21px;
+            position: relative;
+        }
+
+        .header-action:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 1px;
+            right: 0;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 20px;
+            background: var(--red);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-header {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: white;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -290px;
+            width: 280px;
+            height: 100vh;
+            background: var(--white);
+            z-index: 1200;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.18);
+            transition: 0.3s;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            height: 70px;
+            background: var(--green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            border: none;
+            background: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            padding: 15px 12px;
+        }
+
+        .sidebar-menu button {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            text-align: left;
+            padding: 14px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .sidebar-menu button:hover,
+        .sidebar-menu button.active {
+            background: var(--light-green);
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        .sidebar-menu .logout {
+            color: var(--red);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 1100;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* MAIN */
+
+        .main {
+            max-width: 1500px;
+            margin: auto;
+            padding: 95px 25px 30px;
+        }
+
+        .page {
+            display: none;
+            position: relative;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: #eef2f0;
+            color: #333;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        .page-close:hover {
+            background: var(--red);
+            color: white;
+        }
+
+        .page-title {
+            padding-right: 55px;
+            margin-bottom: 22px;
+        }
+
+        .page-title h2 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            color: var(--muted);
+        }
+
+        /* WELCOME */
+
+        .welcome {
+            background: linear-gradient(110deg, #e9f9ef, #f8fffb);
+            border-radius: 17px;
+            min-height: 180px;
+            padding: 30px;
+            margin-bottom: 23px;
+            border: 1px solid #d8f0df;
+        }
+
+        body.dark .welcome {
+            background: #173523;
+        }
+
+        .welcome h2 {
+            color: var(--green);
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: var(--muted);
+        }
+
+        .welcome-badge {
+            display: inline-block;
+            margin-top: 16px;
+            background: white;
+            color: var(--green);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        /* STATS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 23px;
+        }
+
+        .stat {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 21px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--green);
+        }
+
+        .stat h3 {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .stat .number {
+            font-size: 31px;
+            font-weight: bold;
+        }
+
+        /* CARDS */
+
+        .card {
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .card-header h3 {
+            font-size: 19px;
+        }
+
+        /* TABLE */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px 11px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8faf9;
+        }
+
+        body.dark th {
+            background: #111827;
+        }
+
+        /* STATUS */
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #946200;
+        }
+
+        .progress {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .resolved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .medium {
+            background: #fff3cd;
+            color: #946200;
+        }
+
+        /* BUTTONS */
+
+        .btn {
+            border: none;
+            border-radius: 7px;
+            padding: 9px 13px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-blue {
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-red {
+            background: var(--red);
+            color: white;
+        }
+
+        .btn-gray {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        /* QUICK ACTIONS */
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .quick-btn {
+            border: none;
+            background: var(--light-green);
+            color: var(--green);
+            padding: 18px;
+            border-radius: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* TWO COLUMN */
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 22px;
+        }
+
+        /* SCHEDULE */
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .schedule-item h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .schedule-item p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* NOTIFICATIONS */
+
+        .notification {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .notification.unread {
+            border-left: 5px solid var(--green);
+            background: #f4fcf7;
+        }
+
+        .notification h4 {
+            margin-bottom: 5px;
+        }
+
+        .notification p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* PROFILE */
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 30px;
+        }
+
+        .profile-photo {
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            background: var(--light-green);
+            border: 4px solid #d7f0df;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            overflow: hidden;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        select,
+        .search {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 11px 13px;
+            outline: none;
+            background: var(--white);
+            color: var(--text);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* MODAL */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--white);
+            width: 650px;
+            max-width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 17px;
+            top: 12px;
+            border: none;
+            background: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* TOAST */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #1f2937;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 9px;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1100px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .main {
+                padding: 90px 14px 25px;
+            }
+
+            .header h1 {
+                font-size: 19px;
+            }
+
+            .header-actions {
+                right: 8px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .profile-grid,
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <button class="menu-btn" onclick="openSidebar()">
+            ☰
+        </button>
+
+        <h1>Officer Dashboard</h1>
+
+        <div class="header-actions">
+
+            <button class="header-action"
+                onclick="showPage('notifications')"
+                title="Notifications">
+
+                🔔
+
+                <span class="notification-badge"
+                    id="headerNotificationBadge">
+                    0
+                </span>
+
+            </button>
+
+            <button class="header-action"
+                onclick="showPage('profile')"
+                title="My Profile">
+
+                <span class="profile-header">
+                    👤
+                </span>
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-header">
+
+            <h2>GramaSathi</h2>
+
+            <button class="close-btn"
+                onclick="closeSidebar()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="sidebar-menu">
+
+            <button class="active"
+                onclick="showPage('dashboard', this)">
+                📊 Dashboard
+            </button>
+
+            <button onclick="showPage('assigned', this)">
+                📋 Assigned Complaints
+            </button>
+
+            <button onclick="showPage('resolved', this)">
+                ✅ Resolved Complaints
+            </button>
+
+            <button onclick="showPage('schedule', this)">
+                📅 My Schedule
+            </button>
+
+            <button onclick="showPage('notifications', this)">
+                🔔 Notifications
+            </button>
+
+            <button onclick="showPage('activity', this)">
+                🕒 Activity Log
+            </button>
+
+            <button onclick="showPage('profile', this)">
+                👤 My Profile
+            </button>
+
+            <button onclick="toggleDarkMode()">
+                🌙 Dark Mode
+            </button>
+
+            <button class="logout"
+                onclick="logout()">
+                🚪 Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <div class="overlay"
+        id="overlay"
+        onclick="closeSidebar()">
+    </div>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <!-- DASHBOARD -->
+
+        <section class="page active"
+            id="dashboard">
+
+            <button class="page-close"
+                onclick="showPage('dashboard')">
+                ×
+            </button>
+
+            <div class="welcome">
+
+                <h2>
+                    Hello, Officer 👋
+                </h2>
+
+                <p>
+                    Manage your assigned complaints
+                    and update their progress.
+                </p>
+
+                <span class="welcome-badge">
+                    Officer ID:
+                    <span id="welcomeOfficerId">
+                        4
+                    </span>
+                </span>
+
+            </div>
+
+
+            <!-- STATISTICS -->
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <h3>
+                        Assigned Complaints
+                    </h3>
+
+                    <div class="number"
+                        id="assignedCount">
+                        0
+                    </div>
+
+                    <small>
+                        Total assigned to you
+                    </small>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <h3>
+                        Pending
+                    </h3>
+
+                    <div class="number"
+                        id="pendingCount">
+                        0
+                    </div>
+
+                    <small>
+                        Waiting for action
+                    </small>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <h3>
+                        In Progress
+                    </h3>
+
+                    <div class="number"
+                        id="progressCount">
+                        0
+                    </div>
+
+                    <small>
+                        Currently working
+                    </small>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <h3>
+                        Resolved
+                    </h3>
+
+                    <div class="number"
+                        id="resolvedCount">
+                        0
+                    </div>
+
+                    <small>
+                        Successfully resolved
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUICK ACTIONS -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>
+                        Quick Actions
+                    </h3>
+
+                </div>
+
+                <div class="quick-actions">
+
+                    <button class="quick-btn"
+                        onclick="showPage('assigned')">
+                        📋
+                        <br>
+                        Assigned Complaints
+                    </button>
+
+                    <button class="quick-btn"
+                        onclick="showPage('resolved')">
+                        ✅
+                        <br>
+                        Resolved Complaints
+                    </button>
+
+                    <button class="quick-btn"
+                        onclick="showPage('notifications')">
+                        🔔
+                        <br>
+                        Notifications
+                    </button>
+
+                    <button class="quick-btn"
+                        onclick="showPage('profile')">
+                        👤
+                        <br>
+                        My Profile
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="two-column">
+
+                <!-- TODAY'S WORK -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h3>
+                            Today's Work
+                        </h3>
+
+                    </div>
+
+                    <div id="todaysWorkList">
+
+                        <p>
+                            Loading complaints...
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PERFORMANCE -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h3>
+                            My Performance
+                        </h3>
+
+                    </div>
+
+                    <div>
+
+                        <h2 id="performanceRate">
+                            0%
+                        </h2>
+
+                        <p style="color:var(--muted);margin-top:6px;">
+                            Resolution Rate
+                        </p>
+
+                        <div style="
+                            margin-top:18px;
+                            height:9px;
+                            background:#e5e7eb;
+                            border-radius:20px;
+                            overflow:hidden;
+                        ">
+
+                            <div id="performanceBar"
+                                style="
+                                    height:100%;
+                                    width:0%;
+                                    background:#087f3e;
+                                ">
+                            </div>
+
+                        </div>
+
+                        <p id="performanceText"
+                            style="
+                                color:var(--muted);
+                                margin-top:12px;
+                                font-size:13px;
+                            ">
+                            Loading performance...
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECENTLY ASSIGNED -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>
+                        Recently Assigned
+                    </h3>
+
+                    <button class="btn btn-blue"
+                        onclick="showPage('assigned')">
+                        View All
+                    </button>
+
+                </div>
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Complaint ID</th>
+                                <th>Citizen</th>
+                                <th>Complaint</th>
+                                <th>Date</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="recentlyAssignedTable">
+
+                            <tr>
+                                <td colspan="7"
+                                    style="text-align:center;">
+                                    Loading...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ASSIGNED COMPLAINTS -->
+
+        <section class="page"
+            id="assigned">
+
+            <button class="page-close"
+                onclick="showPage('dashboard')">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>
+                    Assigned Complaints
+                </h2>
+
+                <p>
+                    Complaints assigned to you by Admin.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <div class="filters">
+
+                    <input
+                        type="text"
+                        class="search"
+                        id="complaintSearch"
+                        placeholder="Search complaint..."
+                        oninput="filterComplaints()"
+                    >
+
+                    <select
+                        id="statusFilter"
+                        onchange="filterComplaints()">
+
+                        <option value="All">
+                            All Status
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="In Progress">
+                            In Progress
+                        </option>
+
+                        <option value="Resolved">
+                            Resolved
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Complaint ID</th>
+                                <th>Citizen</th>
+                                <th>Category</th>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="complaintTable">
+
+                            <tr>
+                                <td colspan="8"
+                                    style="text-align:center;">
+                                    Loading complaints...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESOLVED -->
+
+        <section class="page"
+            id="resolved">
+
+            <button class="page-close"
+                onclick="showPage('dashboard')">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>
+                    Resolved Complaints
+                </h2>
+
+                <p>
+                    Complaints completed by you.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Complaint ID</th>
+                                <th>Citizen</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="resolvedTable">
+
+                            <tr>
+                                <td colspan="6"
+                                    style="text-align:center;">
+                                    Loading...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SCHEDULE -->
+
+        <section class="page"
+            id="schedule">
+
+            <button class="page-close"
+                onclick="showPage('dashboard')">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>
+                    My Schedule
+                </h2>
+
+                <p>
+                    Your current work schedule.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <div class="schedule-item">
+
+                    <div>
+                        <h4>
+                            Review Assigned Complaints
+                        </h4>
+
+                        <p>
+                            Check new complaints assigned by Admin.
+                        </p>
+                    </div>
+
+                    <strong style="margin-left:auto;">
+                        Today
+                    </strong>
+
+                </div>
+
+
+                <div class="schedule-item">
+
+                    <div>
+                        <h4>
+                            Update Complaint Status
+                        </h4>
+
+                        <p>
+                            Update complaints after field verification.
+                        </p>
+                    </div>
+
+                    <strong style="margin-left:auto;">
+                        Today
+                    </strong>
+
+                </div>
+
+
+                <div class="schedule-item">
+
+                    <div>
+                        <h4>
+                            Complete Resolved Cases
+                        </h4>
+
+                        <p>
+                            Add resolution notes for completed complaints.
+                        </p>
+                    </div>
+
+                    <strong style="margin-left:auto;">
+                        As Required
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- NOTIFICATIONS -->
+
+        <section class="page"
+            id="notifications">
+
+            <button class="page-close"
+                onclick="showPage('dashboard')">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>
+                    Notifications
+                </h2>
+
+                <p>
+                    Latest updates from GramaSathi.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <div id="notificationList">
+
+                    <p>
+                        Loading notifications...
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACTIVITY -->
+
+        <section class="page"
+            id="activity">
+
+            <button class="page-close"
+                onclick="showPage('dashboard')">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>
+                    Activity Log
+                </h2>
+
+                <p>
+                    Your recent dashboard activity.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <div id="activityList">
+
+                    <div class="schedule-item">
+
+                        <div>
+
+                            <h4>
+                                Officer Dashboard Opened
+                            </h4>
+
+                            <p>
+                                Dashboard connected to Flask backend.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROFILE -->
+
+        <section class="page"
+            id="profile">
+
+            <button class="page-close"
+                onclick="showPage('dashboard')">
+                ×
+            </button>
+
+            <div class="page-title">
+
+                <h2>
+                    My Profile
+                </h2>
+
+                <p>
+                    View and update your officer information.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <div class="profile-grid">
+
+                    <div>
+
+                        <div class="profile-photo"
+                            id="profilePhoto">
+                            👤
+                        </div>
+
+                        <br>
+
+                        <input
+                            type="file"
+                            id="profileImageInput"
+                            accept="image/*"
+                            onchange="previewProfileImage(event)"
+                        >
+
+                    </div>
+
+
+                    <div class="profile-form">
+
+                        <div class="form-group">
+
+                            <label>
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="profileName"
+                                placeholder="Officer name"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Mobile
+                            </label>
+
+                            <input
+                                type="text"
+                                id="profileMobile"
+                                readonly
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="profileEmail"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Village
+                            </label>
+
+                            <input
+                                type="text"
+                                id="profileVillage"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <button class="btn btn-green"
+                                onclick="saveProfile()">
+                                Save Profile
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- COMPLAINT MODAL -->
+
+    <div class="modal"
+        id="complaintModal">
+
+        <div class="modal-box">
+
+            <button class="modal-close"
+                onclick="closeModal()">
+                ×
+            </button>
+
+            <h2 style="margin-bottom:20px;">
+                Complaint Details
+            </h2>
+
+            <div id="complaintDetails">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOAST -->
+
+    <div class="toast"
+        id="toast">
+    </div>
+
+
+    <script>
+
+const role = localStorage.getItem("gramasathiRole");
+
+if (role !== "officer") {
+    window.location.replace("login.html");
+}
+        /* =====================================================
+           BACKEND CONFIGURATION
+        ===================================================== */
+
+        const API_BASE = "http://127.0.0.1:5001";
+
+     const CURRENT_LOGIN_ID =
+    Number(localStorage.getItem("gramasathiUserId")) ||
+    Number(localStorage.getItem("officerId")) ||
+    Number(localStorage.getItem("userId"));
+
+if (!CURRENT_LOGIN_ID) {
+    alert("Officer session not found. Please login again.");
+    window.location.replace("login.html");
+}
+
+const OFFICER_ID = CURRENT_LOGIN_ID;   
+
+
+        /* =====================================================
+           BASIC HELPERS
+        ===================================================== */
+
+        function escapeHtml(value) {
+
+            if (value === null || value === undefined) {
+                return "";
+            }
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "N/A";
+            }
+
+            const date = new Date(value);
+
+            if (isNaN(date.getTime())) {
+                return String(value);
+            }
+
+            return date.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+        }
+
+
+        function getComplaintTitle(complaint) {
+
+            return (
+                complaint.title ||
+                complaint.description ||
+                "Complaint"
+            );
+        }
+
+
+        function priorityForComplaint() {
+
+            return "Medium";
+        }
+
+
+        function getStatusClass(status) {
+
+            if (status === "Pending") {
+                return "pending";
+            }
+
+            if (status === "In Progress") {
+                return "progress";
+            }
+
+            if (status === "Resolved") {
+                return "resolved";
+            }
+
+            return "pending";
+        }
+
+
+        function showToast(message) {
+
+            const toast =
+                document.getElementById("toast");
+
+            toast.textContent = message;
+
+            toast.classList.add("show");
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        function openSidebar() {
+
+            document
+                .getElementById("sidebar")
+                .classList.add("active");
+
+            document
+                .getElementById("overlay")
+                .classList.add("active");
+        }
+
+
+        function closeSidebar() {
+
+            document
+                .getElementById("sidebar")
+                .classList.remove("active");
+
+            document
+                .getElementById("overlay")
+                .classList.remove("active");
+        }
+
+
+        /* =====================================================
+           PAGE NAVIGATION
+        ===================================================== */
+
+        function showPage(pageId, button = null) {
+
+            document
+                .querySelectorAll(".page")
+                .forEach(page => {
+                    page.classList.remove("active");
+                });
+
+            const page =
+                document.getElementById(pageId);
+
+            if (page) {
+                page.classList.add("active");
+            }
+
+            document
+                .querySelectorAll(".sidebar-menu button")
+                .forEach(btn => {
+                    btn.classList.remove("active");
+                });
+
+            if (button) {
+                button.classList.add("active");
+            }
+
+            closeSidebar();
+
+            if (pageId === "assigned") {
+                renderComplaintTable(officerComplaints);
+            }
+
+            if (pageId === "resolved") {
+                renderResolvedComplaints(
+                    officerComplaints
+                );
+            }
+
+            if (pageId === "notifications") {
+                loadNotifications();
+            }
+
+        }
+
+
+        /* =====================================================
+           LOAD OFFICER COMPLAINTS
+        ===================================================== */
+
+        async function loadComplaints() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_BASE}/api/officer/complaints/${OFFICER_ID}`,
+                        {
+                            cache: "no-store"
+                        }
+                    );
+
+                const payload =
+                    await response.json();
+
+                if (
+                    !response.ok ||
+                    payload.success === false
+                ) {
+
+                    throw new Error(
+                        payload.message ||
+                        "Failed to load complaints"
+                    );
+
+                }
+
+                officerComplaints =
+                    Array.isArray(payload)
+                        ? payload
+                        : (
+                            Array.isArray(
+                                payload.complaints
+                            )
+                                ? payload.complaints
+                                : []
+                        );
+
+
+                renderComplaintTable(
+                    officerComplaints
+                );
+
+                renderResolvedComplaints(
+                    officerComplaints
+                );
+
+                updateDashboardCounts();
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Complaint loading error:",
+                    error
+                );
+
+                officerComplaints = [];
+
+                const table =
+                    document.getElementById(
+                        "complaintTable"
+                    );
+
+                if (table) {
+
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="8"
+                                style="
+                                    text-align:center;
+                                    color:#dc2626;
+                                    padding:25px;
+                                ">
+                                Could not connect to GramaSathi backend.
+                                Please make sure Flask is running on port 5001.
+                            </td>
+                        </tr>
+                    `;
+
+                }
+
+                updateDashboardCounts();
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RENDER COMPLAINT TABLE
+        ===================================================== */
+
+        function renderComplaintTable(
+            complaints
+        ) {
+
+            const table =
+                document.getElementById(
+                    "complaintTable"
+                );
+
+            if (!table) {
+                return;
+            }
+
+            if (!complaints.length) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="8"
+                            style="
+                                text-align:center;
+                                padding:25px;
+                                color:var(--muted);
+                            ">
+                            No complaints assigned.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            table.innerHTML =
+                complaints.map(c => {
+
+                    const status =
+                        c.status || "Pending";
+
+                    const priority =
+                        priorityForComplaint(c);
+
+                    return `
+                        <tr>
+
+                            <td>
+                                #${escapeHtml(
+                                    c.complaint_id
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    c.citizen_name ||
+                                    "N/A"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    c.category ||
+                                    "General"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    getComplaintTitle(c)
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    formatDate(
+                                        c.created_at
+                                    )
+                                )}
+                            </td>
+
+                            <td>
+                                <span class="status medium">
+                                    ${priority}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="status ${getStatusClass(status)}">
+                                    ${escapeHtml(status)}
+                                </span>
+                            </td>
+
+                            <td>
+                                <button
+                                    class="btn btn-blue"
+                                    onclick="viewBackendComplaint('${escapeHtml(c.complaint_id)}')">
+                                    View
+                                </button>
+                            </td>
+
+                        </tr>
+                    `;
+
+                }).join("");
+
+        }
+
+
+        /* =====================================================
+           RESOLVED COMPLAINTS
+        ===================================================== */
+
+        function renderResolvedComplaints(
+            complaints
+        ) {
+
+            const table =
+                document.getElementById(
+                    "resolvedTable"
+                );
+
+            if (!table) {
+                return;
+            }
+
+            const resolved =
+                complaints.filter(
+                    c => c.status === "Resolved"
+                );
+
+
+            if (!resolved.length) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6"
+                            style="
+                                text-align:center;
+                                padding:25px;
+                                color:var(--muted);
+                            ">
+                            No resolved complaints.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            table.innerHTML =
+                resolved.map(c => {
+
+                    return `
+                        <tr>
+
+                            <td>
+                                #${escapeHtml(
+                                    c.complaint_id
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    c.citizen_name ||
+                                    "N/A"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    getComplaintTitle(c)
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    c.category ||
+                                    "General"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    formatDate(
+                                        c.updated_at ||
+                                        c.created_at
+                                    )
+                                )}
+                            </td>
+
+                            <td>
+                                <span class="status resolved">
+                                    Resolved
+                                </span>
+                            </td>
+
+                        </tr>
+                    `;
+
+                }).join("");
+
+        }
+
+
+        /* =====================================================
+           SEARCH / FILTER
+        ===================================================== */
+
+        function filterComplaints() {
+
+            const search =
+                (
+                    document.getElementById(
+                        "complaintSearch"
+                    )?.value || ""
+                ).toLowerCase();
+
+            const status =
+                document.getElementById(
+                    "statusFilter"
+                )?.value || "All";
+
+
+            const filtered =
+                officerComplaints.filter(c => {
+
+                    const text =
+                        `
+                        ${c.complaint_id || ""}
+                        ${c.citizen_name || ""}
+                        ${c.title || ""}
+                        ${c.category || ""}
+                        ${c.description || ""}
+                        `.toLowerCase();
+
+                    const searchMatch =
+                        text.includes(search);
+
+                    const statusMatch =
+                        status === "All" ||
+                        c.status === status;
+
+                    return (
+                        searchMatch &&
+                        statusMatch
+                    );
+
+                });
+
+
+            renderComplaintTable(filtered);
+
+        }
+
+
+        /* =====================================================
+           VIEW COMPLAINT
+        ===================================================== */
+
+        function viewBackendComplaint(
+            complaintId
+        ) {
+
+            const complaint =
+                officerComplaints.find(
+                    c =>
+                        String(c.complaint_id) ===
+                        String(complaintId)
+                );
+
+            if (!complaint) {
+
+                showToast(
+                    "Complaint not found"
+                );
+
+                return;
+            }
+
+            viewComplaint(complaint);
+
+        }
+
+
+        function viewComplaint(
+            complaint
+        ) {
+
+            const modal =
+                document.getElementById(
+                    "complaintModal"
+                );
+
+            const details =
+                document.getElementById(
+                    "complaintDetails"
+                );
+
+
+            details.innerHTML = `
+
+                <div class="detail-row">
+                    <strong>Complaint ID</strong>
+                    <span>
+                        #${escapeHtml(
+                            complaint.complaint_id
+                        )}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Citizen</strong>
+                    <span>
+                        ${escapeHtml(
+                            complaint.citizen_name ||
+                            "N/A"
+                        )}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Mobile</strong>
+                    <span>
+                        ${escapeHtml(
+                            complaint.citizen_mobile ||
+                            "N/A"
+                        )}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Category</strong>
+                    <span>
+                        ${escapeHtml(
+                            complaint.category ||
+                            "General"
+                        )}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Title</strong>
+                    <span>
+                        ${escapeHtml(
+                            complaint.title ||
+                            "Complaint"
+                        )}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Description</strong>
+                    <span style="max-width:60%;">
+                        ${escapeHtml(
+                            complaint.description ||
+                            "No description"
+                        )}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Village</strong>
+                    <span>
+                        ${escapeHtml(
+                            complaint.village ||
+                            "N/A"
+                        )}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Location</strong>
+                    <span>
+                        ${escapeHtml(
+                            complaint.location ||
+                            "N/A"
+                        )}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Current Status</strong>
+
+                    <select id="complaintStatus"
+                        style="min-width:160px;">
+
+                        <option value="Pending"
+                            ${complaint.status === "Pending" ? "selected" : ""}>
+                            Pending
+                        </option>
+
+                        <option value="In Progress"
+                            ${complaint.status === "In Progress" ? "selected" : ""}>
+                            In Progress
+                        </option>
+
+                        <option value="Resolved"
+                            ${complaint.status === "Resolved" ? "selected" : ""}>
+                            Resolved
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group"
+                    style="margin-top:20px;">
+
+                    <label>
+                        Officer Remarks / Resolution Note
+                    </label>
+
+                    <textarea
+                        id="resolutionNote"
+                        placeholder="Enter update or resolution note...">${escapeHtml(
+                            complaint.resolution_note ||
+                            ""
+                        )}</textarea>
+
+                </div>
+
+
+                <div style="
+                    margin-top:20px;
+                    display:flex;
+                    gap:10px;
+                    justify-content:flex-end;
+                ">
+
+                    <button
+                        class="btn btn-gray"
+                        onclick="closeModal()">
+                        Cancel
+                    </button>
+
+                    <button
+                        class="btn btn-green"
+                        onclick="updateComplaint('${escapeHtml(complaint.complaint_id)}')">
+                        Update Complaint
+                    </button>
+
+                </div>
+
+            `;
+
+            modal.classList.add("active");
+
+        }
+
+
+        function closeModal() {
+
+            document
+                .getElementById("complaintModal")
+                .classList.remove("active");
+
+        }
+
+
+        /* =====================================================
+           UPDATE COMPLAINT
+        ===================================================== */
+
+        async function updateComplaint(
+            complaintId
+        ) {
+
+            const status =
+                document.getElementById(
+                    "complaintStatus"
+                )?.value;
+
+            const resolutionNote =
+                (
+                    document.getElementById(
+                        "resolutionNote"
+                    )?.value || ""
+                ).trim();
+
+
+            if (
+                status === "Resolved" &&
+                !resolutionNote
+            ) {
+
+                showToast(
+                    "Resolution note is required when resolving"
+                );
+
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_BASE}/api/officer/complaints/${encodeURIComponent(complaintId)}/status`,
+                        {
+                            method: "PUT",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                status:
+                                    status,
+
+                                officer_id:
+                                    OFFICER_ID,
+
+                                resolution_note:
+                                    resolutionNote
+
+                            })
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    result.success === false
+                ) {
+
+                    throw new Error(
+                        result.message ||
+                        result.error ||
+                        "Status update failed"
+                    );
+
+                }
+
+
+                closeModal();
+
+                showToast(
+                    "Complaint #" +
+                    complaintId +
+                    " updated successfully"
+                );
+
+
+                officerComplaints = [];
+
+                await loadComplaints();
+
+                await Promise.all([
+                    loadTodaysWork(),
+                    loadRecentlyAssigned(),
+                    loadMyPerformance(),
+                    loadNotifications()
+                ]);
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Update complaint error:",
+                    error
+                );
+
+                showToast(
+                    error.message ||
+                    "Failed to update complaint"
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           DASHBOARD COUNTS
+        ===================================================== */
+
+        function updateDashboardCounts() {
+
+            const pending =
+                officerComplaints.filter(
+                    c => c.status === "Pending"
+                ).length;
+
+            const progress =
+                officerComplaints.filter(
+                    c => c.status === "In Progress"
+                ).length;
+
+            const resolved =
+                officerComplaints.filter(
+                    c => c.status === "Resolved"
+                ).length;
+
+
+            document.getElementById(
+                "assignedCount"
+            ).textContent =
+                officerComplaints.length;
+
+
+            document.getElementById(
+                "pendingCount"
+            ).textContent =
+                pending;
+
+
+            document.getElementById(
+                "progressCount"
+            ).textContent =
+                progress;
+
+
+            document.getElementById(
+                "resolvedCount"
+            ).textContent =
+                resolved;
+
+        }
+
+
+        /* =====================================================
+           TODAY'S WORK
+        ===================================================== */
+
+        async function loadTodaysWork() {
+
+            const container =
+                document.getElementById(
+                    "todaysWorkList"
+                );
+
+            if (!container) {
+                return;
+            }
+
+
+            if (!officerComplaints.length) {
+                await loadComplaints();
+            }
+
+
+            const today =
+                new Date();
+
+
+            const todays =
+                officerComplaints.filter(c => {
+
+                    if (!c.created_at) {
+                        return false;
+                    }
+
+                    const date =
+                        new Date(
+                            c.created_at
+                        );
+
+                    return (
+                        date.toDateString() ===
+                        today.toDateString()
+                    );
+
+                });
+
+
+            const list =
+                todays.length
+                    ? todays
+                    : officerComplaints.slice(0, 3);
+
+
+            if (!list.length) {
+
+                container.innerHTML =
+                    "<p>No assigned work available.</p>";
+
+                return;
+            }
+
+
+            container.innerHTML =
+                list.slice(0, 3).map(c => `
+
+                    <div class="schedule-item">
+
+                        <div style="flex:1;">
+
+                            <h4>
+                                Complaint #${escapeHtml(
+                                    c.complaint_id
+                                )}
+                            </h4>
+
+                            <p>
+                                ${escapeHtml(
+                                    getComplaintTitle(c)
+                                )}
+                            </p>
+
+                            <p>
+                                ${escapeHtml(
+                                    c.location ||
+                                    c.village ||
+                                    "Location unavailable"
+                                )}
+                            </p>
+
+                            <p>
+                                Status:
+                                ${escapeHtml(
+                                    c.status ||
+                                    "Pending"
+                                )}
+                            </p>
+
+                        </div>
+
+                        <button
+                            class="btn btn-blue"
+                            onclick="viewBackendComplaint('${escapeHtml(c.complaint_id)}')">
+
+                            View
+
+                        </button>
+
+                    </div>
+
+                `).join("");
+
+        }
+
+
+        /* =====================================================
+           RECENTLY ASSIGNED
+        ===================================================== */
+
+        async function loadRecentlyAssigned() {
+
+            const table =
+                document.getElementById(
+                    "recentlyAssignedTable"
+                );
+
+            if (!table) {
+                return;
+            }
+
+
+            if (!officerComplaints.length) {
+                await loadComplaints();
+            }
+
+
+            const complaints =
+                officerComplaints.slice(0, 5);
+
+
+            if (!complaints.length) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="7"
+                            style="text-align:center;padding:20px;">
+                            No complaints found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            table.innerHTML =
+                complaints.map(c => {
+
+                    const status =
+                        c.status ||
+                        "Pending";
+
+
+                    return `
+
+                        <tr>
+
+                            <td>
+                                #${escapeHtml(
+                                    c.complaint_id
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    c.citizen_name ||
+                                    "N/A"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    getComplaintTitle(c)
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    formatDate(
+                                        c.created_at
+                                    )
+                                )}
+                            </td>
+
+                            <td>
+                                <span class="status medium">
+                                    Medium
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="status ${getStatusClass(status)}">
+                                    ${escapeHtml(status)}
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="btn btn-blue"
+                                    onclick="viewBackendComplaint('${escapeHtml(c.complaint_id)}')">
+
+                                    View
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }).join("");
+
+        }
+
+
+        /* =====================================================
+           PERFORMANCE
+        ===================================================== */
+
+        async function loadMyPerformance() {
+
+            if (!officerComplaints.length) {
+                await loadComplaints();
+            }
+
+
+            const total =
+                officerComplaints.length;
+
+            const resolved =
+                officerComplaints.filter(
+                    c =>
+                        c.status ===
+                        "Resolved"
+                ).length;
+
+
+            const rate =
+                total === 0
+                    ? 0
+                    : Math.round(
+                        (resolved / total) *
+                        100
+                    );
+
+
+            document.getElementById(
+                "performanceRate"
+            ).textContent =
+                rate + "%";
+
+
+            document.getElementById(
+                "performanceBar"
+            ).style.width =
+                rate + "%";
+
+
+            document.getElementById(
+                "performanceText"
+            ).textContent =
+                `${resolved} of ${total} assigned complaints resolved.`;
+
+        }
+
+
+        /* =====================================================
+           NOTIFICATIONS
+        ===================================================== */
+
+        async function loadNotifications() {
+
+            const list =
+                document.getElementById(
+                    "notificationList"
+                );
+
+            if (!list) {
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_BASE}/api/notifications/${OFFICER_ID}`,
+                        {
+                            cache: "no-store"
+                        }
+                    );
+
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Notification request failed"
+                    );
+                }
+
+
+                const payload =
+                    await response.json();
+
+
+                const notifications =
+                    Array.isArray(payload)
+                        ? payload
+                        : (
+                            Array.isArray(
+                                payload.notifications
+                            )
+                                ? payload.notifications
+                                : []
+                        );
+
+
+                const unread =
+                    notifications.filter(
+                        n => !n.is_read
+                    ).length;
+
+
+                document.getElementById(
+                    "headerNotificationBadge"
+                ).textContent =
+                    unread;
+
+
+                if (!notifications.length) {
+
+                    list.innerHTML = `
+
+                        <div class="notification">
+
+                            <div>
+
+                                <h4>
+                                    No new notifications
+                                </h4>
+
+                                <p>
+                                    You are up to date.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                    return;
+                }
+
+
+                list.innerHTML =
+                    notifications.map(n => `
+
+                        <div
+                            class="notification ${n.is_read ? "" : "unread"}"
+                            data-notification-id="${escapeHtml(n.id)}">
+
+                            <div>
+
+                                <h4>
+                                    ${n.is_read
+                                        ? "Notification"
+                                        : "New Update"}
+                                </h4>
+
+                                <p>
+                                    ${escapeHtml(
+                                        n.message ||
+                                        "Notification"
+                                    )}
+                                </p>
+
+                                <small
+                                    style="
+                                        color:var(--muted);
+                                    ">
+
+                                    ${escapeHtml(
+                                        formatDate(
+                                            n.created_at
+                                        )
+                                    )}
+
+                                </small>
+
+                            </div>
+
+                            ${
+                                n.is_read
+
+                                    ? `
+                                        <button
+                                            class="btn btn-gray"
+                                            onclick="deleteNotification(this)">
+                                            Delete
+                                        </button>
+                                    `
+
+                                    : `
+                                        <button
+                                            class="btn btn-gray"
+                                            onclick="markBackendNotificationRead(${Number(n.id)}, this)">
+                                            Mark Read
+                                        </button>
+                                    `
+                            }
+
+                        </div>
+
+                    `).join("");
+
+            }
+            catch (error) {
+
+                console.warn(
+                    "Notifications unavailable:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "headerNotificationBadge"
+                ).textContent =
+                    "0";
+
+
+                list.innerHTML = `
+
+                    <div class="notification">
+
+                        <div>
+
+                            <h4>
+                                Notifications unavailable
+                            </h4>
+
+                            <p>
+                                Start the GramaSathi backend
+                                to load notifications.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           MARK NOTIFICATION READ
+        ===================================================== */
+
+        async function markBackendNotificationRead(
+            notificationId,
+            button
+        ) {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_BASE}/api/notifications/${notificationId}/read`,
+                        {
+                            method: "PUT"
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    result.success === false
+                ) {
+
+                    throw new Error(
+                        result.message ||
+                        "Could not mark notification as read"
+                    );
+
+                }
+
+
+                const notification =
+                    button.closest(
+                        ".notification"
+                    );
+
+
+                if (notification) {
+
+                    notification.classList.remove(
+                        "unread"
+                    );
+
+                    button.textContent =
+                        "Delete";
+
+                    button.onclick =
+                        function () {
+                            deleteNotification(
+                                this
+                            );
+                        };
+
+                }
+
+
+                updateNotificationBadge();
+
+                showToast(
+                    "Notification marked as read"
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Notification error:",
+                    error
+                );
+
+                showToast(
+                    "Could not update notification"
+                );
+
+            }
+
+        }
+
+
+        function updateNotificationBadge() {
+
+            const unread =
+                document.querySelectorAll(
+                    ".notification.unread"
+                ).length;
+
+
+            document.getElementById(
+                "headerNotificationBadge"
+            ).textContent =
+                unread;
+
+        }
+
+
+        function deleteNotification(button) {
+
+            const notification =
+                button.closest(
+                    ".notification"
+                );
+
+            if (notification) {
+                notification.remove();
+            }
+
+            updateNotificationBadge();
+
+        }
+
+
+        /* =====================================================
+           PROFILE
+        ===================================================== */
+
+      
+/* =================================================
+   PROFILE
+================================================= */
+
+function getProfileField(labelText) {
+    const groups = document.querySelectorAll("#profile .form-group");
+
+    for (const group of groups) {
+        const label = group.querySelector("label");
+
+        if (
+            label &&
+            label.textContent.trim().toLowerCase() ===
+                labelText.trim().toLowerCase()
+        ) {
+            return group.querySelector("input, textarea");
+        }
+    }
+
+    return null;
+}
+
+
+/* =========================
+   SAVE PROFILE
+========================= */
+
+async function saveProfile() {
+
+    const nameField = getProfileField("Full Name");
+    const mobileField = getProfileField("Mobile");
+    const emailField = getProfileField("Email");
+    const villageField = getProfileField("Village");
+
+    if (!nameField || !mobileField || !emailField || !villageField) {
+        console.error("Profile fields not found:", {
+            nameField,
+            mobileField,
+            emailField,
+            villageField
+        });
+
+        showToast("Profile form fields not found");
+        return;
+    }
+
+    const name = nameField.value.trim();
+    const mobile = mobileField.value.trim();
+    const email = emailField.value.trim();
+    const village = villageField.value.trim();
+
+    if (!name) {
+        showToast("Please enter your full name");
+        nameField.focus();
+        return;
+    }
+
+    if (!mobile) {
+        showToast("Please enter your mobile number");
+        mobileField.focus();
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_BASE}/api/user/${OFFICER_ID}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    mobile: mobile,
+                    email: email,
+                    village: village
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        console.log("Profile update response:", data);
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.message ||
+                data.error ||
+                "Profile update failed"
+            );
+        }
+
+        /* Keep current officer session */
+        localStorage.setItem(
+            "gramasathiUserId",
+            String(OFFICER_ID)
+        );
+
+        localStorage.setItem(
+            "officerId",
+            String(OFFICER_ID)
+        );
+
+        localStorage.setItem(
+            "userId",
+            String(OFFICER_ID)
+        );
+
+        /* Keep officer name available for dashboard */
+        localStorage.setItem(
+            "gramasathiUserName",
+            name
+        );
+
+        localStorage.setItem(
+            "userName",
+            name
+        );
+
+        localStorage.setItem(
+            "name",
+            name
+        );
+
+        showToast("Profile updated successfully");
+
+        /* Reload latest data from database */
+        await loadProfile();
+
+    } catch (error) {
+
+        console.error(
+            "Profile update error:",
+            error
+        );
+
+        showToast(
+            error.message ||
+            "Unable to update profile"
+        );
+    }
+}
+
+
+/* =========================
+   LOAD PROFILE
+========================= */
+
+async function loadProfile() {
+
+    try {
+
+        const response = await fetch(
+            `${API_BASE}/api/user/${OFFICER_ID}`,
+            {
+                cache: "no-store"
+            }
+        );
+
+        const data = await response.json();
+
+        console.log(
+            "Officer profile response:",
+            data
+        );
+
+        if (
+            !response.ok ||
+            !data.success ||
+            !data.user
+        ) {
+            throw new Error(
+                data.message ||
+                "Unable to load officer profile"
+            );
+        }
+
+        const user = data.user;
+
+        console.log(
+            "Logged-in officer:",
+            user
+        );
+
+        /* Keep correct officer ID */
+        localStorage.setItem(
+            "gramasathiUserId",
+            String(user.id)
+        );
+
+        localStorage.setItem(
+            "officerId",
+            String(user.id)
+        );
+
+        localStorage.setItem(
+            "userId",
+            String(user.id)
+        );
+
+
+        /* Find current page fields */
+        const nameField =
+            getProfileField("Full Name");
+
+        const mobileField =
+            getProfileField("Mobile");
+
+        const emailField =
+            getProfileField("Email");
+
+        const villageField =
+            getProfileField("Village");
+
+
+        /* Put database values into the form */
+
+        if (nameField) {
+            nameField.value =
+                user.name || "";
+        }
+
+        if (mobileField) {
+            mobileField.value =
+                user.mobile || "";
+        }
+
+        if (emailField) {
+            emailField.value =
+                user.email || "";
+        }
+
+        if (villageField) {
+            villageField.value =
+                user.village || "";
+        }
+
+
+        /* Keep logged-in officer name synchronized */
+
+        localStorage.setItem(
+            "gramasathiUserName",
+            user.name || ""
+        );
+
+        localStorage.setItem(
+            "userName",
+            user.name || ""
+        );
+
+        localStorage.setItem(
+            "name",
+            user.name || ""
+        );
+
+
+        console.log(
+            "Officer profile loaded successfully:",
+            {
+                name: user.name,
+                mobile: user.mobile,
+                email: user.email,
+                village: user.village
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load officer profile:",
+            error
+        );
+
+        showToast(
+            "Unable to load profile from backend"
+        );
+    }
+}
+        /* =====================================================
+           PROFILE IMAGE
+        ===================================================== */
+
+        function previewProfileImage(event) {
+
+            const file =
+                event.target.files[0];
+
+            if (!file) {
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function (e) {
+
+                    document.getElementById(
+                        "profilePhoto"
+                    ).innerHTML = `
+
+                        <img
+                            src="${e.target.result}"
+                            alt="Profile">
+
+                    `;
+
+                    localStorage.setItem(
+                        "officerProfileImage",
+                        e.target.result
+                    );
+
+                };
+
+
+            reader.readAsDataURL(file);
+
+        }
+
+
+        function loadProfileImage() {
+
+            const image =
+                localStorage.getItem(
+                    "officerProfileImage"
+                );
+
+            if (!image) {
+                return;
+            }
+
+
+            document.getElementById(
+                "profilePhoto"
+            ).innerHTML = `
+
+                <img
+                    src="${image}"
+                    alt="Profile">
+
+            `;
+
+        }
+
+
+        /* =====================================================
+           DARK MODE
+        ===================================================== */
+
+        function toggleDarkMode() {
+
+            document.body.classList.toggle(
+                "dark"
+            );
+
+
+            localStorage.setItem(
+                "officerDarkMode",
+                document.body.classList.contains(
+                    "dark"
+                )
+                    ? "true"
+                    : "false"
+            );
+
+        }
+
+
+        function loadDarkMode() {
+
+            if (
+                localStorage.getItem(
+                    "officerDarkMode"
+                ) === "true"
+            ) {
+
+                document.body.classList.add(
+                    "dark"
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           LOGOUT
+        ===================================================== */
+
+        function logout() {
+
+    const confirmed = confirm(
+        "Are you sure you want to logout?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    // Clear current login/session information
+    localStorage.removeItem("gramasathiLoggedIn");
+    localStorage.removeItem("gramasathiUserId");
+    localStorage.removeItem("officerId");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("gramasathiUserName");
+    localStorage.removeItem("gramasathiLoginId");
+    localStorage.removeItem("gramasathiRole");
+
+    localStorage.removeItem("citizen_name");
+    localStorage.removeItem("citizenName");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("name");
+
+    // Do NOT remove officer-specific profiles/images.
+    // They should remain saved for each officer.
+
+    window.location.href = "login.html";
+}
+
+
+        /* =====================================================
+           KEYBOARD EVENTS
+        ===================================================== */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Escape") {
+
+                    closeSidebar();
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           INITIALIZE
+        ===================================================== */
+
+        document.getElementById(
+            "welcomeOfficerId"
+        ).textContent =
+            OFFICER_ID;
+
+
+        loadDarkMode();
+
+        loadProfileImage();
+
+        loadProfile();
+
+
+        (async function () {
+
+            await loadComplaints();
+
+            await Promise.all([
+
+                loadTodaysWork(),
+
+                loadRecentlyAssigned(),
+
+                loadMyPerformance(),
+
+                loadNotifications()
+
+            ]);
+
+        })();
+
+    </script>
+
+</body>
+
+</html>

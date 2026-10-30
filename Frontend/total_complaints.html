@@ -1,0 +1,1140 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Complaints - GramSathi</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f8f5;
+            color: #222;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 0 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .back-btn {
+            border: none;
+            background: none;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .header h2 {
+            color: #08783f;
+            font-size: 22px;
+        }
+
+        /* Main */
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            color: #08783f;
+            margin-bottom: 20px;
+        }
+
+        /* Search */
+        .search-box {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .search-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+
+        /* Filter */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            border: 1px solid #08783f;
+            background: white;
+            color: #08783f;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .filter-btn.active {
+            background: #08783f;
+            color: white;
+        }
+
+        /* Complaint Card */
+        .complaint-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 16px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .complaint-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 14px rgba(0, 0, 0, 0.10);
+        }
+
+        .complaint-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .complaint-title {
+            color: #08783f;
+            font-size: 18px;
+        }
+
+        .complaint-id {
+            color: #777;
+            font-size: 13px;
+            margin: 8px 0;
+        }
+
+        .description {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .date {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .pending {
+            background: #fff0d6;
+            color: #d87900;
+        }
+
+        .progress {
+            background: #e4f0ff;
+            color: #1971d4;
+        }
+
+        .resolved {
+            background: #e1f5e8;
+            color: #188447;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            color: #08783f;
+            padding: 35px 20px;
+        }
+
+        /* Empty result */
+        .no-result {
+            display: none;
+            text-align: center;
+            color: #777;
+            padding: 30px;
+        }
+
+        /* Error */
+        .error-message {
+            display: none;
+            text-align: center;
+            color: #b42318;
+            background: #fff1f0;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            margin-top: 12px;
+            border: none;
+            background: #08783f;
+            color: white;
+            padding: 9px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+
+            .header {
+                padding: 0 18px;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
+
+            .complaint-top {
+                align-items: flex-start;
+                gap: 10px;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+
+        <button
+            class="back-btn"
+            onclick="goBack()">
+            ←
+        </button>
+
+        <h2>My Complaints</h2>
+
+    </header>
+
+
+    <main class="container">
+
+        <h2 class="page-title" id="pageTitle">
+            Total Complaints
+        </h2>
+
+
+        <!-- Search -->
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search complaints..."
+                autocomplete="off">
+
+        </div>
+
+
+        <!-- Filters -->
+        <div class="filters">
+
+            <button
+                class="filter-btn active"
+                onclick="filterComplaints('all', this)">
+                All
+            </button>
+
+            <button
+                class="filter-btn"
+                onclick="filterComplaints('pending', this)">
+                Pending
+            </button>
+
+            <button
+                class="filter-btn"
+                onclick="filterComplaints('progress', this)">
+                In Progress
+            </button>
+
+            <button
+                class="filter-btn"
+                onclick="filterComplaints('resolved', this)">
+                Resolved
+            </button>
+
+        </div>
+
+
+        <!-- Loading -->
+        <div
+            class="loading"
+            id="loadingMessage">
+            Loading complaints...
+        </div>
+
+
+        <!-- Error -->
+        <div
+            class="error-message"
+            id="errorMessage">
+
+            <div>
+                Unable to load complaints.
+            </div>
+
+            <button
+                class="retry-btn"
+                onclick="loadComplaints()">
+                Try Again
+            </button>
+
+        </div>
+
+
+        <!-- Complaints -->
+        <div id="complaintsContainer"></div>
+
+
+        <!-- No Result -->
+        <div
+            class="no-result"
+            id="noResult">
+
+            No complaints found.
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        /* =========================================
+           BACKEND URL
+        ========================================= */
+
+        const API_BASE_URL =
+            "http://127.0.0.1:5001";
+
+
+        /* =========================================
+           GET USER ID
+        ========================================= */
+
+        const userId =
+            localStorage.getItem(
+                "gramasathiUserId"
+            );
+
+
+        /* =========================================
+           HTML ELEMENTS
+        ========================================= */
+
+        const complaintsContainer =
+            document.getElementById(
+                "complaintsContainer"
+            );
+
+        const searchInput =
+            document.getElementById(
+                "searchInput"
+            );
+
+        const noResult =
+            document.getElementById(
+                "noResult"
+            );
+
+        const loadingMessage =
+            document.getElementById(
+                "loadingMessage"
+            );
+
+        const errorMessage =
+            document.getElementById(
+                "errorMessage"
+            );
+
+        const pageTitle =
+            document.getElementById(
+                "pageTitle"
+            );
+
+
+        /* =========================================
+           COMPLAINT DATA
+        ========================================= */
+
+        let complaints = [];
+
+        let currentFilter = "all";
+
+
+        /* =========================================
+           CHECK USER LOGIN
+        ========================================= */
+
+        if (!userId) {
+
+            alert(
+                "Please login first."
+            );
+
+            window.location.href =
+                "login(2).html";
+
+        }
+
+
+        /* =========================================
+           GET STATUS FROM URL
+        ========================================= */
+
+        const urlParams =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const urlStatus =
+            urlParams.get("status");
+
+
+        if (urlStatus) {
+
+            if (
+                urlStatus.toLowerCase() ===
+                "pending"
+            ) {
+
+                currentFilter =
+                    "pending";
+
+            }
+
+            else if (
+                urlStatus.toLowerCase() ===
+                "in progress"
+            ) {
+
+                currentFilter =
+                    "progress";
+
+            }
+
+            else if (
+                urlStatus.toLowerCase() ===
+                "resolved"
+            ) {
+
+                currentFilter =
+                    "resolved";
+
+            }
+
+        }
+
+
+        /* =========================================
+           LOAD COMPLAINTS
+        ========================================= */
+
+        async function loadComplaints() {
+
+            loadingMessage.style.display =
+                "block";
+
+            errorMessage.style.display =
+                "none";
+
+            noResult.style.display =
+                "none";
+
+            complaintsContainer.innerHTML =
+                "";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/api/complaints/user/${userId}`
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load complaints"
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                if (!data.success) {
+
+                    throw new Error(
+                        data.message ||
+                        "Unable to load complaints"
+                    );
+
+                }
+
+
+                complaints =
+                    Array.isArray(
+                        data.complaints
+                    )
+                        ? data.complaints
+                        : [];
+
+
+                loadingMessage.style.display =
+                    "none";
+
+
+                setActiveFilterButton();
+
+                updatePageTitle();
+
+                showComplaints();
+
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Complaint loading error:",
+                    error
+                );
+
+
+                loadingMessage.style.display =
+                    "none";
+
+                errorMessage.style.display =
+                    "block";
+
+            }
+
+        }
+
+
+        /* =========================================
+           SHOW COMPLAINTS
+        ========================================= */
+
+        function showComplaints() {
+
+            complaintsContainer.innerHTML =
+                "";
+
+
+            const searchText =
+                searchInput.value
+                    .toLowerCase()
+                    .trim();
+
+
+            let filteredComplaints =
+                complaints.filter(
+                    function (complaint) {
+
+                        const status =
+                            getStatusFilter(
+                                complaint.status
+                            );
+
+
+                        const matchesFilter =
+                            currentFilter === "all" ||
+                            status === currentFilter;
+
+
+                        const searchableText =
+                            (
+                                String(
+                                    complaint.title || ""
+                                ) +
+                                " " +
+                                String(
+                                    complaint.complaint_id || ""
+                                ) +
+                                " " +
+                                String(
+                                    complaint.category || ""
+                                ) +
+                                " " +
+                                String(
+                                    complaint.description || ""
+                                ) +
+                                " " +
+                                String(
+                                    complaint.village || ""
+                                )
+                            ).toLowerCase();
+
+
+                        const matchesSearch =
+                            searchableText.includes(
+                                searchText
+                            );
+
+
+                        return (
+                            matchesFilter &&
+                            matchesSearch
+                        );
+
+                    }
+                );
+
+
+            if (
+                filteredComplaints.length ===
+                0
+            ) {
+
+                noResult.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
+            noResult.style.display =
+                "none";
+
+
+            filteredComplaints.forEach(
+                function (complaint) {
+
+                    const card =
+                        createComplaintCard(
+                            complaint
+                        );
+
+                    complaintsContainer.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================================
+           CREATE COMPLAINT CARD
+        ========================================= */
+
+        function createComplaintCard(
+            complaint
+        ) {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "complaint-card";
+
+
+            const statusInfo =
+                getStatusInfo(
+                    complaint.status
+                );
+
+
+            const title =
+                escapeHTML(
+                    complaint.title ||
+                    "Complaint"
+                );
+
+
+            const complaintId =
+                escapeHTML(
+                    complaint.complaint_id ||
+                    "-"
+                );
+
+
+            const description =
+                escapeHTML(
+                    complaint.description ||
+                    "No description available."
+                );
+
+
+            const category =
+                escapeHTML(
+                    complaint.category ||
+                    "General"
+                );
+
+
+            const village =
+                escapeHTML(
+                    complaint.village ||
+                    ""
+                );
+
+
+            const date =
+                formatDate(
+                    complaint.created_at
+                );
+
+
+            card.innerHTML = `
+
+                <div class="complaint-top">
+
+                    <h3 class="complaint-title">
+                        ${title}
+                    </h3>
+
+                    <span class="status ${statusInfo.className}">
+                        ${statusInfo.text}
+                    </span>
+
+                </div>
+
+
+                <p class="complaint-id">
+                    Complaint ID: ${complaintId}
+                </p>
+
+
+                <p class="description">
+                    ${description}
+                </p>
+
+
+                <p class="date">
+                    Category: ${category}
+                    ${village ? ` | Village: ${village}` : ""}
+                    <br>
+                    Submitted: ${date}
+                </p>
+
+            `;
+
+
+            /* Click → Complaint Tracking */
+
+            card.addEventListener(
+                "click",
+                function () {
+
+                    if (
+                        complaint.complaint_id
+                    ) {
+
+                        window.location.href =
+                            `complaint-tracking.html?id=${encodeURIComponent(
+                                complaint.complaint_id
+                            )}`;
+
+                    }
+
+                }
+            );
+
+
+            return card;
+
+        }
+
+
+        /* =========================================
+           STATUS INFORMATION
+        ========================================= */
+
+        function getStatusInfo(
+            status
+        ) {
+
+            if (
+                status === "Pending"
+            ) {
+
+                return {
+                    text: "Pending",
+                    className: "pending"
+                };
+
+            }
+
+
+            if (
+                status === "In Progress"
+            ) {
+
+                return {
+                    text: "In Progress",
+                    className: "progress"
+                };
+
+            }
+
+
+            if (
+                status === "Resolved"
+            ) {
+
+                return {
+                    text: "Resolved",
+                    className: "resolved"
+                };
+
+            }
+
+
+            return {
+                text: status || "Pending",
+                className: "pending"
+            };
+
+        }
+
+
+        /* =========================================
+           STATUS FILTER
+        ========================================= */
+
+        function getStatusFilter(
+            status
+        ) {
+
+            if (
+                status === "Pending"
+            ) {
+
+                return "pending";
+
+            }
+
+
+            if (
+                status === "In Progress"
+            ) {
+
+                return "progress";
+
+            }
+
+
+            if (
+                status === "Resolved"
+            ) {
+
+                return "resolved";
+
+            }
+
+
+            return "pending";
+
+        }
+
+
+        /* =========================================
+           FILTER BUTTON
+        ========================================= */
+
+        function filterComplaints(
+            status,
+            button
+        ) {
+
+            currentFilter =
+                status;
+
+
+            document
+                .querySelectorAll(
+                    ".filter-btn"
+                )
+                .forEach(
+                    function (btn) {
+
+                        btn.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+            button.classList.add(
+                "active"
+            );
+
+
+            updatePageTitle();
+
+            showComplaints();
+
+        }
+
+
+        /* =========================================
+           SET ACTIVE FILTER FROM URL
+        ========================================= */
+
+        function setActiveFilterButton() {
+
+            document
+                .querySelectorAll(
+                    ".filter-btn"
+                )
+                .forEach(
+                    function (button) {
+
+                        button.classList.remove(
+                            "active"
+                        );
+
+
+                        const text =
+                            button.innerText
+                                .trim();
+
+
+                        if (
+                            currentFilter ===
+                                "all" &&
+                            text === "All"
+                        ) {
+
+                            button.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                        else if (
+                            currentFilter ===
+                                "pending" &&
+                            text === "Pending"
+                        ) {
+
+                            button.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                        else if (
+                            currentFilter ===
+                                "progress" &&
+                            text === "In Progress"
+                        ) {
+
+                            button.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                        else if (
+                            currentFilter ===
+                                "resolved" &&
+                            text === "Resolved"
+                        ) {
+
+                            button.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                    }
+                );
+
+        }
+
+
+        /* =========================================
+           PAGE TITLE
+        ========================================= */
+
+        function updatePageTitle() {
+
+            if (
+                currentFilter ===
+                "pending"
+            ) {
+
+                pageTitle.textContent =
+                    "Pending Complaints";
+
+            }
+
+            else if (
+                currentFilter ===
+                "progress"
+            ) {
+
+                pageTitle.textContent =
+                    "In Progress Complaints";
+
+            }
+
+            else if (
+                currentFilter ===
+                "resolved"
+            ) {
+
+                pageTitle.textContent =
+                    "Resolved Complaints";
+
+            }
+
+            else {
+
+                pageTitle.textContent =
+                    "Total Complaints";
+
+            }
+
+        }
+
+
+        /* =========================================
+           SEARCH
+        ========================================= */
+
+        searchInput.addEventListener(
+            "input",
+            function () {
+
+                showComplaints();
+
+            }
+        );
+
+
+        /* =========================================
+           DATE FORMAT
+        ========================================= */
+
+        function formatDate(
+            dateValue
+        ) {
+
+            if (!dateValue) {
+
+                return "Date unavailable";
+
+            }
+
+
+            const date =
+                new Date(dateValue);
+
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return "Date unavailable";
+
+            }
+
+
+            return date.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric"
+                }
+            );
+
+        }
+
+
+        /* =========================================
+           HTML SAFETY
+        ========================================= */
+
+        function escapeHTML(
+            value
+        ) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        /* =========================================
+           BACK
+        ========================================= */
+
+        function goBack() {
+
+            window.location.href =
+                "dashboard.html";
+
+        }
+
+
+        /* =========================================
+           INITIAL LOAD
+        ========================================= */
+
+        loadComplaints();
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - GramaSathi</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #e8f7e8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 360px;
+            padding: 35px;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #222222;
+            margin-bottom: 40px;
+        }
+
+        .input-box {
+            position: relative;
+            width: 100%;
+            margin-bottom: 18px;
+        }
+
+        .input-box input {
+            width: 100%;
+            height: 52px;
+            background: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 7px;
+            padding: 0 15px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .input-box input:focus {
+            border-color: #079447;
+        }
+
+        .input-box input::placeholder {
+            color: #777777;
+        }
+
+        .password-input {
+            padding-right: 45px !important;
+        }
+
+        .eye {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 17px;
+        }
+
+        .eye-slash {
+            position: absolute;
+            width: 2px;
+            height: 25px;
+            background: #222222;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            left: 50%;
+            top: 50%;
+            pointer-events: none;
+        }
+
+        .forgot {
+            display: block;
+            text-align: right;
+            margin-top: 3px;
+            margin-bottom: 38px;
+            color: #555555;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .forgot:hover {
+            color: #079447;
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 7px;
+            background: #079447;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #067b3b;
+        }
+
+        .login-btn:disabled {
+            background: #7db89a;
+            cursor: not-allowed;
+        }
+
+        .signup {
+            text-align: center;
+            margin-top: 27px;
+            font-size: 13px;
+            color: #555555;
+        }
+
+        .signup a {
+            color: #079447;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .signup a:hover {
+            text-decoration: underline;
+        }
+
+        #message {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 15px;
+            min-height: 18px;
+        }
+
+        @media (max-width: 450px) {
+
+            .login-container {
+                width: 100%;
+                max-width: 360px;
+                padding: 25px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- LOGIN -->
+
+    <div class="login-container">
+
+        <h2>
+            Login to GramaSathi
+        </h2>
+
+
+        <!-- Mobile Number / Email -->
+
+        <div class="input-box">
+
+            <input
+                type="text"
+                id="loginId"
+                placeholder="Mobile Number or Email"
+                autocomplete="username"
+            >
+
+        </div>
+
+
+        <!-- Password -->
+
+        <div class="input-box">
+
+            <input
+                type="password"
+                id="password"
+                class="password-input"
+                placeholder="Password"
+                autocomplete="current-password"
+            >
+
+            <span
+                class="eye"
+                onclick="togglePassword()"
+                aria-label="Show password"
+            >
+                👁️
+            </span>
+
+        </div>
+
+
+        <!-- Forgot Password -->
+
+        <a
+            href="frg.html"
+            class="forgot"
+        >
+            Forgot Password?
+        </a>
+
+
+        <!-- Login -->
+
+        <button
+            class="login-btn"
+            id="loginButton"
+            onclick="login()"
+        >
+            Login
+        </button>
+
+
+        <!-- Sign Up -->
+
+        <p class="signup">
+
+            Don't have an account?
+
+            <a href="register.html">
+                Sign Up
+            </a>
+
+        </p>
+
+
+        <!-- Message -->
+
+        <p id="message"></p>
+
+
+    </div>
+
+
+    <script>
+
+
+        /* =====================================================
+           BACKEND
+        ===================================================== */
+
+        const API_BASE =
+            "http://127.0.0.1:5001";
+
+
+        /* =====================================================
+           CLEAR OLD LOGIN SESSION
+           
+           Important:
+           Previous user's session must not remain when
+           another account logs in.
+        ===================================================== */
+
+        function clearLoginSession() {
+
+            const sessionKeys = [
+
+                "gramasathiLoggedIn",
+
+                "gramasathiUserId",
+
+                "gramasathiUserName",
+
+                "gramasathiLoginId",
+
+                "gramasathiRole",
+
+                "citizenId",
+
+                "officerId",
+
+                "adminId",
+
+                "userId",
+
+                "userName",
+
+                "username",
+
+                "name"
+
+            ];
+
+            sessionKeys.forEach(function (key) {
+
+                localStorage.removeItem(key);
+
+            });
+
+        }
+
+
+        /* =====================================================
+           SHOW / HIDE PASSWORD
+        ===================================================== */
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const eye =
+                document.querySelector(".eye");
+
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                eye.innerHTML =
+                    '👁️<span class="eye-slash"></span>';
+
+                eye.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
+            }
+
+            else {
+
+                password.type = "password";
+
+                eye.innerHTML = "👁️";
+
+                eye.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           SAVE CURRENT USER SESSION
+        ===================================================== */
+
+        function saveUserSession(user) {
+
+            /*
+             * First remove previous account session.
+             * This prevents Officer A's session from being
+             * reused when Officer B logs in.
+             */
+
+            clearLoginSession();
+
+
+            /*
+             * Common current-user information
+             */
+
+            localStorage.setItem(
+                "gramasathiLoggedIn",
+                "true"
+            );
+
+            localStorage.setItem(
+                "gramasathiUserId",
+                String(user.id)
+            );
+
+            localStorage.setItem(
+                "gramasathiUserName",
+                user.name || ""
+            );
+
+            localStorage.setItem(
+                "gramasathiLoginId",
+                user.email || user.mobile || ""
+            );
+
+            localStorage.setItem(
+                "gramasathiRole",
+                user.role
+            );
+
+
+            /*
+             * Keep userId for compatibility with existing
+             * pages which may still use it.
+             */
+
+            localStorage.setItem(
+                "userId",
+                String(user.id)
+            );
+
+            localStorage.setItem(
+                "userName",
+                user.name || ""
+            );
+
+            localStorage.setItem(
+                "name",
+                user.name || ""
+            );
+
+
+            /*
+             * ROLE-SPECIFIC ACCOUNT ID
+             */
+
+            if (user.role === "citizen") {
+
+                localStorage.setItem(
+                    "citizenId",
+                    String(user.id)
+                );
+
+            }
+
+
+            else if (user.role === "officer") {
+
+                localStorage.setItem(
+                    "officerId",
+                    String(user.id)
+                );
+
+            }
+
+
+            else if (user.role === "admin") {
+
+                localStorage.setItem(
+                    "adminId",
+                    String(user.id)
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           REDIRECT BASED ON ROLE
+        ===================================================== */
+
+        function redirectByRole(role) {
+
+            if (role === "citizen") {
+
+                window.location.replace(
+                    "dashboard.html"
+                );
+
+                return;
+
+            }
+
+
+            if (role === "officer") {
+
+                window.location.replace(
+                    "officerdashboard.html"
+                );
+
+                return;
+
+            }
+
+
+            if (role === "admin") {
+
+                window.location.replace(
+                    "admindashboard.html"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Unknown role
+             */
+
+            clearLoginSession();
+
+            alert(
+                "Invalid account role. Please contact administrator."
+            );
+
+            window.location.replace(
+                "login.html"
+            );
+
+        }
+
+
+        /* =====================================================
+           LOGIN
+           
+           FRONTEND
+              ↓
+           FLASK
+              ↓
+           MYSQL
+              ↓
+           ROLE
+              ↓
+           CORRECT DASHBOARD
+        ===================================================== */
+
+        async function login() {
+
+
+            const loginId =
+                document
+                    .getElementById("loginId")
+                    .value
+                    .trim();
+
+
+            const password =
+                document
+                    .getElementById("password")
+                    .value
+                    .trim();
+
+
+            const message =
+                document.getElementById("message");
+
+
+            const loginButton =
+                document.getElementById("loginButton");
+
+
+            /* -----------------------------------------------
+               FRONTEND VALIDATION
+            ------------------------------------------------ */
+
+            if (loginId === "") {
+
+                message.textContent =
+                    "Please enter your mobile number or email.";
+
+                message.style.color = "red";
+
+                return;
+
+            }
+
+
+            if (password === "") {
+
+                message.textContent =
+                    "Please enter your password.";
+
+                message.style.color = "red";
+
+                return;
+
+            }
+
+
+            /* -----------------------------------------------
+               LOADING
+            ------------------------------------------------ */
+
+            loginButton.disabled = true;
+
+            loginButton.textContent =
+                "Logging in...";
+
+            message.textContent = "";
+
+
+            try {
+
+
+                /* -------------------------------------------
+                   LOGIN REQUEST
+                ------------------------------------------- */
+
+                const response =
+                    await fetch(
+                        `${API_BASE}/api/login`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                /*
+                                 * Send loginId so backend can
+                                 * accept either mobile or email.
+                                 */
+
+                                loginId: loginId,
+
+                                mobile: loginId,
+
+                                email: loginId,
+
+                                password: password
+
+                            })
+                        }
+                    );
+
+
+                /* -------------------------------------------
+                   READ RESPONSE
+                ------------------------------------------- */
+
+                const data =
+                    await response.json();
+
+
+                console.log(
+                    "Login response:",
+                    data
+                );
+
+
+                /* -------------------------------------------
+                   LOGIN FAILED
+                ------------------------------------------- */
+
+                if (
+                    !response.ok ||
+                    !data.success ||
+                    !data.user
+                ) {
+
+                    message.textContent =
+                        data.message ||
+                        "Invalid email/mobile or password.";
+
+                    message.style.color = "red";
+
+                    loginButton.disabled = false;
+
+                    loginButton.textContent =
+                        "Login";
+
+                    return;
+
+                }
+
+
+                /* -------------------------------------------
+                   VALIDATE ROLE
+                ------------------------------------------- */
+
+                const role =
+                    String(
+                        data.user.role || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                if (
+                    role !== "citizen" &&
+                    role !== "officer" &&
+                    role !== "admin"
+                ) {
+
+                    clearLoginSession();
+
+                    message.textContent =
+                        "Invalid account role.";
+
+                    message.style.color = "red";
+
+                    loginButton.disabled = false;
+
+                    loginButton.textContent =
+                        "Login";
+
+                    return;
+
+                }
+
+
+                /* -------------------------------------------
+                   SAVE ONLY CURRENT ACCOUNT
+                ------------------------------------------- */
+
+                saveUserSession({
+                    id: data.user.id,
+                    name: data.user.name,
+                    mobile: data.user.mobile,
+                    email: data.user.email,
+                    role: role
+                });
+
+
+                console.log(
+                    "Logged in user:",
+                    {
+                        id: data.user.id,
+                        name: data.user.name,
+                        role: role
+                    }
+                );
+
+
+                message.textContent =
+                    "Login successful!";
+
+                message.style.color =
+                    "#079447";
+
+
+                /* -------------------------------------------
+                   REDIRECT TO ONLY THAT ROLE'S DASHBOARD
+                ------------------------------------------- */
+
+                setTimeout(function () {
+
+                    redirectByRole(role);
+
+                }, 400);
+
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "Login Error:",
+                    error
+                );
+
+                message.textContent =
+                    "Unable to connect to the backend. Make sure Flask is running.";
+
+                message.style.color =
+                    "red";
+
+                loginButton.disabled =
+                    false;
+
+                loginButton.textContent =
+                    "Login";
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ENTER KEY LOGIN
+        ===================================================== */
+
+        document
+            .getElementById("password")
+            .addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (event.key === "Enter") {
+
+                        login();
+
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById("loginId")
+            .addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (event.key === "Enter") {
+
+                        login();
+
+                    }
+
+                }
+            );
+
+
+    </script>
+
+
+</body>
+
+</html>

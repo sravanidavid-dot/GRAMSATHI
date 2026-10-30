@@ -1,0 +1,2480 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GramaSathi - Dashboard</title>
+
+    <style>
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        /* =====================================================
+           COLORS
+        ===================================================== */
+
+        :root {
+
+            --green: #087f3e;
+            --dark-green: #05652f;
+            --light-green: #eaf8ef;
+
+            --bg: #f4f7f5;
+            --white: #ffffff;
+
+            --text: #1f2937;
+            --muted: #6b7280;
+
+            --border: #e5e7eb;
+
+            --blue: #2563eb;
+            --orange: #f59e0b;
+            --yellow: #eab308;
+            --red: #dc2626;
+            --purple: #7c3aed;
+
+            --shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+
+        body {
+
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+
+        }
+
+
+        a {
+
+            text-decoration: none;
+            color: inherit;
+
+        }
+
+
+        button {
+
+            font-family: inherit;
+
+        }
+
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 70px;
+
+            background: var(--green);
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            z-index: 1000;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.15);
+
+        }
+
+
+        .header-title {
+
+            font-size: 24px;
+            font-weight: 700;
+
+        }
+
+
+
+        /* =====================================================
+           HAMBURGER
+        ===================================================== */
+
+        .menu-btn {
+
+            position: absolute;
+
+            left: 18px;
+
+            width: 46px;
+            height: 46px;
+
+            border: none;
+
+            background: transparent;
+
+            color: white;
+
+            font-size: 29px;
+
+            cursor: pointer;
+
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transition: 0.2s;
+
+        }
+
+
+        .menu-btn:hover {
+
+            background: rgba(255, 255, 255, 0.15);
+
+        }
+
+
+
+        /* =====================================================
+           HEADER RIGHT
+        ===================================================== */
+
+        .header-actions {
+
+            position: absolute;
+
+            right: 18px;
+
+            height: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+        }
+
+
+        .header-action {
+
+            position: relative;
+
+            width: 44px;
+            height: 44px;
+
+            border: none;
+
+            background: transparent;
+
+            color: white;
+
+            border-radius: 50%;
+
+            cursor: pointer;
+
+            font-size: 22px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transition: 0.2s;
+
+        }
+
+
+        .header-action:hover {
+
+            background: rgba(255, 255, 255, 0.15);
+
+        }
+
+
+        .notification-badge {
+
+            position: absolute;
+
+            top: 1px;
+            right: 0;
+
+            min-width: 18px;
+            height: 18px;
+
+            padding: 0 4px;
+
+            background: var(--red);
+
+            color: white;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+            font-weight: bold;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 2px solid var(--green);
+
+        }
+
+
+        .profile-header {
+
+            width: 34px;
+            height: 34px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            color: var(--green);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 18px;
+
+        }
+
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+
+            position: fixed;
+
+            top: 0;
+            left: -290px;
+
+            width: 280px;
+            height: 100vh;
+
+            background: white;
+
+            z-index: 1200;
+
+            box-shadow:
+                5px 0 25px rgba(0, 0, 0, 0.18);
+
+            transition: 0.3s ease;
+
+            overflow-y: auto;
+
+        }
+
+
+        .sidebar.active {
+
+            left: 0;
+
+        }
+
+
+        .sidebar-header {
+
+            height: 70px;
+
+            background: var(--green);
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 20px;
+
+        }
+
+
+        .sidebar-header h2 {
+
+            font-size: 20px;
+
+        }
+
+
+        .close-btn {
+
+            background: none;
+
+            border: 0;
+
+            color: white;
+
+            font-size: 30px;
+
+            cursor: pointer;
+
+        }
+
+
+        .sidebar-menu {
+
+            padding: 16px 12px;
+
+        }
+
+
+        .sidebar-menu a {
+
+            display: flex;
+
+            align-items: center;
+
+            width: 100%;
+
+            padding: 14px 15px;
+
+            margin-bottom: 6px;
+
+            border-radius: 9px;
+
+            color: #333;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+
+        }
+
+
+        .sidebar-menu a:hover {
+
+            background: var(--light-green);
+
+            color: var(--green);
+
+            font-weight: bold;
+
+        }
+
+
+        .sidebar-menu .menu-icon {
+
+            width: 28px;
+
+            font-size: 18px;
+
+        }
+
+
+        /* =====================================================
+           OVERLAY
+        ===================================================== */
+
+        .overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.45);
+
+            z-index: 1100;
+
+            display: none;
+
+        }
+
+
+        .overlay.active {
+
+            display: block;
+
+        }
+
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+
+            max-width: 1500px;
+
+            margin: auto;
+
+            padding:
+                95px 25px 40px;
+
+        }
+
+
+
+        /* =====================================================
+           WELCOME CARD
+        ===================================================== */
+
+        .welcome-card {
+
+            position: relative;
+
+            background: linear-gradient(135deg,
+                    #eefaf3,
+                    #ffffff);
+
+            border: 1px solid #d6eadc;
+
+            border-radius: 16px;
+
+            padding: 30px;
+
+            min-height: 165px;
+
+            box-shadow: var(--shadow);
+
+            margin-bottom: 24px;
+
+        }
+
+
+        .welcome-content {
+
+            max-width: 700px;
+
+        }
+
+
+        .welcome-card h1 {
+
+            color: var(--green);
+
+            font-size: 28px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .welcome-card p {
+
+            color: #47705b;
+
+            font-size: 15px;
+
+            line-height: 1.6;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .active-account {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            background: white;
+
+            color: var(--green);
+
+            padding: 8px 14px;
+
+            border-radius: 30px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 3px 10px rgba(0, 0, 0, 0.06);
+
+        }
+
+
+        .active-dot {
+
+            width: 12px;
+            height: 12px;
+
+            background: #70b946;
+
+            border-radius: 50%;
+
+        }
+
+
+
+        /* =====================================================
+           SECTION
+        ===================================================== */
+
+        .section {
+
+            margin-bottom: 24px;
+
+        }
+
+
+        .section-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 14px;
+
+        }
+
+
+        .section-title {
+
+            font-size: 20px;
+
+            color: #172033;
+
+        }
+
+
+        .view-all {
+
+            color: var(--green);
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+        }
+
+
+        .view-all:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+
+        /* =====================================================
+           QUICK OVERVIEW
+        ===================================================== */
+
+        .overview {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+        }
+
+
+        .overview-card {
+
+            background: white;
+
+            border-radius: 14px;
+
+            padding: 22px;
+
+            min-height: 125px;
+
+            box-shadow: var(--shadow);
+
+            border-left: 4px solid var(--green);
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: space-between;
+
+            transition: 0.2s;
+
+        }
+
+
+        .overview-card:hover {
+
+            transform: translateY(-3px);
+
+        }
+
+
+        .overview-card h3 {
+
+            color: #65738a;
+
+            font-size: 13px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .overview-number {
+
+            font-size: 31px;
+
+            font-weight: 700;
+
+            color: #182235;
+
+        }
+
+
+        .overview-description {
+
+            color: #5c6c82;
+
+            font-size: 12px;
+
+            margin-top: 6px;
+
+        }
+
+
+        .pending-card {
+
+            border-left-color: var(--orange);
+
+        }
+
+
+        .progress-card {
+
+            border-left-color: var(--yellow);
+
+        }
+
+
+        .resolved-card {
+
+            border-left-color: var(--green);
+
+        }
+
+
+
+        /* =====================================================
+           QUICK ACTIONS
+        ===================================================== */
+
+        .quick-actions {
+
+            background: white;
+
+            border-radius: 15px;
+
+            padding: 24px;
+
+            box-shadow: var(--shadow);
+
+        }
+
+
+        .quick-actions h2 {
+
+            font-size: 20px;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .actions-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 14px;
+
+        }
+
+
+        .action-btn {
+
+            border: none;
+
+            background: var(--light-green);
+
+            color: var(--green);
+
+            min-height: 58px;
+
+            border-radius: 11px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            transition: 0.2s;
+
+        }
+
+
+        .action-btn:hover {
+
+            background: #d9f1e2;
+
+            transform: translateY(-2px);
+
+        }
+
+
+
+        /* =====================================================
+           SERVICES
+        ===================================================== */
+
+        .services {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(6, 1fr);
+
+            gap: 14px;
+
+        }
+
+
+        .service-card {
+
+            background: white;
+
+            min-height: 145px;
+
+            border-radius: 14px;
+
+            box-shadow: var(--shadow);
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 15px 8px;
+
+            border-bottom: 3px solid var(--green);
+
+            transition: 0.2s;
+
+        }
+
+
+        .service-card:hover {
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 8px 22px rgba(0, 0, 0, 0.10);
+
+        }
+
+
+        .service-icon {
+
+            width: 52px;
+            height: 52px;
+
+            border-radius: 13px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .service-card p {
+
+            font-size: 14px;
+
+            line-height: 1.4;
+
+            font-weight: 500;
+
+        }
+
+
+        .green-icon {
+
+            background: #e4f6ea;
+
+            color: var(--green);
+
+        }
+
+
+        .blue-icon {
+
+            background: #e9f1ff;
+
+            color: var(--blue);
+
+        }
+
+
+        .purple-icon {
+
+            background: #f0eaff;
+
+            color: var(--purple);
+
+        }
+
+
+        .emergency-icon {
+
+            background: #fde8e8;
+
+            color: var(--red);
+
+        }
+
+
+        .red-icon {
+
+            background: #fce9e9;
+
+            color: #b91c1c;
+
+        }
+
+
+        .dark-green-icon {
+
+            background: var(--green);
+
+            color: white;
+
+        }
+
+
+        .tracking-icon {
+
+            background: #e9f1ff;
+
+            color: var(--blue);
+
+        }
+
+
+
+        /* =====================================================
+           RECENT ACTIVITY
+        ===================================================== */
+
+        .activity {
+
+            background: white;
+
+            border-radius: 15px;
+
+            box-shadow: var(--shadow);
+
+            padding: 8px 22px;
+
+        }
+
+
+        .activity-row {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 18px 0;
+
+            border-bottom: 1px solid var(--border);
+
+        }
+
+
+        .activity-row:last-child {
+
+            border-bottom: none;
+
+        }
+
+
+        .activity-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+        }
+
+
+        .activity-icon {
+
+            width: 44px;
+            height: 44px;
+
+            border-radius: 11px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+
+        }
+
+
+        .road {
+
+            background: #fff4df;
+
+        }
+
+
+        .water {
+
+            background: #e8f2ff;
+
+        }
+
+
+        .activity-left h3 {
+
+            font-size: 15px;
+
+            margin-bottom: 4px;
+
+        }
+
+
+        .activity-left p {
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+        }
+
+
+        .activity-right {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: flex-end;
+
+            gap: 5px;
+
+        }
+
+
+        .status {
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+        }
+
+
+        .pending {
+
+            background: #fff2d9;
+
+            color: #b76b00;
+
+        }
+
+
+        .progress {
+
+            background: #e8f1ff;
+
+            color: #2563eb;
+
+        }
+
+
+        .resolved {
+
+            background: #e6f7eb;
+
+            color: var(--green);
+
+        }
+
+
+        .time {
+
+            color: #8a94a3;
+
+            font-size: 11px;
+
+        }
+
+
+
+        /* =====================================================
+           TRACK COMPLAINT
+        ===================================================== */
+
+        .tracking-card {
+
+            background: white;
+
+            border-radius: 15px;
+
+            padding: 20px;
+
+            box-shadow: var(--shadow);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+        }
+
+
+        .tracking-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+        .tracking-card h3 {
+
+            font-size: 16px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .tracking-card p {
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+        }
+
+
+        .track-btn {
+
+            background: var(--green);
+
+            color: white;
+
+            padding: 11px 18px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+        }
+
+
+        .track-btn:hover {
+
+            background: var(--dark-green);
+
+        }
+
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1100px) {
+
+            .services {
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+
+            }
+
+            .overview {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+            .actions-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .main {
+
+                padding:
+                    90px 15px 30px;
+
+            }
+
+
+            .header-title {
+
+                font-size: 20px;
+
+            }
+
+
+            .welcome-card {
+
+                padding: 22px;
+
+            }
+
+
+            .welcome-card h1 {
+
+                font-size: 23px;
+
+            }
+
+
+            .overview {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .services {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+
+            .actions-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .activity-row {
+
+                align-items: flex-start;
+
+            }
+
+
+            .activity-right {
+
+                align-items: flex-end;
+
+            }
+
+
+            .tracking-card {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+        }
+
+
+        @media (max-width: 420px) {
+
+            .services {
+
+                grid-template-columns: 1fr 1fr;
+
+            }
+
+
+            .service-card {
+
+                min-height: 130px;
+
+            }
+
+
+            .header-actions {
+
+                right: 8px;
+
+            }
+
+
+            .menu-btn {
+
+                left: 8px;
+
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ===================================================== -->
+
+    <header class="header">
+
+
+        <!-- HAMBURGER -->
+
+        <button class="menu-btn" onclick="openMenu()" aria-label="Open Menu">
+
+            ☰
+
+        </button>
+
+
+        <!-- TITLE -->
+
+        <div class="header-title">
+
+            GramaSathi
+
+        </div>
+
+
+        <!-- RIGHT ACTIONS -->
+
+        <div class="header-actions">
+
+
+            <!-- NOTIFICATIONS -->
+
+            <a href="notifications.html" class="header-action" aria-label="Notifications">
+
+                🔔
+
+                <span class="notification-badge">
+                    2
+                </span>
+
+            </a>
+
+
+            <!-- PROFILE -->
+
+            <a href="profile.html" class="header-action" aria-label="Profile">
+
+                <div class="profile-header">
+
+                    👤
+
+                </div>
+
+            </a>
+
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ===================================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+
+        <div class="sidebar-header">
+
+
+            <h2>
+                GRAMSATHI
+            </h2>
+
+
+            <button class="close-btn" onclick="closeMenu()" aria-label="Close Menu">
+
+                ×
+
+            </button>
+
+
+        </div>
+
+
+
+        <nav class="sidebar-menu">
+
+
+            <!-- HOME -->
+
+            <a href="dashboard.html">
+
+                <span class="menu-icon">
+                    🏠
+                </span>
+
+                Home
+
+            </a>
+
+
+            <!-- RAISE COMPLAINT -->
+
+            <a href="raise-complaint.html">
+
+                <span class="menu-icon">
+                    📝
+                </span>
+
+                Raise Complaint
+
+            </a>
+
+
+            <!-- MY COMPLAINTS -->
+
+            <a href="my-complaints.html">
+
+                <span class="menu-icon">
+                    📋
+                </span>
+
+                My Complaints
+
+            </a>
+
+
+            <!-- COMPLAINT TRACKING -->
+
+            <a href="complaint-tracking.html">
+
+                <span class="menu-icon">
+                    🔎
+                </span>
+
+                Complaint Tracking
+
+            </a>
+
+
+            <!-- GOVERNMENT SCHEMES -->
+
+            <a href="government schemes.html">
+
+                <span class="menu-icon">
+                    🏛️
+                </span>
+
+                Government Schemes
+
+            </a>
+
+
+            <!-- EMERGENCY -->
+
+            <a href="Emergency.html">
+
+                <span class="menu-icon">
+                    🚨
+                </span>
+
+                Emergency Contacts
+
+            </a>
+
+
+            <!-- ANNOUNCEMENTS -->
+
+            <a href="announcement.html">
+
+                <span class="menu-icon">
+                    📢
+                </span>
+
+                Announcements
+
+            </a>
+
+
+            <!-- NOTIFICATIONS -->
+
+            <a href="notifications.html">
+
+                <span class="menu-icon">
+                    🔔
+                </span>
+
+                Notifications
+
+            </a>
+
+
+            <!-- HELP -->
+
+            <a href="help and support.html">
+
+                <span class="menu-icon">
+                    ❓
+                </span>
+
+                Help &amp; Support
+
+            </a>
+
+
+            <!-- PROFILE -->
+
+            <a href="profile.html">
+
+                <span class="menu-icon">
+                    👤
+                </span>
+
+                Profile
+
+            </a>
+
+
+        </nav>
+
+    </aside>
+
+
+
+    <!-- OVERLAY -->
+
+    <div class="overlay" id="overlay" onclick="closeMenu()">
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
+
+    <main class="main">
+
+
+
+        <!-- =================================================
+             WELCOME
+        ================================================= -->
+
+        <section class="welcome-card">
+
+
+            <div class="welcome-content">
+
+
+                <h1>
+                    Hello, Citizen 👋
+                </h1>
+
+
+                <p>
+                    Welcome to GramaSathi. Raise complaints,
+                    track issues and access important village
+                    services from one place.
+                </p>
+
+
+                <div class="active-account">
+
+                    <span class="active-dot"></span>
+
+                    Citizen Account • Active
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             QUICK OVERVIEW
+        ================================================= -->
+
+        <section class="section">
+
+
+            <div class="section-header">
+
+                <h2 class="section-title">
+                    Quick Overview
+                </h2>
+
+            </div>
+
+
+            <div class="overview">
+
+
+                <!-- TOTAL -->
+
+                <a href="total_complaints.html" class="overview-card">
+
+                    <div>
+
+                        <h3>
+                            Total Complaints
+                        </h3>
+
+                        <div class="overview-number" id="totalComplaintsCount">
+
+                            12
+
+                        </div>
+
+                        <p class="overview-description">
+                            All complaints submitted
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+
+                <!-- PENDING -->
+
+                <a href="total_complaints.html?status=Pending" class="overview-card pending-card">
+
+                    <div>
+
+                        <h3>
+                            Pending
+                        </h3>
+
+                        <div class="overview-number">
+                            05
+                        </div>
+
+                        <p class="overview-description">
+                            Need attention
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+
+                <!-- IN PROGRESS -->
+
+                <a href="total_complaints.html?status=In%20Progress" class="overview-card progress-card">
+
+                    <div>
+
+                        <h3>
+                            In Progress
+                        </h3>
+
+                        <div class="overview-number">
+                            03
+                        </div>
+
+                        <p class="overview-description">
+                            Currently being worked on
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+
+                <!-- RESOLVED -->
+
+                <a href="total_complaints.html?status=Resolved" class="overview-card resolved-card">
+
+                    <div>
+
+                        <h3>
+                            Resolved
+                        </h3>
+
+                        <div class="overview-number">
+                            04
+                        </div>
+
+                        <p class="overview-description">
+                            Successfully completed
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             QUICK ACTIONS
+        ================================================= -->
+
+        <section class="section">
+
+
+            <div class="quick-actions">
+
+
+                <h2>
+                    Quick Actions
+                </h2>
+
+
+                <div class="actions-grid">
+
+
+                    <a href="raise-complaint.html" class="action-btn">
+
+                        📝 Raise Complaint
+
+                    </a>
+
+
+                    <a href="my-complaints.html" class="action-btn">
+
+                        📋 My Complaints
+
+                    </a>
+
+
+                    <a href="complaint-tracking.html" class="action-btn">
+
+                        🔎 Track Complaint
+
+                    </a>
+
+
+                    <a href="notifications.html" class="action-btn">
+
+                        🔔 Notifications
+
+                    </a>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             SERVICES
+        ================================================= -->
+
+        <section class="section">
+
+
+            <div class="section-header">
+
+                <h2 class="section-title">
+                    Services
+                </h2>
+
+            </div>
+
+
+            <div class="services">
+
+
+                <!-- RAISE COMPLAINT -->
+
+                <a href="raise-complaint.html" class="service-card">
+
+                    <div class="service-icon green-icon">
+
+                        ✎
+
+                    </div>
+
+                    <p>
+                        Raise<br>
+                        Complaint
+                    </p>
+
+                </a>
+
+
+
+                <!-- MY COMPLAINTS -->
+
+                <a href="my-complaints.html" class="service-card">
+
+                    <div class="service-icon blue-icon">
+
+                        ☑
+
+                    </div>
+
+                    <p>
+                        My<br>
+                        Complaints
+                    </p>
+
+                </a>
+
+
+
+                <!-- GOVERNMENT SCHEMES -->
+
+                <a href="government schemes.html" class="service-card">
+
+                    <div class="service-icon purple-icon">
+
+                        🏛
+
+                    </div>
+
+                    <p>
+                        Government<br>
+                        Schemes
+                    </p>
+
+                </a>
+
+
+
+                <!-- EMERGENCY CONTACTS -->
+
+                <a href="Emergency.html" class="service-card">
+
+                    <div class="service-icon emergency-icon">
+
+                        🚨
+
+                    </div>
+
+                    <p>
+                        Emergency<br>
+                        Contacts
+                    </p>
+
+                </a>
+
+
+
+                <!-- ANNOUNCEMENTS -->
+
+                <a href="announcement.html" class="service-card">
+
+                    <div class="service-icon red-icon">
+
+                        ⚑
+
+                    </div>
+
+                    <p>
+                        Announcements
+                    </p>
+
+                </a>
+
+
+
+                <!-- HELP -->
+
+                <a href="help and support.html" class="service-card">
+
+                    <div class="service-icon dark-green-icon">
+
+                        ?
+
+                    </div>
+
+                    <p>
+                        Help &amp;<br>
+                        Support
+                    </p>
+
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             COMPLAINT TRACKING
+        ================================================= -->
+
+        <section class="section">
+
+
+            <div class="section-header">
+
+                <h2 class="section-title">
+                    Complaint Tracking
+                </h2>
+
+
+                <a href="complaint-tracking.html" class="view-all">
+
+                    Track Now
+
+                </a>
+
+            </div>
+
+
+            <div class="tracking-card">
+
+
+                <div class="tracking-left">
+
+
+                    <div class="service-icon tracking-icon">
+
+                        🔎
+
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Track Your Complaint
+                        </h3>
+
+                        <p>
+                            Check the latest status and
+                            progress of your submitted complaint.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <a href="complaint-tracking.html" class="track-btn">
+
+                    Track Complaint
+
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             RECENT ACTIVITY
+        ================================================= -->
+
+        <section class="section">
+
+
+            <div class="section-header">
+
+                <h2 class="section-title">
+                    Recent Activity
+                </h2>
+
+
+                <a href="my-complaints.html" class="view-all">
+
+                    View All
+
+                </a>
+
+            </div>
+
+
+            <div class="activity">
+
+
+                <!-- ACTIVITY 1 -->
+
+                <div class="activity-row">
+
+
+                    <div class="activity-left">
+
+
+                        <div class="activity-icon road">
+
+                            ⌁
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Road Complaint
+                            </h3>
+
+                            <p>
+                                Complaint submitted successfully
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="activity-right">
+
+                        <span class="status pending">
+                            Pending
+                        </span>
+
+                        <span class="time">
+                            Today, 10:30 AM
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- ACTIVITY 2 -->
+
+                <div class="activity-row">
+
+
+                    <div class="activity-left">
+
+
+                        <div class="activity-icon water">
+
+                            💧
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Water Supply Issue
+                            </h3>
+
+                            <p>
+                                Complaint assigned for review
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="activity-right">
+
+                        <span class="status progress">
+                            In Progress
+                        </span>
+
+                        <span class="time">
+                            Yesterday, 04:15 PM
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- ACTIVITY 3 -->
+
+                <div class="activity-row">
+
+
+                    <div class="activity-left">
+
+
+                        <div class="activity-icon" style="background:#e6f7eb;">
+
+                            ✓
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Street Light Complaint
+                            </h3>
+
+                            <p>
+                                Complaint resolved successfully
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="activity-right">
+
+                        <span class="status resolved">
+                            Resolved
+                        </span>
+
+                        <span class="time">
+                            2 days ago
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ===================================================== -->
+
+    <script>
+
+        const role = localStorage.getItem("gramasathiRole");
+
+    if (role !== "citizen") {
+        window.location.replace("login.html");
+    }
+
+
+
+        /* =================================================
+           MENU OPEN
+        ================================================= */
+
+        function openMenu() {
+
+            document
+                .getElementById("sidebar")
+                .classList
+                .add("active");
+
+
+            document
+                .getElementById("overlay")
+                .classList
+                .add("active");
+
+        }
+
+
+
+        /* =================================================
+           MENU CLOSE
+        ================================================= */
+
+        function closeMenu() {
+
+            document
+                .getElementById("sidebar")
+                .classList
+                .remove("active");
+
+
+            document
+                .getElementById("overlay")
+                .classList
+                .remove("active");
+
+        }
+
+
+
+        /* =================================================
+           ESC KEY CLOSES MENU
+        ================================================= */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Escape") {
+
+                    closeMenu();
+
+                }
+
+            }
+        );
+
+
+
+      /* =================================================
+   LOAD DASHBOARD DATA FROM FLASK + MYSQL
+================================================= */
+
+async function loadDashboardData() {
+
+    const userId = localStorage.getItem("gramasathiUserId");
+
+    if (!userId) {
+        console.log("User ID not found.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `http://127.0.0.1:5001/api/dashboard/${userId}`
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            console.error(
+                "Dashboard API Error:",
+                data.message
+            );
+            return;
+        }
+
+        /* -----------------------------------------
+           GET SUMMARY
+        ----------------------------------------- */
+
+        const summary = data.summary;
+
+        /* -----------------------------------------
+           UPDATE QUICK OVERVIEW
+        ----------------------------------------- */
+
+        const totalElement =
+            document.getElementById(
+                "totalComplaintsCount"
+            );
+
+        if (totalElement) {
+            totalElement.textContent =
+                summary.total;
+        }
+
+        const overviewCards =
+            document.querySelectorAll(
+                ".overview-card"
+            );
+
+        if (overviewCards.length >= 4) {
+
+            overviewCards[1]
+                .querySelector(".overview-number")
+                .textContent = summary.pending;
+
+            overviewCards[2]
+                .querySelector(".overview-number")
+                .textContent = summary.in_progress;
+
+            overviewCards[3]
+                .querySelector(".overview-number")
+                .textContent = summary.resolved;
+        }
+
+        console.log(
+            "Dashboard data loaded:",
+            summary
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Dashboard connection error:",
+            error
+        );
+
+    }
+}
+
+/* =================================================
+   LOAD DASHBOARD DATA FROM FLASK + MYSQL
+================================================= */
+
+async function loadDashboardData() {
+
+    const userId = localStorage.getItem("gramasathiUserId");
+
+    if (!userId) {
+        console.log("User ID not found.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `http://127.0.0.1:5001/api/dashboard/${userId}`
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            console.error(
+                "Dashboard API Error:",
+                data.message
+            );
+            return;
+        }
+
+        /* -----------------------------------------
+           GET SUMMARY
+        ----------------------------------------- */
+
+        const summary = data.summary;
+
+        /* -----------------------------------------
+           UPDATE QUICK OVERVIEW
+        ----------------------------------------- */
+
+        const totalElement =
+            document.getElementById(
+                "totalComplaintsCount"
+            );
+
+        if (totalElement) {
+            totalElement.textContent =
+                summary.total;
+        }
+
+        const overviewCards =
+            document.querySelectorAll(
+                ".overview-card"
+            );
+
+        if (overviewCards.length >= 4) {
+
+            overviewCards[1]
+                .querySelector(".overview-number")
+                .textContent = summary.pending;
+
+            overviewCards[2]
+                .querySelector(".overview-number")
+                .textContent = summary.in_progress;
+
+            overviewCards[3]
+                .querySelector(".overview-number")
+                .textContent = summary.resolved;
+        }
+
+        console.log(
+            "Dashboard data loaded:",
+            summary
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Dashboard connection error:",
+            error
+        );
+
+    }
+}
+
+
+/* =================================================
+   LOAD DASHBOARD DATA FROM FLASK + MYSQL
+================================================= */
+
+async function loadDashboardData() {
+
+    const userId = localStorage.getItem("gramasathiUserId");
+
+    if (!userId) {
+        console.log("User ID not found.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `http://127.0.0.1:5001/api/dashboard/${userId}`
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            console.error(
+                "Dashboard API Error:",
+                data.message
+            );
+            return;
+        }
+
+        /* -----------------------------------------
+           GET SUMMARY
+        ----------------------------------------- */
+
+        const summary = data.summary;
+
+        /* -----------------------------------------
+           UPDATE QUICK OVERVIEW
+        ----------------------------------------- */
+
+        const totalElement =
+            document.getElementById(
+                "totalComplaintsCount"
+            );
+
+        if (totalElement) {
+            totalElement.textContent =
+                summary.total;
+        }
+
+        const overviewCards =
+            document.querySelectorAll(
+                ".overview-card"
+            );
+
+        if (overviewCards.length >= 4) {
+
+            overviewCards[1]
+                .querySelector(".overview-number")
+                .textContent = summary.pending;
+
+            overviewCards[2]
+                .querySelector(".overview-number")
+                .textContent = summary.in_progress;
+
+            overviewCards[3]
+                .querySelector(".overview-number")
+                .textContent = summary.resolved;
+        }
+
+        console.log(
+            "Dashboard data loaded:",
+            summary
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Dashboard connection error:",
+            error
+        );
+
+    }
+}
+
+
+/* =================================================
+   LOAD DASHBOARD WHEN PAGE OPENS
+================================================= */
+
+loadDashboardData();
+
+
+    </script>
+
+
+</body>
+
+</html>

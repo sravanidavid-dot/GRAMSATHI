@@ -1,0 +1,4116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GramaSathi - Admin Dashboard</title>
+
+    <style>
+        :root {
+            --green: #087f3e;
+            --dark-green: #05652f;
+            --light-green: #eaf8ef;
+            --bg: #f4f7f5;
+            --white: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --blue: #2563eb;
+            --red: #dc2626;
+            --orange: #ea580c;
+            --purple: #7c3aed;
+            --shadow: 0 5px 20px rgba(0, 0, 0, .08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .15);
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .menu-btn {
+            position: absolute;
+            left: 18px;
+            top: 18px;
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 30px;
+            line-height: 30px;
+        }
+
+        .header-right {
+            position: absolute;
+            right: 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            position: relative;
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 22px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc2626;
+            color: white;
+            font-size: 10px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-mini {
+            border: none;
+            background: white;
+            color: var(--green);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            font-size: 18px;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -290px;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            z-index: 1200;
+            box-shadow: 5px 0 20px rgba(0, 0, 0, .15);
+            transition: .3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-top {
+            height: 70px;
+            background: var(--green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 18px;
+        }
+
+        .sidebar-top h2 {
+            font-size: 20px;
+        }
+
+        .sidebar-close {
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 30px;
+        }
+
+        .sidebar-menu {
+            padding: 15px 10px;
+        }
+
+        .sidebar-menu button {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: left;
+            padding: 14px 15px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .sidebar-menu button:hover,
+        .sidebar-menu button.active {
+            background: var(--light-green);
+            color: var(--green);
+        }
+
+        .sidebar-menu .logout-btn {
+            color: var(--red);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 1100;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* ================= MAIN ================= */
+
+        main {
+            padding: 95px 25px 35px;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .page {
+            display: none;
+            position: relative;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-close {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: white;
+            color: #555;
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+            font-size: 27px;
+            z-index: 5;
+        }
+
+        .page-title {
+            margin-bottom: 25px;
+            padding-right: 55px;
+        }
+
+        .page-title h2 {
+            font-size: 27px;
+            margin-bottom: 7px;
+        }
+
+        .page-title p {
+            color: var(--muted);
+        }
+
+        /* ================= WELCOME ================= */
+
+        .welcome {
+            background: linear-gradient(135deg, var(--green), #0b9a50);
+            color: white;
+            padding: 28px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .welcome h2 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            opacity: .9;
+        }
+
+        .admin-badge {
+            display: inline-block;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, .16);
+            border: 1px solid rgba(255, 255, 255, .3);
+            padding: 8px 13px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--green);
+        }
+
+        .stat .number {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .stat p {
+            color: var(--muted);
+        }
+
+        /* ================= CARDS ================= */
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            margin-bottom: 22px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .card-header h3 {
+            font-size: 19px;
+        }
+
+        /* ================= QUICK ACTIONS ================= */
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .quick-action {
+            border: 1px solid var(--border);
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: left;
+            transition: .2s;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--green);
+        }
+
+        .quick-action strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .quick-action span {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* ================= TWO COLUMN ================= */
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 22px;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 760px;
+        }
+
+        th,
+        td {
+            padding: 13px 12px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8faf9;
+            color: #374151;
+            font-weight: 700;
+        }
+
+        tr:hover td {
+            background: #fafdfb;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.pending {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status.progress {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .status.resolved {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .status.active-status {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .status.blocked {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .btn {
+            border: none;
+            border-radius: 7px;
+            padding: 9px 13px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 3px;
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-blue {
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-red {
+            background: var(--red);
+            color: white;
+        }
+
+        .btn-orange {
+            background: var(--orange);
+            color: white;
+        }
+
+        .btn-purple {
+            background: var(--purple);
+            color: white;
+        }
+
+        .btn-gray {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn:hover {
+            opacity: .9;
+        }
+
+        /* ================= FILTERS ================= */
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .search,
+        .filters select {
+            padding: 11px 13px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            outline: none;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .filters select {
+            min-width: 150px;
+        }
+
+        .search:focus,
+        .filters select:focus,
+        input:focus,
+        textarea:focus {
+            border-color: var(--green);
+        }
+
+        /* ================= SERVICES ================= */
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .service-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .service-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .service-card h3 {
+            margin-bottom: 8px;
+        }
+
+        .service-card p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* ================= NOTIFICATIONS ================= */
+
+        .notification {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 17px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .notification:last-child {
+            border-bottom: none;
+        }
+
+        .notification.unread {
+            background: #f0fdf4;
+            border-left: 4px solid var(--green);
+        }
+
+        .notification h4 {
+            margin-bottom: 6px;
+        }
+
+        .notification p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .notification small {
+            display: block;
+            color: #9ca3af;
+            margin-top: 6px;
+        }
+
+        /* ================= ACTIVITY ================= */
+
+        .activity {
+            display: flex;
+            gap: 15px;
+            padding: 17px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light-green);
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity p {
+            line-height: 1.5;
+        }
+
+        .activity small {
+            color: var(--muted);
+        }
+
+        /* ================= PROFILE ================= */
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 30px;
+        }
+
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--light-green);
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 55px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 11px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            outline: none;
+            width: 100%;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-box {
+            width: min(650px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 15px;
+            top: 12px;
+            border: none;
+            background: transparent;
+            font-size: 28px;
+            color: #666;
+        }
+
+        .modal-box h2 {
+            margin-bottom: 20px;
+            padding-right: 30px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ================= TOAST ================= */
+
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: #1f2937;
+            color: white;
+            padding: 13px 18px;
+            border-radius: 8px;
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: .3s;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ================= DARK MODE ================= */
+
+        body.dark {
+            --bg: #111827;
+            --white: #1f2937;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --border: #374151;
+        }
+
+        body.dark .card,
+        body.dark .sidebar,
+        body.dark .quick-action,
+        body.dark .stat,
+        body.dark .modal-box,
+        body.dark .page-close,
+        body.dark .service-card {
+            background: #1f2937;
+            color: var(--text);
+        }
+
+        body.dark th {
+            background: #111827;
+        }
+
+        body.dark input,
+        body.dark textarea,
+        body.dark select,
+        body.dark .search,
+        body.dark .filters select {
+            background: #111827;
+            color: white;
+            border-color: #374151;
+        }
+
+        body.dark .sidebar-menu button {
+            color: #f3f4f6;
+        }
+
+        body.dark .sidebar-menu button:hover,
+        body.dark .sidebar-menu button.active {
+            background: #263f31;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .service-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            main {
+                padding: 90px 15px 25px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .header-right {
+                right: 10px;
+                gap: 8px;
+            }
+
+            .profile-mini {
+                width: 34px;
+                height: 34px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .notification {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .welcome h2 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <button class="menu-btn" onclick="openSidebar()">
+            ☰
+        </button>
+
+        <h1>Admin Dashboard</h1>
+
+        <div class="header-right">
+
+            <button class="header-icon" onclick="showPage('notifications')">
+                🔔
+                <span class="notification-badge" id="notificationBadge">
+                    0
+                </span>
+            </button>
+
+            <button class="profile-mini" onclick="showPage('profile')">
+                👨‍💼
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-top">
+
+            <h2>GramaSathi</h2>
+
+            <button class="sidebar-close" onclick="closeSidebar()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="sidebar-menu">
+
+            <button class="active"
+                    onclick="showPage('dashboard', this)">
+                🏠 Dashboard
+            </button>
+
+            <button onclick="showPage('complaints', this)">
+                📋 Complaints
+            </button>
+
+            <button onclick="showPage('users', this)">
+                👥 Users
+            </button>
+
+            <button onclick="showPage('services', this)">
+                🛠️ Services
+            </button>
+
+            <button onclick="showPage('notifications', this)">
+                🔔 Notifications
+            </button>
+
+            <button onclick="showPage('activity', this)">
+                📊 Activity Log
+            </button>
+
+            <button onclick="showPage('profile', this)">
+                👤 Admin Profile
+            </button>
+
+            <button onclick="toggleDarkMode()">
+                🌙 Dark Mode
+            </button>
+
+            <button class="logout-btn" onclick="logout()">
+                🚪 Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <div class="overlay"
+         id="overlay"
+         onclick="closeSidebar()">
+    </div>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================== -->
+
+        <section class="page active" id="dashboard">
+
+            <div class="welcome">
+
+                <h2>
+                    Hello, Admin 👋
+                </h2>
+
+                <p>
+                    Manage complaints, users and village operations
+                    from one place.
+                </p>
+
+                <span class="admin-badge">
+                    🟢 Admin Account • Active
+                </span>
+
+            </div>
+
+
+            <!-- STATS -->
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <div class="number" id="totalComplaints">
+                        0
+                    </div>
+
+                    <p>
+                        Total Complaints
+                    </p>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="number" id="pendingComplaints">
+                        0
+                    </div>
+
+                    <p>
+                        Pending Complaints
+                    </p>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="number" id="progressComplaints">
+                        0
+                    </div>
+
+                    <p>
+                        In Progress
+                    </p>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="number" id="resolvedComplaints">
+                        0
+                    </div>
+
+                    <p>
+                        Resolved
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUICK ACTIONS -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>
+                        Quick Actions
+                    </h3>
+
+                </div>
+
+
+                <div class="quick-grid">
+
+                    <button class="quick-action"
+                            onclick="showPage('complaints')">
+
+                        <strong>
+                            📋 Manage Complaints
+                        </strong>
+
+                        <span>
+                            View and manage citizen complaints
+                        </span>
+
+                    </button>
+
+
+                    <button class="quick-action"
+                            onclick="showPage('users')">
+
+                        <strong>
+                            👥 Manage Users
+                        </strong>
+
+                        <span>
+                            View citizens and officers
+                        </span>
+
+                    </button>
+
+
+                    <button class="quick-action"
+                            onclick="showPage('services')">
+
+                        <strong>
+                            🛠️ Manage Services
+                        </strong>
+
+                        <span>
+                            Manage available services
+                        </span>
+
+                    </button>
+
+
+                    <button class="quick-action"
+                            onclick="showPage('notifications')">
+
+                        <strong>
+                            🔔 Notifications
+                        </strong>
+
+                        <span>
+                            View system notifications
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECENT DATA -->
+
+            <div class="two-column">
+
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h3>
+                            Recent Complaints
+                        </h3>
+
+                        <button class="btn btn-blue"
+                                onclick="showPage('complaints')">
+                            View All
+                        </button>
+
+                    </div>
+
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Citizen</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="recentComplaintsTable">
+
+                                <tr>
+                                    <td colspan="5"
+                                        style="text-align:center;">
+                                        Loading...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h3>
+                            System Overview
+                        </h3>
+
+                    </div>
+
+
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            👥
+                        </div>
+
+                        <div>
+                            <p>
+                                <strong id="citizenCount">
+                                    0
+                                </strong>
+                                registered citizens
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            👮
+                        </div>
+
+                        <div>
+                            <p>
+                                <strong id="officerCount">
+                                    0
+                                </strong>
+                                active officers
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            🔔
+                        </div>
+
+                        <div>
+                            <p>
+                                <strong id="unreadCount">
+                                    0
+                                </strong>
+                                unread notifications
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             COMPLAINTS
+        ================================================== -->
+
+        <section class="page" id="complaints">
+
+            <button class="page-close"
+                    onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>
+                    Manage Complaints
+                </h2>
+
+                <p>
+                    Review complaints and assign them to officers.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="filters">
+
+                    <input
+                        class="search"
+                        id="complaintSearch"
+                        placeholder="🔍 Search complaints..."
+                        oninput="filterComplaints()">
+
+
+                    <select id="complaintStatus"
+                            onchange="filterComplaints()">
+
+                        <option value="all">
+                            All Status
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="In Progress">
+                            In Progress
+                        </option>
+
+                        <option value="Resolved">
+                            Resolved
+                        </option>
+
+                    </select>
+
+
+                    <select id="complaintCategory"
+                            onchange="filterComplaints()">
+
+                        <option value="all">
+                            All Categories
+                        </option>
+
+                        <option value="Water Supply">
+                            Water Supply
+                        </option>
+
+                        <option value="Electricity">
+                            Electricity
+                        </option>
+
+                        <option value="Road">
+                            Road
+                        </option>
+
+                        <option value="Sanitation">
+                            Sanitation
+                        </option>
+
+                        <option value="Health">
+                            Health
+                        </option>
+
+                        <option value="Education">
+                            Education
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Complaint ID</th>
+                                <th>Citizen</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Officer</th>
+                                <th>Status</th>
+                                <th>Action</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="complaintTable">
+
+                            <tr>
+
+                                <td colspan="7"
+                                    style="text-align:center;">
+                                    Loading complaints...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             USERS
+        ================================================== -->
+
+        <section class="page" id="users">
+
+            <button class="page-close"
+                    onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>
+                    Manage Users
+                </h2>
+
+                <p>
+                    View citizens and officers registered in GramaSathi.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="filters">
+
+                    <input
+                        class="search"
+                        id="userSearch"
+                        placeholder="🔍 Search users..."
+                        oninput="filterUsers()">
+
+
+                    <select id="userType"
+                            onchange="filterUsers()">
+
+                        <option value="all">
+                            All Users
+                        </option>
+
+                        <option value="citizen">
+                            Citizens
+                        </option>
+
+                        <option value="officer">
+                            Officers
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Mobile</th>
+                                <th>Role</th>
+                                <th>Village</th>
+                                <th>Action</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="userTable">
+
+                            <tr>
+
+                                <td colspan="6"
+                                    style="text-align:center;">
+                                    Loading users...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SERVICES
+        ================================================== -->
+
+        <section class="page" id="services">
+
+            <button class="page-close"
+                    onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>
+                    Manage Services
+                </h2>
+
+                <p>
+                    Manage services available to citizens.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="service-grid">
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            💧
+                        </div>
+
+                        <h3>
+                            Water Supply
+                        </h3>
+
+                        <p>
+                            Report water supply problems,
+                            pipeline issues and related complaints.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                    </div>
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            💡
+                        </div>
+
+                        <h3>
+                            Electricity
+                        </h3>
+
+                        <p>
+                            Report street light and electricity
+                            related problems.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                    </div>
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            🛣️
+                        </div>
+
+                        <h3>
+                            Roads
+                        </h3>
+
+                        <p>
+                            Report damaged roads, potholes and
+                            village transportation issues.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                    </div>
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            🗑️
+                        </div>
+
+                        <h3>
+                            Sanitation
+                        </h3>
+
+                        <p>
+                            Report garbage collection and
+                            sanitation related issues.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                    </div>
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            🏥
+                        </div>
+
+                        <h3>
+                            Health
+                        </h3>
+
+                        <p>
+                            Access and report basic village
+                            health service issues.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                    </div>
+
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            🏫
+                        </div>
+
+                        <h3>
+                            Education
+                        </h3>
+
+                        <p>
+                            Manage complaints related to
+                            village schools and education.
+                        </p>
+
+                        <br>
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             NOTIFICATIONS
+        ================================================== -->
+
+        <section class="page" id="notifications">
+
+            <button class="page-close"
+                    onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>
+                    Notifications
+                </h2>
+
+                <p>
+                    Monitor notifications related to the admin account.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>
+                        Recent Notifications
+                    </h3>
+
+                    <button class="btn btn-green"
+                            onclick="markAllNotificationsRead()">
+                        Mark All Read
+                    </button>
+
+                </div>
+
+
+                <div id="notificationList">
+
+                    <p style="color:var(--muted);">
+                        Loading notifications...
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ACTIVITY
+        ================================================== -->
+
+        <section class="page" id="activity">
+
+            <button class="page-close"
+                    onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>
+                    Activity Log
+                </h2>
+
+                <p>
+                    Recent complaint activity from the system.
+                </p>
+
+            </div>
+
+
+            <div class="card"
+                 id="activityList">
+
+                <p style="color:var(--muted);">
+                    Loading activity...
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PROFILE
+        ================================================== -->
+
+        <section class="page" id="profile">
+
+            <button class="page-close"
+                    onclick="closeOpenedPage()">
+                ×
+            </button>
+
+
+            <div class="page-title">
+
+                <h2>
+                    Admin Profile
+                </h2>
+
+                <p>
+                    Manage your administrator information.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="profile-grid">
+
+
+                    <div>
+
+                        <div class="profile-photo"
+                             id="profilePhoto">
+                            👨‍💼
+                        </div>
+
+                        <br>
+
+                        <input type="file"
+                               id="profileImage"
+                               accept="image/*"
+                               onchange="changeProfileImage(this)">
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="profile-form">
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Full Name
+                                </label>
+
+                                <input id="adminName">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Admin ID
+                                </label>
+
+                                <input id="adminId"
+                                       readonly>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Department
+                                </label>
+
+                                <input id="adminDepartment"
+                                       value="GramaSathi Administration">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Mobile Number
+                                </label>
+
+                                <input id="adminMobile">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Email
+                                </label>
+
+                                <input id="adminEmail">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Role
+                                </label>
+
+                                <input id="adminRole"
+                                       value="System Administrator"
+                                       readonly>
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <label>
+                                    Village
+                                </label>
+
+                                <input id="adminVillage">
+
+                            </div>
+
+                        </div>
+
+
+                        <br>
+
+                        <button class="btn btn-green"
+                                onclick="saveProfile()">
+                            💾 Save Profile
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         MODAL
+    ====================================================== -->
+
+    <div class="modal"
+         id="modal">
+
+        <div class="modal-box">
+
+            <button class="modal-close"
+                    onclick="closeModal()">
+                ×
+            </button>
+
+            <div id="modalContent">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
+
+    <div class="toast"
+         id="toast">
+    </div>
+
+
+    <script>
+
+        const role = localStorage.getItem("gramasathiRole");
+
+if (role !== "admin") {
+    window.location.replace("login.html");
+}
+        /* =====================================================
+           CONFIG
+        ====================================================== */
+
+        const API_BASE =
+            "http://127.0.0.1:5001/api";
+
+
+        let adminUserId =
+            localStorage.getItem("gramasathiUserId");
+
+
+        let complaints = [];
+        let citizens = [];
+        let officers = [];
+        let notifications = [];
+
+
+        /* =====================================================
+           API HELPER
+        ====================================================== */
+
+        async function apiFetch(endpoint, options = {}) {
+
+            const response =
+                await fetch(API_BASE + endpoint, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    ...options
+                });
+
+
+            const data =
+                await response.json().catch(() => ({}));
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    data.message ||
+                    "Request failed"
+                );
+
+            }
+
+
+            return data;
+        }
+
+
+        /* =====================================================
+           ESCAPE HTML
+        ====================================================== */
+
+        function escapeHTML(value) {
+
+            return String(value ?? "")
+                .replace(/[&<>"']/g, function (char) {
+
+                    return {
+                        "&": "&amp;",
+                        "<": "&lt;",
+                        ">": "&gt;",
+                        '"': "&quot;",
+                        "'": "&#39;"
+                    }[char];
+
+                });
+        }
+
+
+        /* =====================================================
+           STATUS CLASS
+        ====================================================== */
+
+        function getStatusClass(status) {
+
+            if (status === "Resolved") {
+                return "resolved";
+            }
+
+            if (status === "In Progress") {
+                return "progress";
+            }
+
+            return "pending";
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ====================================================== */
+
+        function openSidebar() {
+
+            document
+                .getElementById("sidebar")
+                .classList.add("active");
+
+            document
+                .getElementById("overlay")
+                .classList.add("active");
+        }
+
+
+        function closeSidebar() {
+
+            document
+                .getElementById("sidebar")
+                .classList.remove("active");
+
+            document
+                .getElementById("overlay")
+                .classList.remove("active");
+        }
+
+
+        /* =====================================================
+           PAGE NAVIGATION
+        ====================================================== */
+
+        function showPage(pageId, button = null) {
+
+            document
+                .querySelectorAll(".page")
+                .forEach(page => {
+                    page.classList.remove("active");
+                });
+
+
+            const page =
+                document.getElementById(pageId);
+
+
+            if (!page) {
+                return;
+            }
+
+
+            page.classList.add("active");
+
+
+            document
+                .querySelectorAll(".sidebar-menu button")
+                .forEach(btn => {
+                    btn.classList.remove("active");
+                });
+
+
+            if (button) {
+                button.classList.add("active");
+            }
+
+
+            closeSidebar();
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+
+            if (pageId === "dashboard") {
+                loadAdminDashboard();
+            }
+
+            if (pageId === "complaints") {
+                loadComplaints();
+            }
+
+            if (pageId === "users") {
+                loadUsers();
+            }
+
+            if (pageId === "notifications") {
+                loadNotifications();
+            }
+
+            if (pageId === "activity") {
+                loadActivity();
+            }
+
+            if (pageId === "profile") {
+                loadAdminProfile();
+            }
+        }
+
+
+        /* =====================================================
+           CLOSE PAGE
+        ====================================================== */
+
+        function closeOpenedPage() {
+
+            document
+                .querySelectorAll(".page")
+                .forEach(page => {
+                    page.classList.remove("active");
+                });
+
+
+            document
+                .getElementById("dashboard")
+                .classList.add("active");
+
+
+            document
+                .querySelectorAll(".sidebar-menu button")
+                .forEach(btn => {
+                    btn.classList.remove("active");
+                });
+
+
+            const dashboardButton =
+                document.querySelector(
+                    '.sidebar-menu button[onclick*="dashboard"]'
+                );
+
+
+            if (dashboardButton) {
+                dashboardButton.classList.add("active");
+            }
+
+
+            closeSidebar();
+
+
+            loadAdminDashboard();
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+
+
+        /* =====================================================
+           ADMIN DASHBOARD
+        ====================================================== */
+
+        async function loadAdminDashboard() {
+
+            try {
+
+                const data =
+                    await apiFetch("/admin/dashboard");
+
+
+                const summary =
+                    data.summary || {};
+
+
+                document.getElementById(
+                    "totalComplaints"
+                ).textContent =
+                    summary.total_complaints ?? 0;
+
+
+                document.getElementById(
+                    "pendingComplaints"
+                ).textContent =
+                    summary.pending ?? 0;
+
+
+                document.getElementById(
+                    "progressComplaints"
+                ).textContent =
+                    summary.in_progress ?? 0;
+
+
+                document.getElementById(
+                    "resolvedComplaints"
+                ).textContent =
+                    summary.resolved ?? 0;
+
+
+                document.getElementById(
+                    "citizenCount"
+                ).textContent =
+                    summary.citizens ?? 0;
+
+
+                document.getElementById(
+                    "officerCount"
+                ).textContent =
+                    summary.officers ?? 0;
+
+
+                await loadRecentComplaints();
+
+                await loadNotifications(true);
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                showToast(
+                    "Could not load admin dashboard"
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RECENT COMPLAINTS
+        ====================================================== */
+
+        async function loadRecentComplaints() {
+
+            try {
+
+                const data =
+                    await apiFetch("/admin/complaints");
+
+
+                const rows =
+                    data.complaints || [];
+
+
+                complaints = rows;
+
+
+                const recent =
+                    rows.slice(0, 5);
+
+
+                const table =
+                    document.getElementById(
+                        "recentComplaintsTable"
+                    );
+
+
+                if (!recent.length) {
+
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="5"
+                                style="text-align:center;color:var(--muted);">
+                                No complaints found.
+                            </td>
+                        </tr>
+                    `;
+
+                    return;
+                }
+
+
+                table.innerHTML =
+                    recent.map(c => `
+
+                        <tr>
+
+                            <td>
+                                #${escapeHTML(c.complaint_id)}
+                            </td>
+
+                            <td>
+                                ${escapeHTML(c.citizen_name)}
+                            </td>
+
+                            <td>
+                                ${escapeHTML(c.category)}
+                            </td>
+
+                            <td>
+                                <span class="status ${getStatusClass(c.status)}">
+                                    ${escapeHTML(c.status)}
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="btn btn-blue"
+                                    onclick="viewComplaintById('${escapeHTML(c.complaint_id)}')">
+                                    View
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `).join("");
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           LOAD ALL COMPLAINTS
+        ====================================================== */
+
+        async function loadComplaints() {
+
+            const table =
+                document.getElementById(
+                    "complaintTable"
+                );
+
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="7"
+                        style="text-align:center;">
+                        Loading complaints...
+                    </td>
+                </tr>
+            `;
+
+
+            try {
+
+                const data =
+                    await apiFetch("/admin/complaints");
+
+
+                complaints =
+                    data.complaints || [];
+
+
+                renderComplaints(complaints);
+
+            }
+
+            catch (error) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="7"
+                            style="text-align:center;color:#dc2626;">
+                            ${escapeHTML(error.message)}
+                        </td>
+                    </tr>
+                `;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RENDER COMPLAINTS
+        ====================================================== */
+
+        function renderComplaints(rows) {
+
+            const table =
+                document.getElementById(
+                    "complaintTable"
+                );
+
+
+            if (!rows.length) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="7"
+                            style="text-align:center;color:var(--muted);">
+                            No complaints found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            table.innerHTML =
+                rows.map(c => `
+
+                    <tr
+                        data-status="${escapeHTML(c.status)}"
+                        data-category="${escapeHTML(c.category)}">
+
+                        <td>
+                            #${escapeHTML(c.complaint_id)}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(c.citizen_name)}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(c.category)}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(c.description)}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(c.officer_name || "Not Assigned")}
+                        </td>
+
+                        <td>
+
+                            <span class="status ${getStatusClass(c.status)}">
+                                ${escapeHTML(c.status)}
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="btn btn-blue"
+                                onclick="viewComplaintById('${escapeHTML(c.complaint_id)}')">
+                                View
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `).join("");
+
+
+            filterComplaints();
+
+        }
+
+
+        /* =====================================================
+           FILTER COMPLAINTS
+        ====================================================== */
+
+        function filterComplaints() {
+
+            const search =
+                (
+                    document.getElementById(
+                        "complaintSearch"
+                    )?.value || ""
+                ).toLowerCase();
+
+
+            const status =
+                document.getElementById(
+                    "complaintStatus"
+                )?.value || "all";
+
+
+            const category =
+                document.getElementById(
+                    "complaintCategory"
+                )?.value || "all";
+
+
+            document
+                .querySelectorAll("#complaintTable tr")
+                .forEach(row => {
+
+                    const text =
+                        row.innerText.toLowerCase();
+
+
+                    const rowStatus =
+                        row.dataset.status || "";
+
+
+                    const rowCategory =
+                        row.dataset.category || "";
+
+
+                    const searchMatch =
+                        text.includes(search);
+
+
+                    const statusMatch =
+                        status === "all" ||
+                        rowStatus === status;
+
+
+                    const categoryMatch =
+                        category === "all" ||
+                        rowCategory === category;
+
+
+                    row.style.display =
+                        searchMatch &&
+                        statusMatch &&
+                        categoryMatch
+                            ? ""
+                            : "none";
+
+                });
+
+        }
+
+
+        /* =====================================================
+           VIEW COMPLAINT
+        ====================================================== */
+
+        function viewComplaintById(complaintId) {
+
+            const complaint =
+                complaints.find(
+                    c =>
+                        c.complaint_id === complaintId
+                );
+
+
+            if (!complaint) {
+
+                showToast(
+                    "Complaint details not found"
+                );
+
+                return;
+            }
+
+
+            openModal(`
+
+                <h2>
+                    Complaint Details
+                </h2>
+
+                <div class="detail-row">
+
+                    <strong>
+                        Complaint ID
+                    </strong>
+
+                    <span>
+                        #${escapeHTML(complaint.complaint_id)}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Citizen
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(complaint.citizen_name)}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Mobile
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(complaint.citizen_mobile || "-")}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Category
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(complaint.category)}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Village
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(complaint.village || "-")}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Location
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(complaint.location || "-")}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Description
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(complaint.description)}
+                    </span>
+
+                </div>
+
+
+                <br>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Assign Officer
+                    </label>
+
+                    <select
+                        id="assignOfficer"
+                        style="width:100%;">
+
+                        <option value="">
+                            Select Officer
+                        </option>
+
+                        ${officers.map(o => `
+
+                            <option
+                                value="${o.id}"
+                                ${Number(complaint.assigned_officer) === Number(o.id)
+                                    ? "selected"
+                                    : ""}>
+
+                                ${escapeHTML(o.name)}
+                                -
+                                ${escapeHTML(o.mobile)}
+
+                            </option>
+
+                        `).join("")}
+
+                    </select>
+
+                </div>
+
+
+                <br>
+
+
+                <button
+                    class="btn btn-green"
+                    onclick="assignComplaint('${escapeHTML(complaint.complaint_id)}')">
+
+                    Assign Officer
+
+                </button>
+
+
+                <button
+                    class="btn btn-gray"
+                    onclick="closeModal()">
+
+                    Close
+
+                </button>
+
+            `);
+
+
+            loadOfficersForModal();
+
+        }
+
+
+        /* =====================================================
+           LOAD OFFICERS
+        ====================================================== */
+
+        async function loadOfficersForModal() {
+
+            try {
+
+                const data =
+                    await apiFetch(
+                        "/admin/officers"
+                    );
+
+
+                officers =
+                    data.officers || [];
+
+
+                const select =
+                    document.getElementById(
+                        "assignOfficer"
+                    );
+
+
+                if (!select) {
+                    return;
+                }
+
+
+                const complaintId =
+                    document
+                        .querySelector("#modalContent")
+                        ?.innerHTML;
+
+
+                /* Rebuild only when officers are available. */
+
+                const currentComplaint =
+                    complaints.find(c =>
+                        document
+                            .querySelector("#modalContent")
+                            ?.innerHTML
+                            ?.includes(
+                                escapeHTML(c.complaint_id)
+                            )
+                    );
+
+
+                select.innerHTML = `
+                    <option value="">
+                        Select Officer
+                    </option>
+
+                    ${officers.map(o => `
+
+                        <option value="${o.id}">
+
+                            ${escapeHTML(o.name)}
+                            -
+                            ${escapeHTML(o.mobile)}
+
+                        </option>
+
+                    `).join("")}
+                `;
+
+
+                if (
+                    currentComplaint &&
+                    currentComplaint.assigned_officer
+                ) {
+
+                    select.value =
+                        currentComplaint.assigned_officer;
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ASSIGN COMPLAINT
+        ====================================================== */
+
+        async function assignComplaint(complaintId) {
+
+            const officerId =
+                document.getElementById(
+                    "assignOfficer"
+                ).value;
+
+
+            if (!officerId) {
+
+                showToast(
+                    "Please select an officer"
+                );
+
+                return;
+            }
+
+
+            if (!adminUserId) {
+
+                showToast(
+                    "Admin login session not found"
+                );
+
+                return;
+            }
+
+
+            try {
+
+                await apiFetch(
+                    "/admin/complaints/" +
+                    encodeURIComponent(complaintId) +
+                    "/assign",
+                    {
+                        method: "PUT",
+
+                        body: JSON.stringify({
+                            officer_id:
+                                Number(officerId),
+
+                            admin_id:
+                                Number(adminUserId)
+                        })
+                    }
+                );
+
+
+                closeModal();
+
+
+                showToast(
+                    "Officer assigned successfully"
+                );
+
+
+                await loadComplaints();
+
+                await loadAdminDashboard();
+
+                await loadActivity();
+
+            }
+
+            catch (error) {
+
+                showToast(
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           USERS
+        ====================================================== */
+
+        async function loadUsers() {
+
+            const table =
+                document.getElementById(
+                    "userTable"
+                );
+
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="6"
+                        style="text-align:center;">
+                        Loading users...
+                    </td>
+                </tr>
+            `;
+
+
+            try {
+
+                const [
+                    citizenData,
+                    officerData
+                ] = await Promise.all([
+
+                    apiFetch(
+                        "/admin/citizens"
+                    ),
+
+                    apiFetch(
+                        "/admin/officers"
+                    )
+
+                ]);
+
+
+                citizens =
+                    citizenData.citizens || [];
+
+
+                officers =
+                    officerData.officers || [];
+
+
+                const citizenRows =
+                    citizens.map(
+                        u => ({
+                            ...u,
+                            role: "citizen"
+                        })
+                    );
+
+
+                const officerRows =
+                    officers.map(
+                        u => ({
+                            ...u,
+                            role: "officer"
+                        })
+                    );
+
+
+                const users =
+                    [
+                        ...citizenRows,
+                        ...officerRows
+                    ];
+
+
+                window.allAdminUsers =
+                    users;
+
+
+                renderUsers(users);
+
+            }
+
+            catch (error) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6"
+                            style="text-align:center;color:#dc2626;">
+                            ${escapeHTML(error.message)}
+                        </td>
+                    </tr>
+                `;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RENDER USERS
+        ====================================================== */
+
+        function renderUsers(users) {
+
+            const table =
+                document.getElementById(
+                    "userTable"
+                );
+
+
+            if (!users.length) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6"
+                            style="text-align:center;">
+                            No users found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            table.innerHTML =
+                users.map(u => `
+
+                    <tr data-role="${escapeHTML(u.role)}">
+
+                        <td>
+                            ${escapeHTML(u.id)}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(u.name)}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(u.mobile)}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                u.role === "officer"
+                                    ? "Officer"
+                                    : "Citizen"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(u.village || "-")}
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="btn btn-blue"
+                                onclick="viewUser(${u.id}, '${escapeHTML(u.role)}')">
+
+                                View
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `).join("");
+
+
+            filterUsers();
+
+        }
+
+
+        /* =====================================================
+           FILTER USERS
+        ====================================================== */
+
+        function filterUsers() {
+
+            const search =
+                (
+                    document.getElementById(
+                        "userSearch"
+                    )?.value || ""
+                ).toLowerCase();
+
+
+            const type =
+                document.getElementById(
+                    "userType"
+                )?.value || "all";
+
+
+            document
+                .querySelectorAll("#userTable tr")
+                .forEach(row => {
+
+                    const text =
+                        row.innerText.toLowerCase();
+
+
+                    const role =
+                        row.dataset.role || "";
+
+
+                    const searchMatch =
+                        text.includes(search);
+
+
+                    const roleMatch =
+                        type === "all" ||
+                        role === type;
+
+
+                    row.style.display =
+                        searchMatch &&
+                        roleMatch
+                            ? ""
+                            : "none";
+
+                });
+
+        }
+
+
+        /* =====================================================
+           VIEW USER
+        ====================================================== */
+
+        function viewUser(id, role) {
+
+            const users =
+                window.allAdminUsers || [];
+
+
+            const user =
+                users.find(
+                    u =>
+                        Number(u.id) === Number(id) &&
+                        u.role === role
+                );
+
+
+            if (!user) {
+
+                showToast(
+                    "User not found"
+                );
+
+                return;
+            }
+
+
+            openModal(`
+
+                <h2>
+                    User Details
+                </h2>
+
+                <div class="detail-row">
+
+                    <strong>
+                        User ID
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(user.id)}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Name
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(user.name)}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Mobile
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(user.mobile)}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Email
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(user.email || "-")}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Role
+                    </strong>
+
+                    <span>
+                        ${role === "officer"
+                            ? "Officer"
+                            : "Citizen"}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Village
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(user.village || "-")}
+                    </span>
+
+                </div>
+
+            `);
+
+        }
+
+
+        /* =====================================================
+           NOTIFICATIONS
+        ====================================================== */
+
+        async function loadNotifications(silent = false) {
+
+            if (!adminUserId) {
+
+                if (!silent) {
+                    showToast(
+                        "Admin login session not found"
+                    );
+                }
+
+                return;
+            }
+
+
+            try {
+
+                const data =
+                    await apiFetch(
+                        "/notifications/" +
+                        encodeURIComponent(
+                            adminUserId
+                        )
+                    );
+
+
+                notifications =
+                    data.notifications || [];
+
+
+                renderNotifications();
+
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                if (!silent) {
+
+                    showToast(
+                        "Could not load notifications"
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RENDER NOTIFICATIONS
+        ====================================================== */
+
+        function renderNotifications() {
+
+            const list =
+                document.getElementById(
+                    "notificationList"
+                );
+
+
+            const unread =
+                notifications.filter(
+                    n =>
+                        !n.is_read
+                );
+
+
+            document.getElementById(
+                "notificationBadge"
+            ).textContent =
+                unread.length;
+
+
+            document.getElementById(
+                "unreadCount"
+            ).textContent =
+                unread.length;
+
+
+            if (!notifications.length) {
+
+                list.innerHTML = `
+                    <p style="color:var(--muted);">
+                        No notifications.
+                    </p>
+                `;
+
+                return;
+            }
+
+
+            list.innerHTML =
+                notifications.map(n => `
+
+                    <div class="notification ${n.is_read ? "" : "unread"}">
+
+                        <div>
+
+                            <h4>
+                                Notification
+                            </h4>
+
+                            <p>
+                                ${escapeHTML(n.message)}
+                            </p>
+
+                            <small>
+                                ${escapeHTML(
+                                    n.created_at || ""
+                                )}
+                            </small>
+
+                        </div>
+
+
+                        ${
+                            n.is_read
+
+                            ? `<button
+                                    class="btn btn-gray"
+                                    onclick="deleteNotification(${n.id})">
+                                    Delete
+                               </button>`
+
+                            : `<button
+                                    class="btn btn-gray"
+                                    onclick="markNotificationRead(${n.id})">
+                                    Mark Read
+                               </button>`
+                        }
+
+                    </div>
+
+                `).join("");
+
+        }
+
+
+        /* =====================================================
+           MARK NOTIFICATION READ
+        ====================================================== */
+
+        async function markNotificationRead(id) {
+
+            try {
+
+                await apiFetch(
+                    "/notifications/" +
+                    id +
+                    "/read",
+                    {
+                        method: "PUT"
+                    }
+                );
+
+
+                await loadNotifications();
+
+                showToast(
+                    "Notification marked as read"
+                );
+
+            }
+
+            catch (error) {
+
+                showToast(
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           DELETE NOTIFICATION
+           
+           Current backend provides read endpoint, not delete.
+           So this keeps the notification available in backend
+           and only removes it visually from this session.
+        ====================================================== */
+
+        function deleteNotification(id) {
+
+            const index =
+                notifications.findIndex(
+                    n =>
+                        Number(n.id) === Number(id)
+                );
+
+
+            if (index !== -1) {
+
+                notifications.splice(
+                    index,
+                    1
+                );
+
+            }
+
+
+            renderNotifications();
+
+
+            showToast(
+                "Notification removed from view"
+            );
+
+        }
+
+
+        /* =====================================================
+           MARK ALL READ
+        ====================================================== */
+
+        async function markAllNotificationsRead() {
+
+            const unread =
+                notifications.filter(
+                    n =>
+                        !n.is_read
+                );
+
+
+            if (!unread.length) {
+
+                showToast(
+                    "No unread notifications"
+                );
+
+                return;
+            }
+
+
+            try {
+
+                for (
+                    const notification
+                    of unread
+                ) {
+
+                    await apiFetch(
+                        "/notifications/" +
+                        notification.id +
+                        "/read",
+                        {
+                            method: "PUT"
+                        }
+                    );
+
+                }
+
+
+                await loadNotifications();
+
+
+                showToast(
+                    "All notifications marked as read"
+                );
+
+            }
+
+            catch (error) {
+
+                showToast(
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           PROFILE
+        ====================================================== */
+
+        async function loadAdminProfile() {
+
+            if (!adminUserId) {
+
+                showToast(
+                    "Admin login session not found"
+                );
+
+                return;
+            }
+
+
+            try {
+
+                const data =
+                    await apiFetch(
+                        "/user/" +
+                        encodeURIComponent(
+                            adminUserId
+                        )
+                    );
+
+
+                const user =
+                    data.user || data;
+
+
+                document.getElementById(
+                    "adminName"
+                ).value =
+                    user.name || "";
+
+
+                document.getElementById(
+                    "adminId"
+                ).value =
+                    user.id || adminUserId;
+
+
+                document.getElementById(
+                    "adminMobile"
+                ).value =
+                    user.mobile || "";
+
+
+                document.getElementById(
+                    "adminEmail"
+                ).value =
+                    user.email || "";
+
+
+                document.getElementById(
+                    "adminVillage"
+                ).value =
+                    user.village || "";
+
+
+                document.getElementById(
+                    "adminRole"
+                ).value =
+                    user.role === "admin"
+                        ? "System Administrator"
+                        : user.role || "Administrator";
+
+
+                const savedDepartment =
+                    localStorage.getItem(
+                        "gramasathiAdminDepartment"
+                    );
+
+
+                if (savedDepartment) {
+
+                    document.getElementById(
+                        "adminDepartment"
+                    ).value =
+                        savedDepartment;
+
+                }
+
+            }
+
+            catch (error) {
+
+                showToast(
+                    "Could not load profile"
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           SAVE PROFILE
+        ====================================================== */
+
+        async function saveProfile() {
+
+            if (!adminUserId) {
+
+                showToast(
+                    "Admin login session not found"
+                );
+
+                return;
+            }
+
+
+            const name =
+                document.getElementById(
+                    "adminName"
+                ).value.trim();
+
+
+            const mobile =
+                document.getElementById(
+                    "adminMobile"
+                ).value.trim();
+
+
+            const email =
+                document.getElementById(
+                    "adminEmail"
+                ).value.trim();
+
+
+            const village =
+                document.getElementById(
+                    "adminVillage"
+                ).value.trim();
+
+
+            const department =
+                document.getElementById(
+                    "adminDepartment"
+                ).value.trim();
+
+
+            if (!name || !mobile) {
+
+                showToast(
+                    "Name and mobile are required"
+                );
+
+                return;
+            }
+
+
+            try {
+
+                await apiFetch(
+                    "/user/" +
+                    encodeURIComponent(
+                        adminUserId
+                    ),
+                    {
+                        method: "PUT",
+
+                        body: JSON.stringify({
+                            name: name,
+                            mobile: mobile,
+                            email: email,
+                            village: village
+                        })
+                    }
+                );
+
+
+                localStorage.setItem(
+                    "gramasathiAdminDepartment",
+                    department
+                );
+
+
+                showToast(
+                    "Admin profile saved successfully"
+                );
+
+            }
+
+            catch (error) {
+
+                showToast(
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           PROFILE IMAGE
+        ====================================================== */
+
+        function changeProfileImage(input) {
+
+            const file =
+                input.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function (event) {
+
+                    document
+                        .getElementById(
+                            "profilePhoto"
+                        )
+                        .innerHTML =
+                        `
+                            <img
+                                src="${event.target.result}"
+                                alt="Admin Profile">
+                        `;
+
+
+                    localStorage.setItem(
+                        "gramasathiAdminImage",
+                        event.target.result
+                    );
+
+                };
+
+
+            reader.readAsDataURL(file);
+
+        }
+
+
+        function loadProfileImage() {
+
+            const image =
+                localStorage.getItem(
+                    "gramasathiAdminImage"
+                );
+
+
+            if (image) {
+
+                document
+                    .getElementById(
+                        "profilePhoto"
+                    )
+                    .innerHTML =
+                    `
+                        <img
+                            src="${image}"
+                            alt="Admin Profile">
+                    `;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ACTIVITY
+        ====================================================== */
+
+        async function loadActivity() {
+
+            const container =
+                document.getElementById(
+                    "activityList"
+                );
+
+
+            try {
+
+                const data =
+                    await apiFetch(
+                        "/admin/complaints"
+                    );
+
+
+                const rows =
+                    data.complaints || [];
+
+
+                if (!rows.length) {
+
+                    container.innerHTML = `
+                        <p style="color:var(--muted);">
+                            No activity available.
+                        </p>
+                    `;
+
+                    return;
+                }
+
+
+                const recent =
+                    rows.slice(0, 8);
+
+
+                container.innerHTML =
+                    recent.map(c => `
+
+                        <div class="activity">
+
+                            <div class="activity-icon">
+
+                                ${
+                                    c.status === "Resolved"
+                                        ? "✓"
+                                        : c.status === "In Progress"
+                                            ? "↻"
+                                            : "!"
+                                }
+
+                            </div>
+
+                            <div>
+
+                                <p>
+
+                                    Complaint
+                                    <strong>
+                                        #${escapeHTML(c.complaint_id)}
+                                    </strong>
+
+                                    is currently
+
+                                    <strong>
+                                        ${escapeHTML(c.status)}
+                                    </strong>.
+
+                                </p>
+
+                                <small>
+
+                                    ${escapeHTML(
+                                        c.updated_at ||
+                                        c.created_at ||
+                                        ""
+                                    )}
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    `).join("");
+
+            }
+
+            catch (error) {
+
+                container.innerHTML = `
+                    <p style="color:var(--muted);">
+                        Activity could not be loaded.
+                    </p>
+                `;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           MODAL
+        ====================================================== */
+
+        function openModal(content) {
+
+            document.getElementById(
+                "modalContent"
+            ).innerHTML =
+                content;
+
+
+            document.getElementById(
+                "modal"
+            ).classList.add(
+                "active"
+            );
+
+        }
+
+
+        function closeModal() {
+
+            document.getElementById(
+                "modal"
+            ).classList.remove(
+                "active"
+            );
+
+        }
+
+
+        /* =====================================================
+           TOAST
+        ====================================================== */
+
+        function showToast(message) {
+
+            const toast =
+                document.getElementById(
+                    "toast"
+                );
+
+
+            toast.textContent =
+                message;
+
+
+            toast.classList.add(
+                "show"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    toast.classList.remove(
+                        "show"
+                    );
+
+                },
+                2500
+            );
+
+        }
+
+
+        /* =====================================================
+           DARK MODE
+        ====================================================== */
+
+        function toggleDarkMode() {
+
+            document.body
+                .classList
+                .toggle("dark");
+
+
+            localStorage.setItem(
+                "gramasathiAdminDarkMode",
+                document.body.classList.contains(
+                    "dark"
+                )
+            );
+
+        }
+
+
+        function loadDarkMode() {
+
+            if (
+                localStorage.getItem(
+                    "gramasathiAdminDarkMode"
+                ) === "true"
+            ) {
+
+                document.body
+                    .classList
+                    .add("dark");
+
+            }
+
+        }
+
+
+        /* =====================================================
+           LOGOUT
+        ====================================================== */
+
+        function logout() {
+
+            const confirmed =
+                confirm(
+                    "Are you sure you want to logout?"
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            localStorage.removeItem(
+                "gramasathiUserId"
+            );
+
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        /* =====================================================
+           ESC KEY
+        ====================================================== */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    closeSidebar();
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           MODAL OUTSIDE CLICK
+        ====================================================== */
+
+        document
+            .getElementById("modal")
+            .addEventListener(
+                "click",
+                function (event) {
+
+                    if (
+                        event.target === this
+                    ) {
+
+                        closeModal();
+
+                    }
+
+                }
+            );
+
+
+        /* =====================================================
+           INITIAL LOAD
+        ====================================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function () {
+
+                loadDarkMode();
+
+                loadProfileImage();
+
+                await loadAdminDashboard();
+
+                await loadComplaints();
+
+                await loadUsers();
+
+                await loadNotifications(true);
+
+                await loadActivity();
+
+                await loadAdminProfile();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

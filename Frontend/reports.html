@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reports - GramaSathi</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4faf6;
+            color: #222;
+        }
+
+        /* HEADER */
+        .header {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header h1 {
+            color: #087c48;
+            font-size: 28px;
+        }
+
+        .back-arrow {
+            position: absolute;
+            left: 30px;
+            font-size: 32px;
+            color: #222;
+            cursor: pointer;
+        }
+
+        /* MAIN */
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title h2 {
+            color: #087c48;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .title p {
+            color: #666;
+            font-size: 15px;
+        }
+
+        /* REPORT BOX */
+        .report-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .report-box h3 {
+            color: #087c48;
+            font-size: 20px;
+            margin-bottom: 18px;
+        }
+
+        .report-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5px;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+        }
+
+        .report-row:last-child {
+            border-bottom: none;
+        }
+
+        .report-row span:last-child {
+            font-weight: bold;
+            color: #087c48;
+        }
+
+        /* GENERATE BUTTON */
+        .generate-btn {
+            display: block;
+            margin: 30px auto;
+            padding: 13px 28px;
+            border: none;
+            border-radius: 25px;
+            background: #087c48;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .generate-btn:hover {
+            background: #05663b;
+        }
+
+        /* MOBILE */
+        @media (max-width: 600px) {
+
+            .header {
+                height: 60px;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+
+            .back-arrow {
+                left: 18px;
+                font-size: 28px;
+            }
+
+            .container {
+                width: 94%;
+                margin: 20px auto;
+            }
+
+            .title h2 {
+                font-size: 24px;
+            }
+
+            .report-box {
+                padding: 20px;
+            }
+
+            .report-row {
+                font-size: 15px;
+            }
+        }
+
+        @media print {
+
+            .header {
+                border-bottom: 1px solid #ddd;
+            }
+
+            .back-arrow {
+                display: none;
+            }
+
+            .generate-btn {
+                display: none;
+            }
+
+            body {
+                background: white;
+            }
+
+            .report-box {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+
+        <span class="back-arrow" onclick="goBack()">←</span>
+
+        <h1>GRAMSATHI</h1>
+
+    </div>
+
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+
+        <div class="title">
+
+            <h2>Reports</h2>
+
+            <p>Complaint and village information</p>
+
+        </div>
+
+
+        <!-- CATEGORY REPORT -->
+        <div class="report-box">
+
+            <h3>Complaints by Category</h3>
+
+            <div class="report-row">
+                <span>💧 Water Supply</span>
+                <span>4</span>
+            </div>
+
+            <div class="report-row">
+                <span>🛣️ Roads</span>
+                <span>3</span>
+            </div>
+
+            <div class="report-row">
+                <span>💡 Electricity</span>
+                <span>3</span>
+            </div>
+
+            <div class="report-row">
+                <span>🧹 Sanitation</span>
+                <span>2</span>
+            </div>
+
+        </div>
+
+
+        <!-- VILLAGE REPORT -->
+        <div class="report-box">
+
+            <h3>Complaints by Village</h3>
+
+            <div class="report-row">
+                <span>Ramanapalli</span>
+                <span>6</span>
+            </div>
+
+            <div class="report-row">
+                <span>Chinnapalli</span>
+                <span>4</span>
+            </div>
+
+            <div class="report-row">
+                <span>Other Villages</span>
+                <span>2</span>
+            </div>
+
+        </div>
+
+
+        <!-- GENERATE REPORT -->
+        <button class="generate-btn" onclick="generateReport()">
+            📊 Generate Report
+        </button>
+
+    </div>
+
+
+    <script>
+
+        function goBack() {
+            window.location.href = "officer-dashboard.html";
+        }
+
+        function generateReport() {
+            window.print();
+        }
+
+    </script>
+
+</body>
+
+</html>

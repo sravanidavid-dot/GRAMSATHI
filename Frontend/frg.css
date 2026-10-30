@@ -1,0 +1,131 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    background: #e8f7e8;
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+}
+
+.left {
+    width: 50%;
+    min-height: 100vh;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right {
+    width: 50%;
+    min-height: 100vh;
+    background: #c8e6c9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+}
+
+.form-box {
+    width: 420px;
+    padding: 40px;
+}
+
+.form-box h2 {
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+.form-box p {
+    text-align: center;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.form-box input {
+    width: 100%;
+    height: 52px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0 15px;
+    font-size: 15px;
+    outline: none;
+    margin-bottom: 20px;
+}
+
+.form-box input:focus {
+    border-color: #079447;
+}
+
+.form-box button {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 8px;
+    background: #079447;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.form-box button:hover {
+    background: #067b3b;
+}
+
+.illustration {
+    font-size: 120px;
+    margin-bottom: 30px;
+}
+
+.right h1 {
+    font-size: 36px;
+    color: #087b3d;
+    margin-bottom: 15px;
+}
+
+.right p {
+    color: #555;
+    font-size: 17px;
+    max-width: 400px;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+
+    .container {
+        flex-direction: column;
+    }
+
+    .left,
+    .right {
+        width: 100%;
+        min-height: 50vh;
+    }
+
+    .form-box {
+        width: 90%;
+    }
+
+    .right h1 {
+        font-size: 28px;
+    }
+
+    .illustration {
+        font-size: 80px;
+    }
+}
