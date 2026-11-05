@@ -34,10 +34,15 @@ CORS(app)
 
 def get_db_connection():
     return mysql.connector.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        user=os.getenv("DB_USER", "root"),
-        password=os.getenv("DB_PASSWORD", ""),
-        database=os.getenv("DB_NAME", "gramasathi")
+        host=os.getenv("DB_HOST"),
+        port=int(os.getenv("DB_PORT", "4000")),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME"),
+        ssl_ca=os.getenv("DB_SSL_CA"),
+        ssl_verify_cert=True,
+        ssl_verify_identity=True,
+        use_pure=True
     )
 
 
@@ -224,27 +229,9 @@ def register():
         data.get("password") or ""
     )
 
-    role = str(
-        data.get("role") or "citizen"
-    ).strip().lower()
-
-
-    # -----------------------------------------------------
-    # VALID ROLE
-    # -----------------------------------------------------
-
-    allowed_roles = {
-        "citizen",
-        "officer",
-        "admin"
-    }
-
-    if role not in allowed_roles:
-
-        return jsonify({
-            "success": False,
-            "message": "Invalid account type"
-        }), 400
+    # Public registration is restricted to Citizen accounts.
+    # Admin and Officer accounts must be created securely.
+    role = "citizen"
 
 
     # -----------------------------------------------------
