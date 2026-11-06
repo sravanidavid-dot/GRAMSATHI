@@ -31,7 +31,6 @@ CORS(app)
 # =========================================================
 # MYSQL DATABASE
 # =========================================================
-
 def get_db_connection():
     return mysql.connector.connect(
         host=os.getenv("DB_HOST"),
@@ -459,48 +458,52 @@ def register():
 @app.route("/api/login", methods=["POST"])
 def login():
 
-    data = request.get_json(silent=True) or {}
-
-    login_id = str(
-        data.get("mobile")
-        or data.get("email")
-        or data.get("loginId")
-        or data.get("login_id")
-        or ""
-    ).strip().lower()
-
-    password = str(
-        data.get("password", "")
-    )
-
-
-    if not login_id or not password:
-
-        return jsonify({
-            "success": False,
-            "message": "Mobile/email and password are required"
-        }), 400
-
+    start_time = time.perf_counter()
 
     conn = None
     cursor = None
 
     try:
+        data = request.get_json(silent=True) or {}
+
+        login_id = str(
+            data.get("mobile")
+            or data.get("email")
+            or data.get("loginId")
+            or data.get("login_id")
+            or ""
+        ).strip().lower()
+
+        password = str(data.get("password", ""))
+
+        if not login_id or not password:
+            return jsonify({
+                "success": False,
+                "message": "Mobile/email and password are required"
+            }), 400
+
+        # 1. Database connection timing
+        db_start = time.perf_counter()
 
         conn = get_db()
 
-        if conn is None:
+        db_seconds = time.perf_counter() - db_start
 
+        print(
+            f"[LOGIN TIMING] Database connection: {db_seconds:.3f} seconds",
+            flush=True
+        )
+
+        if conn is None:
             return jsonify({
                 "success": False,
                 "message": "Database connection failed"
             }), 500
 
+        cursor = conn.cursor(dictionary=True)
 
-        cursor = conn.cursor(
-            dictionary=True
-        )
-
+        # 2. User search timing
+        query_start = time.perf_counter()
 
         cursor.execute(
             """
@@ -518,39 +521,46 @@ def login():
                OR LOWER(email) = %s
             LIMIT 1
             """,
-            (
-                login_id,
-                login_id
-            )
+            (login_id, login_id)
         )
 
         user = cursor.fetchone()
 
+        query_seconds = time.perf_counter() - query_start
 
-        if user is None:
-
-            return jsonify({
-                "success": False,
-                "message": "Invalid mobile/email or password"
-            }), 401
-
-
-        if not check_password_hash(
-            user["password"],
-            password
-        ):
-
-            return jsonify({
-                "success": False,
-                "message": "Invalid mobile/email or password"
-            }), 401
-
-
-        user.pop(
-            "password",
-            None
+        print(
+            f"[LOGIN TIMING] User search: {query_seconds:.3f} seconds",
+            flush=True
         )
 
+        if user is None:
+            return jsonify({
+                "success": False,
+                "message": "Invalid mobile/email or password"
+            }), 401
+
+        # 3. Password verification timing
+        password_start = time.perf_counter()
+
+        password_valid = check_password_hash(
+            user["password"],
+            password
+        )
+
+        password_seconds = time.perf_counter() - password_start
+
+        print(
+            f"[LOGIN TIMING] Password verification: {password_seconds:.3f} seconds",
+            flush=True
+        )
+
+        if not password_valid:
+            return jsonify({
+                "success": False,
+                "message": "Invalid mobile/email or password"
+            }), 401
+
+        user.pop("password", None)
 
         return jsonify({
             "success": True,
@@ -558,8 +568,8 @@ def login():
             "user": user
         })
 
-
     except Error as e:
+        app.logger.exception("Login database error")
 
         return jsonify({
             "success": False,
@@ -567,15 +577,19 @@ def login():
             "error": str(e)
         }), 500
 
-
     finally:
-
         if cursor:
             cursor.close()
 
         if conn:
             conn.close()
 
+        total_seconds = time.perf_counter() - start_time
+
+        print(
+            f"[LOGIN TIMING] TOTAL: {total_seconds:.3f} seconds",
+            flush=True
+        )
 
 # =========================================================
 # GET USER PROFILE
