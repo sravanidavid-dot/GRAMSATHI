@@ -274,48 +274,17 @@
 
                 <div class="otp-box">
 
-                    <input
-                        type="text"
-                        inputmode="numeric"
-                        maxlength="1"
-                        id="otp1"
-                        autocomplete="one-time-code"
-                    >
+                    <input type="text" inputmode="numeric" maxlength="1" id="otp1" autocomplete="one-time-code">
 
-                    <input
-                        type="text"
-                        inputmode="numeric"
-                        maxlength="1"
-                        id="otp2"
-                    >
+                    <input type="text" inputmode="numeric" maxlength="1" id="otp2">
 
-                    <input
-                        type="text"
-                        inputmode="numeric"
-                        maxlength="1"
-                        id="otp3"
-                    >
+                    <input type="text" inputmode="numeric" maxlength="1" id="otp3">
 
-                    <input
-                        type="text"
-                        inputmode="numeric"
-                        maxlength="1"
-                        id="otp4"
-                    >
+                    <input type="text" inputmode="numeric" maxlength="1" id="otp4">
 
-                    <input
-                        type="text"
-                        inputmode="numeric"
-                        maxlength="1"
-                        id="otp5"
-                    >
+                    <input type="text" inputmode="numeric" maxlength="1" id="otp5">
 
-                    <input
-                        type="text"
-                        inputmode="numeric"
-                        maxlength="1"
-                        id="otp6"
-                    >
+                    <input type="text" inputmode="numeric" maxlength="1" id="otp6">
 
                 </div>
 
@@ -341,23 +310,14 @@
 
                 <!-- RESEND -->
 
-                <button
-                    id="resendBtn"
-                    type="button"
-                    onclick="resendOTP()"
-                >
+                <button id="resendBtn" type="button" onclick="resendOTP()">
                     Resend OTP
                 </button>
 
 
                 <!-- VERIFY -->
 
-                <button
-                    class="verify-btn"
-                    id="verifyBtn"
-                    type="button"
-                    onclick="verifyOTP()"
-                >
+                <button class="verify-btn" id="verifyBtn" type="button" onclick="verifyOTP()">
                     Verify OTP
                 </button>
 
@@ -374,546 +334,217 @@
 
 
     <script>
+        const API = "https://gramasathi-backend.onrender.com/api/forgot-password";
+        const MSG91_WIDGET_ID = "366b67657a36313334303739";
+        // Use the same OTP Widget token as frg.html. Never put MSG91 AuthKey here.
+        const MSG91_WIDGET_TOKEN = "588016T2JXO9SokSOk6aeeb725P1";
 
-        const API =
-            "https://gramasathi-backend.onrender.com/api/forgot-password";
-
-
-        let phoneNumber =
-            localStorage.getItem("resetMobile");
-
-
+        const phoneNumber = localStorage.getItem("resetMobile");
+        const otpInputs = Array.from({ length: 6 }, (_, i) => document.getElementById("otp" + (i + 1)));
         let timer = null;
-
         let time = 30;
-
         let verifying = false;
+        let msg91Ready = false;
+        let msg91LoadPromise = null;
 
-
-        /* =========================
-           CHECK CONTACT
-        ========================= */
-
-        if (!phoneNumber) {
-
-            document.getElementById("message").textContent =
-                "Please return to Forgot Password.";
-
-            document.getElementById("message").className =
-                "error";
-
-            document.getElementById("verifyBtn").disabled = true;
-
-        } else {
-
-            document.getElementById("phoneDisplay").textContent =
-                phoneNumber;
-
-        }
-
-
-        /* =========================
-           OTP INPUTS
-        ========================= */
-
-        const otpInputs = [];
-
-        for (let i = 1; i <= 6; i++) {
-
-            otpInputs.push(
-                document.getElementById("otp" + i)
-            );
-
-        }
-
-
-        otpInputs.forEach((input, index) => {
-
-            input.addEventListener("input", function () {
-
-                /* Only numbers */
-
-                this.value =
-                    this.value.replace(/\D/g, "");
-
-
-                if (this.value.length === 1) {
-
-                    if (index < 5) {
-
-                        otpInputs[index + 1].focus();
-
-                    }
-
-                }
-
-            });
-
-
-            input.addEventListener("keydown", function (event) {
-
-                if (
-                    event.key === "Backspace" &&
-                    this.value === "" &&
-                    index > 0
-                ) {
-
-                    otpInputs[index - 1].focus();
-
-                }
-
-            });
-
-        });
-
-
-        /* =========================
-           GET OTP
-        ========================= */
-
-        function getEnteredOTP() {
-
-            let otp = "";
-
-            for (let i = 0; i < 6; i++) {
-
-                otp += otpInputs[i].value;
-
-            }
-
-            return otp.trim();
-
-        }
-
-
-        /* =========================
-           MESSAGE
-        ========================= */
+        const messageBox = document.getElementById("message");
+        const verifyButton = document.getElementById("verifyBtn");
+        const resendButton = document.getElementById("resendBtn");
 
         function showMessage(text, type) {
-
-            const message =
-                document.getElementById("message");
-
-            message.textContent = text;
-
-            message.className = type || "";
-
+            messageBox.textContent = text;
+            messageBox.className = type || "";
         }
 
+        function loadMSG91Widget() {
+            if (msg91Ready) return Promise.resolve();
+            if (msg91LoadPromise) return msg91LoadPromise;
+            msg91LoadPromise = new Promise((resolve, reject) => {
+                window.configuration = {
+                    widgetId: MSG91_WIDGET_ID,
+                    tokenAuth: MSG91_WIDGET_TOKEN,
+                    exposeMethods: true,
+                    success: () => { },
+                    failure: (error) => console.error("MSG91 widget error:", error)
+                };
+                const script = document.createElement("script");
+                script.src = "https://verify.msg91.com/otp-provider.js";
+                script.async = true;
+                script.onload = () => {
+                    if (typeof window.initSendOTP !== "function") {
+                        reject(new Error("MSG91 SDK did not initialize."));
+                        return;
+                    }
+                    window.initSendOTP(window.configuration);
+                    const started = Date.now();
+                    const waitForMethods = () => {
+                        if (typeof window.verifyOtp === "function" && typeof window.retryOtp === "function") {
+                            msg91Ready = true;
+                            resolve();
+                        } else if (Date.now() - started > 8000) {
+                            reject(new Error("MSG91 OTP methods are unavailable."));
+                        } else {
+                            setTimeout(waitForMethods, 100);
+                        }
+                    };
+                    waitForMethods();
+                };
+                script.onerror = () => reject(new Error("Could not load MSG91 SDK."));
+                document.head.appendChild(script);
+            });
+            return msg91LoadPromise;
+        }
 
-        /* =========================
-           TIMER
-        ========================= */
+        function callMSG91(method, args) {
+            return new Promise((resolve, reject) => {
+                try {
+                    if (method === "verifyOtp" || method === "retryOtp") {
+                        // MSG91 Web SDK signatures put reqId after the callbacks.
+                        window[method](args[0], resolve, reject, args[1]);
+                    } else {
+                        window[method](args[0], resolve, reject);
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        function getAccessToken(data) {
+            return data?.["access-token"] || data?.accessToken || data?.access_token || data?.message || data?.data?.["access-token"] || "";
+        }
+
+        function getReqId(data) {
+            return data?.reqId || data?.requestId || data?.message || data?.data?.reqId || localStorage.getItem("msg91ReqId") || "";
+        }
 
         function startTimer() {
-
             clearInterval(timer);
-
             time = 30;
-
-            document.getElementById("timer").textContent =
-                time;
-
-            document.getElementById("timerText").style.display =
-                "inline";
-
-            document.getElementById("timer").style.display =
-                "inline";
-
-            document.getElementById("seconds").style.display =
-                "inline";
-
-            document.getElementById("resendBtn").style.display =
-                "none";
-
-
-            timer = setInterval(function () {
-
+            document.getElementById("timer").textContent = time;
+            document.getElementById("timerText").style.display = "inline";
+            document.getElementById("timer").style.display = "inline";
+            document.getElementById("seconds").style.display = "inline";
+            resendButton.style.display = "none";
+            timer = setInterval(() => {
                 time--;
-
-                document.getElementById("timer").textContent =
-                    time;
-
-
+                document.getElementById("timer").textContent = time;
                 if (time <= 0) {
-
                     clearInterval(timer);
-
-                    showResendButton();
-
+                    document.getElementById("timerText").style.display = "none";
+                    document.getElementById("timer").style.display = "none";
+                    document.getElementById("seconds").style.display = "none";
+                    resendButton.style.display = "block";
                 }
-
             }, 1000);
-
         }
 
-
-        /* =========================
-           RESEND BUTTON
-        ========================= */
-
-        function showResendButton() {
-
-            document.getElementById("timerText").style.display =
-                "none";
-
-            document.getElementById("timer").style.display =
-                "none";
-
-            document.getElementById("seconds").style.display =
-                "none";
-
-            document.getElementById("resendBtn").style.display =
-                "block";
-
+        function getEnteredOTP() {
+            return otpInputs.map(input => input.value).join("").trim();
         }
 
-
-        /* =========================
-           VERIFY OTP
-        ========================= */
+        otpInputs.forEach((input, index) => {
+            input.addEventListener("input", () => {
+                input.value = input.value.replace(/\D/g, "").slice(0, 1);
+                if (input.value && index < 5) otpInputs[index + 1].focus();
+            });
+            input.addEventListener("keydown", event => {
+                if (event.key === "Backspace" && !input.value && index > 0) otpInputs[index - 1].focus();
+            });
+        });
 
         async function verifyOTP() {
-
-            if (verifying) {
+            if (verifying) return;
+            if (!phoneNumber) {
+                showMessage("Please return to Forgot Password.", "error");
                 return;
             }
-
-
-            const contact =
-                localStorage.getItem("resetMobile");
-
-
-            const enteredOTP =
-                getEnteredOTP();
-
-
-            if (!contact) {
-
-                showMessage(
-                    "Please return to Forgot Password.",
-                    "error"
-                );
-
+            const otp = getEnteredOTP();
+            if (!/^\d{6}$/.test(otp)) {
+                showMessage("Please enter the complete 6-digit OTP.", "error");
                 return;
-
             }
-
-
-            if (!/^\d{6}$/.test(enteredOTP)) {
-
-                showMessage(
-                    "Please enter the complete 6-digit OTP.",
-                    "error"
-                );
-
+            const reqId = getReqId({});
+            if (!reqId) {
+                showMessage("OTP request expired. Please return and request a new OTP.", "error");
                 return;
-
             }
-
 
             verifying = true;
-
-
-            const verifyButton =
-                document.getElementById("verifyBtn");
-
-
             verifyButton.disabled = true;
-
-            verifyButton.textContent =
-                "Verifying...";
-
-
+            verifyButton.textContent = "Verifying...";
             try {
+                await loadMSG91Widget();
+                const verifyResult = await callMSG91("verifyOtp", [otp, reqId]);
+                if (verifyResult?.type === "error") {
+                    throw new Error(verifyResult.message || "Incorrect or expired OTP.");
+                }
+                const accessToken = getAccessToken(verifyResult);
+                if (!accessToken) throw new Error("MSG91 did not return a verification token.");
 
-                const response = await fetch(
-                    `${API}/verify-otp`,
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body: JSON.stringify({
-
-                            contact: contact,
-
-                            /*
-                             * Keep OTP as STRING.
-                             * Important when OTP starts with 0.
-                             */
-
-                            otp: String(enteredOTP)
-
-                        })
-
-                    }
-                );
-
-
-                let data = {};
-
-                try {
-
-                    data = await response.json();
-
-                } catch (jsonError) {
-
-                    data = {};
-
+                const response = await fetch(`${API}/verify-widget-token`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contact: phoneNumber, access_token: accessToken })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success || !result.reset_token) {
+                    throw new Error(result.message || "Server could not validate the OTP.");
                 }
 
-
-                console.log(
-                    "OTP verification response:",
-                    response.status,
-                    data
-                );
-
-
-                if (response.ok) {
-
-                    clearInterval(timer);
-
-
-                    showMessage(
-                        "OTP Verified Successfully!",
-                        "success"
-                    );
-
-
-                    if (data.reset_token) {
-
-                        localStorage.setItem(
-                            "resetToken",
-                            data.reset_token
-                        );
-
-                    }
-
-
-                    document.getElementById(
-                        "resendBtn"
-                    ).style.display = "none";
-
-
-                    setTimeout(function () {
-
-                        window.location.href =
-                            "reset.html";
-
-                    }, 1000);
-
-
-                } else {
-
-                    /*
-                     * Show actual backend error.
-                     * This helps us know whether OTP
-                     * is wrong, expired, or attempts
-                     * exceeded.
-                     */
-
-                    showMessage(
-                        data.error ||
-                        data.message ||
-                        `OTP verification failed. Server returned ${response.status}.`,
-                        "error"
-                    );
-
-
-                    verifyButton.disabled = false;
-
-                    verifyButton.textContent =
-                        "Verify OTP";
-
-                }
-
-
+                localStorage.setItem("resetToken", result.reset_token);
+                localStorage.removeItem("msg91ReqId");
+                localStorage.removeItem("msg91AccessToken");
+                clearInterval(timer);
+                showMessage("OTP verified successfully!", "success");
+                resendButton.style.display = "none";
+                setTimeout(() => window.location.href = "reset.html", 800);
             } catch (error) {
-
-                console.error(
-                    "OTP verification error:",
-                    error
-                );
-
-
-                showMessage(
-                    "Backend connection failed. Make sure lak.py is running on port 5000.",
-                    "error"
-                );
-
-
+                console.error("MSG91 OTP verification error:", error);
+                showMessage(error.message || "OTP verification failed. Please try again.", "error");
                 verifyButton.disabled = false;
-
-                verifyButton.textContent =
-                    "Verify OTP";
-
+                verifyButton.textContent = "Verify OTP";
+            } finally {
+                verifying = false;
             }
-
-            verifying = false;
-
         }
-
-
-        /* =========================
-           RESEND OTP
-        ========================= */
 
         async function resendOTP() {
-
-            const contact =
-                localStorage.getItem("resetMobile");
-
-
-            if (!contact) {
-
-                showMessage(
-                    "Please return to Forgot Password.",
-                    "error"
-                );
-
+            if (!phoneNumber) {
+                showMessage("Please return to Forgot Password.", "error");
                 return;
-
             }
-
-
-            const resendButton =
-                document.getElementById("resendBtn");
-
-
             resendButton.disabled = true;
-
-            resendButton.textContent =
-                "Sending...";
-
-
+            resendButton.textContent = "Sending...";
             try {
-
-                const response = await fetch(
-                    `${API}/send-otp`,
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            contact: contact
-                        })
-
-                    }
-                );
-
-
-                let data = {};
-
-                try {
-
-                    data = await response.json();
-
-                } catch (error) {
-
-                    data = {};
-
-                }
-
-
-                console.log(
-                    "Resend OTP response:",
-                    response.status,
-                    data
-                );
-
-
-                if (!response.ok) {
-
-                    showMessage(
-                        data.error ||
-                        data.message ||
-                        "Could not resend OTP.",
-                        "error"
-                    );
-
-                    resendButton.disabled = false;
-
-                    resendButton.textContent =
-                        "Resend OTP";
-
-                    return;
-
-                }
-
-
-                /* Clear old OTP */
-
-                otpInputs.forEach(function (input) {
-
-                    input.value = "";
-
-                });
-
-
-                showMessage(
-                    "New OTP generated. Check the backend terminal.",
-                    "success"
-                );
-
-
+                await loadMSG91Widget();
+                const reqId = getReqId({});
+                // Default Configuration: MSG91 requires null as retry channel.
+                const result = await callMSG91("retryOtp", [null, reqId]);
+                if (result?.type === "error") throw new Error(result.message || "Could not resend OTP.");
+                const nextReqId = getReqId(result);
+                if (nextReqId) localStorage.setItem("msg91ReqId", nextReqId);
+                otpInputs.forEach(input => input.value = "");
+                showMessage("OTP resent. Please check your phone.", "success");
                 startTimer();
-
-
                 otpInputs[0].focus();
-
-
-                resendButton.disabled = false;
-
-                resendButton.textContent =
-                    "Resend OTP";
-
-
             } catch (error) {
-
-                console.error(
-                    "Resend OTP error:",
-                    error
-                );
-
-
-                showMessage(
-                    "Backend connection failed. Make sure lak.py is running.",
-                    "error"
-                );
-
-
+                console.error("MSG91 resend error:", error);
+                showMessage(error.message || "Could not resend OTP. Please try again.", "error");
+            } finally {
                 resendButton.disabled = false;
-
-                resendButton.textContent =
-                    "Resend OTP";
-
+                resendButton.textContent = "Resend OTP";
             }
-
         }
 
-
-        /* =========================
-           START
-        ========================= */
-
-        if (phoneNumber) {
-
+        if (!phoneNumber) {
+            showMessage("Please return to Forgot Password.", "error");
+            verifyButton.disabled = true;
+        } else {
+            document.getElementById("phoneDisplay").textContent = phoneNumber;
             startTimer();
-
             otpInputs[0].focus();
-
         }
-
     </script>
 
 </body>

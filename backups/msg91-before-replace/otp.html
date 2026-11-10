@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OTP Verification</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background: #f5f7f6;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* LEFT */
+
+        .left-section {
+            width: 50%;
+            min-height: 100vh;
+            background: #07883f;
+            color: white;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+            padding: 40px;
+        }
+
+        .left-section h1 {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .left-section p {
+            font-size: 20px;
+            line-height: 1.7;
+        }
+
+        /* RIGHT */
+
+        .right-section {
+            width: 50%;
+            min-height: 100vh;
+            background: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .otp-form {
+            width: 75%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 32px;
+            color: #222;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            color: #666;
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        #phoneDisplay {
+            color: #07883f;
+        }
+
+        /* OTP BOXES */
+
+        .otp-box {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 30px 0;
+        }
+
+        .otp-box input {
+            width: 55px;
+            height: 60px;
+
+            border: 1px solid #ccc;
+            border-radius: 7px;
+
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+
+            outline: none;
+        }
+
+        .otp-box input:focus {
+            border: 2px solid #07883f;
+        }
+
+        /* TIMER */
+
+        .timer {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        #timer {
+            color: #07883f;
+            font-weight: bold;
+        }
+
+        /* VERIFY */
+
+        .verify-btn {
+            width: 100%;
+            padding: 15px;
+
+            margin-top: 10px;
+
+            background: #07883f;
+            color: white;
+
+            border: none;
+            border-radius: 6px;
+
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .verify-btn:hover {
+            background: #056b31;
+        }
+
+        .verify-btn:disabled {
+            background: #9db9aa;
+            cursor: not-allowed;
+        }
+
+        /* RESEND */
+
+        #resendBtn {
+            display: none;
+
+            padding: 11px 25px;
+            margin: 10px auto 20px;
+
+            background: white;
+            color: #07883f;
+
+            border: 2px solid #07883f;
+            border-radius: 6px;
+
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #resendBtn:hover {
+            background: #07883f;
+            color: white;
+        }
+
+        /* MESSAGE */
+
+        #message {
+            margin-top: 20px;
+            font-size: 17px;
+            font-weight: bold;
+            min-height: 25px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 700px) {
+
+            .container {
+                flex-direction: column;
+            }
+
+            .left-section,
+            .right-section {
+                width: 100%;
+                min-height: 50vh;
+            }
+
+            .left-section h1 {
+                font-size: 35px;
+            }
+
+            .otp-form {
+                width: 85%;
+            }
+
+            .otp-box {
+                justify-content: center;
+            }
+
+            .otp-box input {
+                width: 42px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- LEFT -->
+
+        <div class="left-section">
+
+            <h1>
+                OTP Verification
+            </h1>
+
+            <p>
+                Secure verification
+                <br>
+                for your account
+            </p>
+
+        </div>
+
+
+        <!-- RIGHT -->
+
+        <div class="right-section">
+
+            <div class="otp-form">
+
+                <h2>
+                    Verify Your Number
+                </h2>
+
+                <p class="description">
+
+                    Enter the 6-digit OTP sent to
+
+                    <br>
+
+                    <b id="phoneDisplay"></b>
+
+                </p>
+
+
+                <!-- OTP -->
+
+                <div class="otp-box">
+
+                    <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="1"
+                        id="otp1"
+                        autocomplete="one-time-code"
+                    >
+
+                    <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="1"
+                        id="otp2"
+                    >
+
+                    <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="1"
+                        id="otp3"
+                    >
+
+                    <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="1"
+                        id="otp4"
+                    >
+
+                    <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="1"
+                        id="otp5"
+                    >
+
+                    <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="1"
+                        id="otp6"
+                    >
+
+                </div>
+
+
+                <!-- TIMER -->
+
+                <div class="timer">
+
+                    <span id="timerText">
+                        Resend OTP in
+                    </span>
+
+                    <b id="timer">
+                        30
+                    </b>
+
+                    <span id="seconds">
+                        seconds
+                    </span>
+
+                </div>
+
+
+                <!-- RESEND -->
+
+                <button
+                    id="resendBtn"
+                    type="button"
+                    onclick="resendOTP()"
+                >
+                    Resend OTP
+                </button>
+
+
+                <!-- VERIFY -->
+
+                <button
+                    class="verify-btn"
+                    id="verifyBtn"
+                    type="button"
+                    onclick="verifyOTP()"
+                >
+                    Verify OTP
+                </button>
+
+
+                <!-- MESSAGE -->
+
+                <div id="message"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const API =
+            "https://gramasathi-backend.onrender.com/api/forgot-password";
+
+
+        let phoneNumber =
+            localStorage.getItem("resetMobile");
+
+
+        let timer = null;
+
+        let time = 30;
+
+        let verifying = false;
+
+
+        /* =========================
+           CHECK CONTACT
+        ========================= */
+
+        if (!phoneNumber) {
+
+            document.getElementById("message").textContent =
+                "Please return to Forgot Password.";
+
+            document.getElementById("message").className =
+                "error";
+
+            document.getElementById("verifyBtn").disabled = true;
+
+        } else {
+
+            document.getElementById("phoneDisplay").textContent =
+                phoneNumber;
+
+        }
+
+
+        /* =========================
+           OTP INPUTS
+        ========================= */
+
+        const otpInputs = [];
+
+        for (let i = 1; i <= 6; i++) {
+
+            otpInputs.push(
+                document.getElementById("otp" + i)
+            );
+
+        }
+
+
+        otpInputs.forEach((input, index) => {
+
+            input.addEventListener("input", function () {
+
+                /* Only numbers */
+
+                this.value =
+                    this.value.replace(/\D/g, "");
+
+
+                if (this.value.length === 1) {
+
+                    if (index < 5) {
+
+                        otpInputs[index + 1].focus();
+
+                    }
+
+                }
+
+            });
+
+
+            input.addEventListener("keydown", function (event) {
+
+                if (
+                    event.key === "Backspace" &&
+                    this.value === "" &&
+                    index > 0
+                ) {
+
+                    otpInputs[index - 1].focus();
+
+                }
+
+            });
+
+        });
+
+
+        /* =========================
+           GET OTP
+        ========================= */
+
+        function getEnteredOTP() {
+
+            let otp = "";
+
+            for (let i = 0; i < 6; i++) {
+
+                otp += otpInputs[i].value;
+
+            }
+
+            return otp.trim();
+
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        function showMessage(text, type) {
+
+            const message =
+                document.getElementById("message");
+
+            message.textContent = text;
+
+            message.className = type || "";
+
+        }
+
+
+        /* =========================
+           TIMER
+        ========================= */
+
+        function startTimer() {
+
+            clearInterval(timer);
+
+            time = 30;
+
+            document.getElementById("timer").textContent =
+                time;
+
+            document.getElementById("timerText").style.display =
+                "inline";
+
+            document.getElementById("timer").style.display =
+                "inline";
+
+            document.getElementById("seconds").style.display =
+                "inline";
+
+            document.getElementById("resendBtn").style.display =
+                "none";
+
+
+            timer = setInterval(function () {
+
+                time--;
+
+                document.getElementById("timer").textContent =
+                    time;
+
+
+                if (time <= 0) {
+
+                    clearInterval(timer);
+
+                    showResendButton();
+
+                }
+
+            }, 1000);
+
+        }
+
+
+        /* =========================
+           RESEND BUTTON
+        ========================= */
+
+        function showResendButton() {
+
+            document.getElementById("timerText").style.display =
+                "none";
+
+            document.getElementById("timer").style.display =
+                "none";
+
+            document.getElementById("seconds").style.display =
+                "none";
+
+            document.getElementById("resendBtn").style.display =
+                "block";
+
+        }
+
+
+        /* =========================
+           VERIFY OTP
+        ========================= */
+
+        async function verifyOTP() {
+
+            if (verifying) {
+                return;
+            }
+
+
+            const contact =
+                localStorage.getItem("resetMobile");
+
+
+            const enteredOTP =
+                getEnteredOTP();
+
+
+            if (!contact) {
+
+                showMessage(
+                    "Please return to Forgot Password.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (!/^\d{6}$/.test(enteredOTP)) {
+
+                showMessage(
+                    "Please enter the complete 6-digit OTP.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            verifying = true;
+
+
+            const verifyButton =
+                document.getElementById("verifyBtn");
+
+
+            verifyButton.disabled = true;
+
+            verifyButton.textContent =
+                "Verifying...";
+
+
+            try {
+
+                const response = await fetch(
+                    `${API}/verify-otp`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            contact: contact,
+
+                            /*
+                             * Keep OTP as STRING.
+                             * Important when OTP starts with 0.
+                             */
+
+                            otp: String(enteredOTP)
+
+                        })
+
+                    }
+                );
+
+
+                let data = {};
+
+                try {
+
+                    data = await response.json();
+
+                } catch (jsonError) {
+
+                    data = {};
+
+                }
+
+
+                console.log(
+                    "OTP verification response:",
+                    response.status,
+                    data
+                );
+
+
+                if (response.ok) {
+
+                    clearInterval(timer);
+
+
+                    showMessage(
+                        "OTP Verified Successfully!",
+                        "success"
+                    );
+
+
+                    if (data.reset_token) {
+
+                        localStorage.setItem(
+                            "resetToken",
+                            data.reset_token
+                        );
+
+                    }
+
+
+                    document.getElementById(
+                        "resendBtn"
+                    ).style.display = "none";
+
+
+                    setTimeout(function () {
+
+                        window.location.href =
+                            "reset.html";
+
+                    }, 1000);
+
+
+                } else {
+
+                    /*
+                     * Show actual backend error.
+                     * This helps us know whether OTP
+                     * is wrong, expired, or attempts
+                     * exceeded.
+                     */
+
+                    showMessage(
+                        data.error ||
+                        data.message ||
+                        `OTP verification failed. Server returned ${response.status}.`,
+                        "error"
+                    );
+
+
+                    verifyButton.disabled = false;
+
+                    verifyButton.textContent =
+                        "Verify OTP";
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "OTP verification error:",
+                    error
+                );
+
+
+                showMessage(
+                    "Backend connection failed. Make sure lak.py is running on port 5000.",
+                    "error"
+                );
+
+
+                verifyButton.disabled = false;
+
+                verifyButton.textContent =
+                    "Verify OTP";
+
+            }
+
+            verifying = false;
+
+        }
+
+
+        /* =========================
+           RESEND OTP
+        ========================= */
+
+        async function resendOTP() {
+
+            const contact =
+                localStorage.getItem("resetMobile");
+
+
+            if (!contact) {
+
+                showMessage(
+                    "Please return to Forgot Password.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const resendButton =
+                document.getElementById("resendBtn");
+
+
+            resendButton.disabled = true;
+
+            resendButton.textContent =
+                "Sending...";
+
+
+            try {
+
+                const response = await fetch(
+                    `${API}/send-otp`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            contact: contact
+                        })
+
+                    }
+                );
+
+
+                let data = {};
+
+                try {
+
+                    data = await response.json();
+
+                } catch (error) {
+
+                    data = {};
+
+                }
+
+
+                console.log(
+                    "Resend OTP response:",
+                    response.status,
+                    data
+                );
+
+
+                if (!response.ok) {
+
+                    showMessage(
+                        data.error ||
+                        data.message ||
+                        "Could not resend OTP.",
+                        "error"
+                    );
+
+                    resendButton.disabled = false;
+
+                    resendButton.textContent =
+                        "Resend OTP";
+
+                    return;
+
+                }
+
+
+                /* Clear old OTP */
+
+                otpInputs.forEach(function (input) {
+
+                    input.value = "";
+
+                });
+
+
+                showMessage(
+                    "New OTP generated. Check the backend terminal.",
+                    "success"
+                );
+
+
+                startTimer();
+
+
+                otpInputs[0].focus();
+
+
+                resendButton.disabled = false;
+
+                resendButton.textContent =
+                    "Resend OTP";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Resend OTP error:",
+                    error
+                );
+
+
+                showMessage(
+                    "Backend connection failed. Make sure lak.py is running.",
+                    "error"
+                );
+
+
+                resendButton.disabled = false;
+
+                resendButton.textContent =
+                    "Resend OTP";
+
+            }
+
+        }
+
+
+        /* =========================
+           START
+        ========================= */
+
+        if (phoneNumber) {
+
+            startTimer();
+
+            otpInputs[0].focus();
+
+        }
+
+    </script>
+
+</body>
+
+</html>
