@@ -1,3 +1,6 @@
+import json
+import urllib.request
+import urllib.error
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
@@ -3304,6 +3307,17 @@ def valid_contact(contact):
     )
 
 
+def canonical_reset_contact(contact):
+    """Use the 10-digit Indian mobile form stored by GramaSathi."""
+    contact = normalize_contact(contact)
+    if "@" in contact:
+        return contact
+    digits = re.sub(r"\D", "", contact)
+    if len(digits) == 12 and digits.startswith("91"):
+        return digits[2:]
+    return digits or contact
+
+
 def valid_password(password):
 
     return (
@@ -3324,7 +3338,7 @@ def valid_password(password):
 
 
 # =========================================================
-# SEND OTP
+# MSG91 WIDGET OTP - SEND / SERVER TOKEN VERIFICATION
 # =========================================================
 
 @app.route(
@@ -3332,243 +3346,189 @@ def valid_password(password):
     methods=["POST"]
 )
 def send_forgot_password_otp():
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-
-    contact = normalize_contact(
-        data.get("contact")
-    )
-
+    """Check that the account exists before the browser asks MSG91 to send OTP."""
+    data = request.get_json(silent=True) or {}
+    contact = normalize_contact(data.get("contact"))
 
     if not valid_contact(contact):
-
         return jsonify({
             "success": False,
             "message": "Enter a valid mobile number or email."
         }), 400
 
-
-    conn = None
-    cursor = None
-
+    contact = canonical_reset_contact(contact)
+    conn = cursor = None
     try:
-
         conn = get_db()
-
         if conn is None:
-
             return jsonify({
                 "success": False,
-                "message": "Database connection failed"
+                "message": "Database connection failed. Please try again."
             }), 500
 
-
-        cursor = conn.cursor(
-            dictionary=True
-        )
-
-
+        cursor = conn.cursor(dictionary=True)
         cursor.execute(
             """
             SELECT id
             FROM users
-            WHERE LOWER(email) = %s
-               OR mobile = %s
+            WHERE LOWER(email) = %s OR mobile = %s
             LIMIT 1
             """,
-            (
-                contact,
-                contact
-            )
+            (contact, contact)
         )
-
-
         user = cursor.fetchone()
 
-
         if not user:
-
             return jsonify({
                 "success": False,
                 "message": "No account found with this mobile number or email."
             }), 404
 
-
-        otp = f"{secrets.randbelow(1000000):06d}"
-
-
+        # A new reset attempt invalidates any previous reset token for this contact.
         with otp_lock:
-
-            otp_storage[contact] = {
-                "otp": otp,
-                "expires": time.time()
-                + OTP_EXPIRY,
-                "attempts": 0
-            }
-
-
-            for token, record in list(
-                reset_tokens.items()
-            ):
-
-                if record["contact"] == contact:
-
-                    reset_tokens.pop(
-                        token,
-                        None
-                    )
-
-
-        # Development OTP
-        app.logger.warning(
-            "Development OTP generated for %s: %s",
-            contact,
-            otp
-        )
-
+            for token, record in list(reset_tokens.items()):
+                if record.get("contact") == contact:
+                    reset_tokens.pop(token, None)
 
         return jsonify({
             "success": True,
-            "message": "OTP generated. Check backend terminal for testing.",
-            "expires_in": OTP_EXPIRY
+            "message": "Account verified. Continue with MSG91 OTP.",
+            "contact": contact
         }), 200
 
-
-    except Error as e:
-
+    except Error:
+        app.logger.exception("Forgot-password account lookup failed")
         return jsonify({
             "success": False,
-            "message": "Database error while sending OTP.",
-            "error": str(e)
+            "message": "Unable to check the account right now. Please try again."
         }), 500
-
-
     finally:
-
         if cursor:
             cursor.close()
-
         if conn:
             conn.close()
 
 
-# =========================================================
-# VERIFY OTP
-# =========================================================
+@app.route(
+    "/api/forgot-password/verify-widget-token",
+    methods=["POST"]
+)
+def verify_msg91_widget_token():
+    """Validate the JWT from MSG91 on the server before issuing our reset token."""
+    data = request.get_json(silent=True) or {}
+    contact = normalize_contact(data.get("contact"))
+    if valid_contact(contact):
+        contact = canonical_reset_contact(contact)
+    access_token = str(data.get("access_token", "")).strip()
+    auth_key = os.getenv("MSG91_AUTH_KEY", "").strip()
 
+    if not valid_contact(contact) or not access_token:
+        return jsonify({
+            "success": False,
+            "message": "The OTP verification response is incomplete. Please verify again."
+        }), 400
+
+    if not auth_key:
+        app.logger.error("MSG91_AUTH_KEY is not configured on the server")
+        return jsonify({
+            "success": False,
+            "message": "OTP service is not configured. Please contact the administrator."
+        }), 500
+
+    try:
+        payload = json.dumps({
+            "authkey": auth_key,
+            "access-token": access_token
+        }).encode("utf-8")
+        msg91_request = urllib.request.Request(
+            "https://control.msg91.com/api/v5/widget/verifyAccessToken",
+            data=payload,
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(msg91_request, timeout=15) as response:
+            result = json.loads(response.read().decode("utf-8"))
+
+        if not isinstance(result, dict) or result.get("type") != "success":
+            app.logger.warning("MSG91 access-token validation rejected the token")
+            return jsonify({
+                "success": False,
+                "message": "MSG91 could not verify this OTP. Please request a new OTP."
+            }), 400
+
+        verified_identifier = normalize_contact(result.get("message", ""))
+        expected_identifier = contact
+
+        # MSG91 returns Indian mobile identifiers with country code (91),
+        # while GramaSathi's user table stores the 10-digit mobile number.
+        verified_digits = re.sub(r"\D", "", verified_identifier)
+        expected_digits = re.sub(r"\D", "", expected_identifier)
+        if verified_digits:
+            if len(verified_digits) == 12 and verified_digits.startswith("91"):
+                verified_digits = verified_digits[2:]
+            if len(expected_digits) == 12 and expected_digits.startswith("91"):
+                expected_digits = expected_digits[2:]
+            identifiers_match = verified_digits == expected_digits
+        else:
+            identifiers_match = verified_identifier == expected_identifier
+
+        if not identifiers_match:
+            app.logger.warning("MSG91 verified identifier did not match reset contact")
+            return jsonify({
+                "success": False,
+                "message": "The verified number/email does not match the account. Please start again."
+            }), 403
+
+        reset_token = secrets.token_urlsafe(32)
+        with otp_lock:
+            reset_tokens[reset_token] = {
+                "contact": contact,
+                "expires": time.time() + RESET_TOKEN_EXPIRY
+            }
+
+        return jsonify({
+            "success": True,
+            "message": "OTP verified successfully.",
+            "reset_token": reset_token,
+            "expires_in": RESET_TOKEN_EXPIRY
+        }), 200
+
+    except urllib.error.HTTPError as e:
+        app.logger.warning("MSG91 token verification HTTP error: %s", e.code)
+        return jsonify({
+            "success": False,
+            "message": "MSG91 verification service rejected the request. Please try again."
+        }), 502
+    except (urllib.error.URLError, TimeoutError):
+        app.logger.exception("MSG91 token verification connection failed")
+        return jsonify({
+            "success": False,
+            "message": "Could not reach MSG91. Please try again."
+        }), 502
+    except (ValueError, TypeError):
+        app.logger.exception("Unexpected MSG91 verification response")
+        return jsonify({
+            "success": False,
+            "message": "Invalid response from MSG91. Please try again."
+        }), 502
+    except Exception:
+        app.logger.exception("Unexpected error while verifying MSG91 widget token")
+        return jsonify({
+            "success": False,
+            "message": "OTP verification failed. Please try again."
+        }), 500
+
+
+# Legacy local-OTP endpoint is intentionally disabled: OTPs must be verified by MSG91.
 @app.route(
     "/api/forgot-password/verify-otp",
     methods=["POST"]
 )
 def verify_forgot_password_otp():
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-
-    contact = normalize_contact(
-        data.get("contact")
-    )
-
-    entered_otp = str(
-        data.get("otp", "")
-    ).strip()
-
-
-    if not contact or not re.fullmatch(
-        r"\d{6}",
-        entered_otp
-    ):
-
-        return jsonify({
-            "success": False,
-            "message": "Enter a valid 6-digit OTP."
-        }), 400
-
-
-    with otp_lock:
-
-        record = otp_storage.get(
-            contact
-        )
-
-
-        if not record:
-
-            return jsonify({
-                "success": False,
-                "message": "Request an OTP first."
-            }), 400
-
-
-        if time.time() > record["expires"]:
-
-            otp_storage.pop(
-                contact,
-                None
-            )
-
-            return jsonify({
-                "success": False,
-                "message": "OTP expired. Request a new one."
-            }), 400
-
-
-        if record["attempts"] >= MAX_OTP_ATTEMPTS:
-
-            otp_storage.pop(
-                contact,
-                None
-            )
-
-            return jsonify({
-                "success": False,
-                "message": "Too many attempts. Request a new OTP."
-            }), 429
-
-
-        record["attempts"] += 1
-
-
-        if not secrets.compare_digest(
-            entered_otp,
-            record["otp"]
-        ):
-
-            return jsonify({
-                "success": False,
-                "message": "Incorrect OTP."
-            }), 400
-
-
-        otp_storage.pop(
-            contact,
-            None
-        )
-
-
-        reset_token = secrets.token_urlsafe(
-            32
-        )
-
-
-        reset_tokens[reset_token] = {
-            "contact": contact,
-            "expires": time.time()
-            + RESET_TOKEN_EXPIRY
-        }
-
-
     return jsonify({
-        "success": True,
-        "message": "OTP verified successfully.",
-        "reset_token": reset_token,
-        "expires_in": RESET_TOKEN_EXPIRY
-    }), 200
+        "success": False,
+        "message": "Please verify the OTP through the MSG91 widget."
+    }), 410
 
 
 # =========================================================
